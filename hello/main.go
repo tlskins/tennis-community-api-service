@@ -1,21 +1,31 @@
 package main
 
 import (
-	// "bytes"
-	// "context"
-	// "encoding/json"
+	"context"
 	"fmt"
 
-	"github.com/aws/aws-lambda-go/events"
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/aws/aws-lambda-go/lambda"
+	// "github.com/aws/aws-lambda-go/events"
 )
 
-func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Println("Received body: ", request.Body)
+type SampleEvent struct {
+	ResponsePayload struct {
+		StatusCode int `json:"statusCode"`
+		Body       struct {
+			Bucket  string   `json:"bucket"`
+			Outputs []string `json:"outputs"`
+		} `json:"body"`
+	} `json:"responsePayload"`
+}
 
-	return events.APIGatewayProxyResponse{Body: request.Body, StatusCode: 200}, nil
+func HandleRequest(ctx context.Context, event SampleEvent) (string, error) {
+	fmt.Println("begin handle request")
+	spew.Dump(event)
+	return fmt.Sprintf("%+v", event), nil
 }
 
 func main() {
-	lambda.Start(Handler)
+	lambda.Start(HandleRequest)
 }
