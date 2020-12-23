@@ -27,6 +27,17 @@ func Parse(req *Request, out interface{}) {
 	}
 }
 
+type Validator interface {
+	Validate() error
+}
+
+func ParseAndValidate(req *Request, out Validator) {
+	Parse(req, out)
+	if err := out.Validate(); err != nil {
+		Abort(http.StatusUnprocessableEntity, err)
+	}
+}
+
 // Fail returns an internal server error with the error message
 func Fail(msg string, status int) (Response, error) {
 	e := make(map[string]string, 0)
