@@ -16,6 +16,9 @@ service: tennis-community-api-service
 #app: your-app-name
 #org: your-org-name
 
+custom:
+  secrets: ${file(config.prod.yml)}
+
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 frameworkVersion: "2"
@@ -55,18 +58,17 @@ package:
     - ./bin/**
 
 functions:
-  hello:
-    handler: bin/hello
+  create_user:
+    handler: bin/create_user
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
     events:
       - http:
-          path: hello
+          path: users
           method: post
-  world:
-    handler: bin/world
-    events:
-      - http:
-          path: world
-          method: get
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

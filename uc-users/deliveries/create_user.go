@@ -19,9 +19,9 @@ func main() {
 	godotenv.Load(*cfgPath)
 
 	usersDBName := os.Getenv("USERS_DB_NAME")
-	usersDBHost := os.Getenv("USERS_HOST")
-	usersDBUser := os.Getenv("USERS_USER")
-	usersDBPwd := os.Getenv("USERS_PWD")
+	usersDBHost := os.Getenv("USERS_DB_HOST")
+	usersDBUser := os.Getenv("USERS_DB_USER")
+	usersDBPwd := os.Getenv("USERS_DB_PWD")
 
 	var ucUsr *usr.UCService
 	ucUsr, err := usr.Init(usersDBName, usersDBHost, usersDBUser, usersDBPwd)
