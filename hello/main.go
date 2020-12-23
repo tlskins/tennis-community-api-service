@@ -20,7 +20,7 @@ type SampleEvent struct {
 	} `json:"responsePayload"`
 }
 
-func HandleRequest(ctx context.Context, event SampleEvent) (string, error) {
+func HandleRequest(ctx context.Context, event map[string]interface{}) (string, error) {
 	fmt.Println("begin handle request")
 	spew.Dump(event)
 	return fmt.Sprintf("%+v", event), nil
