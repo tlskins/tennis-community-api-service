@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/tennis-community-api-service/pkg/auth"
 	api "github.com/tennis-community-api-service/pkg/lambda"
@@ -14,7 +15,12 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 	req := &t.SignInReq{}
 	api.Parse(r, req)
 
-	user := &uT.User{Email: req.Email}
+	now := time.Now()
+	user := &uT.User{
+		Email:     req.Email,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
 	user.EncryptedPassword, err = auth.EncryptPassword(req.Password)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 

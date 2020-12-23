@@ -118,9 +118,3 @@ func HandleRequest(handle func(context.Context, *Request) (Response, error)) fun
 		return
 	}
 }
-
-// WriteJSON(w, err.Code, map[string]interface{}{"message": err.String()})
-// } else if err, ok := r.(error); ok {
-// 	WriteJSON(w, http.StatusInternalServerError, map[string]interface{}{"message": err.Error()})
-// } else {
-// 	WriteJSON(w, http.StatusInternalServerError, map[string]interface{}{"message": "unknown error"})
