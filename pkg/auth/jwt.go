@@ -13,7 +13,6 @@ import (
 type JWTService struct {
 	key                      *rsa.PublicKey
 	secret                   *rsa.PrivateKey
-	rpcPwd                   string
 	accessExpirationMinutes  int
 	refreshExpirationMinutes int
 }
@@ -21,7 +20,6 @@ type JWTService struct {
 type JWTServiceConfig struct {
 	Key                      []byte
 	Secret                   []byte
-	RPCPwd                   string
 	AccessExpirationMinutes  int
 	RefreshExpirationMinutes int
 }
@@ -52,7 +50,6 @@ func NewJWTService(config JWTServiceConfig) (*JWTService, error) {
 		secret:                   jSecret,
 		accessExpirationMinutes:  config.AccessExpirationMinutes,
 		refreshExpirationMinutes: config.RefreshExpirationMinutes,
-		rpcPwd:                   config.RPCPwd,
 	}, nil
 }
 
@@ -69,11 +66,7 @@ func (j *JWTService) IncludeLambdaAuth(ctx context.Context, req *events.APIGatew
 	if val, ok := req.Headers["Cookie"]; ok {
 		authVal = strings.ReplaceAll(val, fmt.Sprintf("%s=", AccessTokenKey), "")
 	} else if val, ok := req.Headers["Authorization"]; ok {
-		if val == j.rpcPwd {
-			ctx = context.WithValue(ctx, RPCAccessTokenKey, val)
-		} else {
-			authVal = strings.TrimPrefix(val, "Bearer ")
-		}
+		authVal = strings.TrimPrefix(val, "Bearer ")
 	}
 	if authVal != "" {
 		var err error

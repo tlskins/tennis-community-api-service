@@ -10,14 +10,6 @@ import (
 	t "github.com/tennis-community-api-service/users/types"
 )
 
-func (u *UsersService) ConfirmUser(_ context.Context, userID string) (resp *t.User, err error) {
-	conf := true
-	return u.Store.UpdateUser(&t.UpdateUser{
-		ID:        userID,
-		Confirmed: &conf,
-	})
-}
-
 func (u *UsersService) SignIn(_ context.Context, email, pwd string) (user *t.User, err error) {
 	if user, err = u.Store.GetUserByEmail(email); err != nil {
 		return

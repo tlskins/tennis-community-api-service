@@ -17,7 +17,6 @@ type User struct {
 
 	// auth
 	EncryptedPassword string     `bson:"pwd" json:"-"`
-	Confirmed         bool       `bson:"conf" json:"confirmed"`
 	LastLoggedIn      *time.Time `bson:"lstLogIn" json:"lastLoggedIn"`
 	AuthToken         string     `bson:"-" json:"authToken"`
 
@@ -32,6 +31,10 @@ type User struct {
 	FriendIds []string `bson:"friendIds" json:"friendIds"`
 }
 
+func (u User) GetAuthables() (id, email string, conf bool) {
+	return u.ID, u.Email, u.Status != enums.UserStatusPending
+}
+
 type UpdateUser struct {
 	ID        string    `bson:"-" json:"id"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
@@ -43,7 +46,6 @@ type UpdateUser struct {
 
 	// auth
 	EncryptedPassword *string    `bson:"pwd,omitempty" json:"-"`
-	Confirmed         *bool      `bson:"conf,omitempty" json:"confirmed,omitempty"`
 	LastLoggedIn      *time.Time `bson:"lstLogIn,omitempty" json:"lastLoggedIn,omitempty"`
 	AuthToken         *string    `bson:"-" json:"authToken,omitempty"`
 

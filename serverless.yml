@@ -65,10 +65,53 @@ functions:
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
       USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
     events:
       - http:
           path: users
           method: post
+  sign_in:
+    handler: bin/sign_in
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+    events:
+      - http:
+          path: users/sign_in
+          method: post
+  confirm_user:
+    handler: bin/confirm_user
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+    events:
+      - http:
+          path: users/{id}/confirm_user
+          method: get
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
