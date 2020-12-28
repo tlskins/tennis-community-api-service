@@ -17,8 +17,10 @@ type Request events.APIGatewayProxyRequest
 type Response events.APIGatewayProxyResponse
 
 var corsHeaders = map[string]string{
-	"Access-Control-Allow-Origin":      "*",
+	"Access-Control-Allow-Origin":      "http://localhost:3000",
 	"Access-Control-Allow-Credentials": "true",
+	"Access-Control-Allow-Methods":     "OPTIONS,POST,GET",
+	"Access-Control-Allow-Headers":     "Content-Type",
 }
 
 func Parse(req *Request, out interface{}) {

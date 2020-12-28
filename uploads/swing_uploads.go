@@ -3,29 +3,70 @@ package uploads
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/tennis-community-api-service/pkg/enums"
+	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uploads/types"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 )
 
-func (u *UploadsService) CreateSwingUpload(_ context.Context, origURL, userID string) (resp *t.SwingUpload, err error) {
-	now := time.Now()
-	data := &t.SwingUpload{
-		OriginalURL: origURL,
-		CreatedAt:   now,
-		UpdatedAt:   now,
-		UserID:      userID,
-		Status:      enums.SwingUploadStatusOriginal,
-	}
-	resp, err = u.Store.CreateSwingUpload(data)
-	return
+func (u *UploadsService) GetSwingUploadURL(ctx context.Context, userId, fileName string) (resp api.Response, err error) {
+	uploadId := time.Now().Format("2006_01_02_15_04_05")
+	sess, err := session.NewSession(&aws.Config{
+		Region:      aws.String("us-east-1"),
+		Credentials: credentials.NewStaticCredentials(u.awsConfig.accessKeyId, u.awsConfig.secretAccessKey, ""),
+	})
+	api.CheckError(http.StatusInternalServerError, err)
+
+	svc := s3.New(sess)
+	req, _ := svc.GetObjectRequest(&s3.GetObjectInput{
+		Bucket: aws.String(u.awsConfig.bucketName),
+		Key:    aws.String(fmt.Sprintf("originals/%s/%s/%s", userId, uploadId, fileName)),
+	})
+	urlStr, err := req.Presign(15 * time.Minute)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(map[string]string{
+		"url": urlStr,
+	}, http.StatusCreated)
 }
+
+func (u *UploadsService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	spew.Dump(r)
+	sess, err := session.NewSession(&aws.Config{
+		Region:      aws.String("us-east-1"),
+		Credentials: credentials.NewStaticCredentials(u.awsConfig.accessKeyId, u.awsConfig.secretAccessKey, ""),
+	})
+	api.CheckError(http.StatusInternalServerError, err)
+
+	c, err := sess.Config.Credentials.Get()
+	spew.Dump(c)
+	api.CheckError(http.StatusInternalServerError, err)
+
+	reader := strings.NewReader(r.Body)
+	uploader := s3manager.NewUploader(sess)
+	_, err = uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(u.awsConfig.bucketName),
+		Key:    aws.String("test_upload.mp4"),
+		Body:   reader,
+	})
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(map[string]string{
+		"result": "success",
+	}, http.StatusCreated)
+}
+
+// S3 Events
 
 // https://tennis-swings.s3.amazonaws.com/clips/timuserid/2020_12_18_1152_59/tim_ground_profile_wide_1min_540p_clip_1.mp4
 func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string, outputs []string) (resp *t.SwingUpload, err error) {

@@ -3,17 +3,18 @@ package uploads
 import (
 	"context"
 
-	t "github.com/tennis-community-api-service/uploads/types"
+	"github.com/tennis-community-api-service/pkg/auth"
+	api "github.com/tennis-community-api-service/pkg/lambda"
+	t "github.com/tennis-community-api-service/uc-uploads/types"
 )
 
-func (u *UCService) CreateSwingUpload(ctx context.Context, origURL, userID string) (*t.SwingUpload, error) {
-	return u.up.CreateSwingUpload(ctx, origURL, userID)
+func (u *UCService) GetSwingUploadURL(ctx context.Context, r *api.Request) (api.Response, error) {
+	req := &t.GetSwingUploadURLReq{}
+	api.Parse(r, req)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	return u.up.GetSwingUploadURL(ctx, claims.Subject, req.FileName)
 }
 
-func (u *UCService) CreateUploadClipVideos(ctx context.Context, bucket string, outputs []string) (*t.SwingUpload, error) {
-	return u.up.CreateUploadClipVideos(ctx, bucket, outputs)
-}
-
-func (u *UCService) CreateUploadSwingVideos(ctx context.Context, bucket string, outputs []string) (*t.SwingUpload, error) {
-	return u.up.CreateUploadSwingVideos(ctx, bucket, outputs)
+func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (api.Response, error) {
+	return u.up.CreateSwingUpload(ctx, r)
 }

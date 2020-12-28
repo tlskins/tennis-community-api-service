@@ -88,3 +88,11 @@ func ClaimsFromContext(ctx context.Context) (authorized bool, claims *CustomClai
 	}
 	return false, nil
 }
+
+func AuthorizedClaimsFromContext(ctx context.Context) *CustomClaims {
+	authorized, claims := ClaimsFromContext(ctx)
+	if !authorized {
+		panic("Unauthorized")
+	}
+	return claims
+}
