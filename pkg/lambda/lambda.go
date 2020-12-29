@@ -24,7 +24,16 @@ var corsHeaders = map[string]string{
 }
 
 func Parse(req *Request, out interface{}) {
-	if err := json.Unmarshal([]byte(req.Body), out); err != nil {
+	var jsonBytes []byte
+	var err error
+	if req.Body == "" {
+		if jsonBytes, err = json.Marshal(req.QueryStringParameters); err != nil {
+			Abort(http.StatusUnprocessableEntity, err)
+		}
+	} else {
+		jsonBytes = []byte(req.Body)
+	}
+	if err = json.Unmarshal(jsonBytes, out); err != nil {
 		Abort(http.StatusUnprocessableEntity, err)
 	}
 }

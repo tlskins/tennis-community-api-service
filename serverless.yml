@@ -118,7 +118,9 @@ functions:
       - http:
           path: users/{id}/confirm_user
           method: get
-          cors: true
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
   create_swing_upload:
     handler: bin/create_swing_upload
     environment:
@@ -135,7 +137,9 @@ functions:
       - http:
           path: users/{id}/create_swing_upload
           method: put
-          cors: true
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
   get_swing_upload_url:
     handler: bin/get_swing_upload_url
     environment:
@@ -150,9 +154,11 @@ functions:
       BUCKET_NAME: ${self:custom.secrets.BUCKET_NAME}
     events:
       - http:
-          path: users/{id}/create_swing_upload
-          method: put
-          cors: true
+          path: uploads/upload_url
+          method: get
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
 # events:

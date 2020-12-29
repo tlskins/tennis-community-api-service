@@ -3,10 +3,12 @@ package auth
 import (
 	"context"
 	"crypto/rsa"
+	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/aws/aws-lambda-go/events"
+	api "github.com/tennis-community-api-service/pkg/lambda"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -25,10 +27,7 @@ type JWTServiceConfig struct {
 }
 
 // AccessTokenKey - cookie and context key for jwt claims authorization
-const AccessTokenKey = "accessToken"
-
-// RPCAccessTokenKey - cookie and context key for rpc authorization
-const RPCAccessTokenKey = "rpcAccessToken"
+const AccessTokenKey = "authToken"
 
 func NewJWTService(config JWTServiceConfig) (*JWTService, error) {
 	var jKey *rsa.PublicKey
@@ -61,7 +60,7 @@ func (j *JWTService) RefreshExpirationMinutes() int {
 	return j.refreshExpirationMinutes
 }
 
-func (j *JWTService) IncludeLambdaAuth(ctx context.Context, req *events.APIGatewayProxyRequest) (context.Context, error) {
+func (j *JWTService) IncludeLambdaAuth(ctx context.Context, req *api.Request) (context.Context, error) {
 	authVal := ""
 	if val, ok := req.Headers["Cookie"]; ok {
 		authVal = strings.ReplaceAll(val, fmt.Sprintf("%s=", AccessTokenKey), "")
@@ -83,16 +82,13 @@ func ClaimsFromContext(ctx context.Context) (authorized bool, claims *CustomClai
 	if ctx.Value(AccessTokenKey) != nil {
 		return true, ctx.Value(AccessTokenKey).(*CustomClaims)
 	}
-	if ctx.Value(RPCAccessTokenKey) != nil {
-		return true, nil
-	}
 	return false, nil
 }
 
 func AuthorizedClaimsFromContext(ctx context.Context) *CustomClaims {
 	authorized, claims := ClaimsFromContext(ctx)
 	if !authorized {
-		panic("Unauthorized")
+		panic(errors.New("Unauthorized"))
 	}
 	return claims
 }
