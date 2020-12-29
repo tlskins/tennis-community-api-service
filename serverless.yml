@@ -97,7 +97,9 @@ functions:
       - http:
           path: users/sign_in
           method: post
-          cors: true
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
   confirm_user:
     handler: bin/confirm_user
     environment:

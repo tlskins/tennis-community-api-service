@@ -57,7 +57,7 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 	api.CheckError(http.StatusNotFound, err)
 	err = auth.ValidateCredentials(user.EncryptedPassword, req.Password)
 	api.CheckError(http.StatusUnauthorized, err)
-	user.AuthToken, err = u.jwt.GenAccessToken(user)
+	authToken, err := u.jwt.GenAccessToken(user)
 	api.CheckError(http.StatusInternalServerError, err)
 	now := time.Now()
 	user, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
@@ -65,6 +65,7 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 		LastLoggedIn: &now,
 	})
 	api.CheckError(http.StatusUnprocessableEntity, err)
+	user.AuthToken = authToken
 
 	return api.Success(user, http.StatusOK)
 }
@@ -80,6 +81,7 @@ func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Respo
 		ID:           user.ID,
 		Status:       &status,
 		LastLoggedIn: &now,
+		UpdatedAt:    now,
 	})
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
