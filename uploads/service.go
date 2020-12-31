@@ -8,17 +8,10 @@ import (
 )
 
 type UploadsService struct {
-	Store     *store.UploadsStore
-	awsConfig *AWSConfig
+	Store *store.UploadsStore
 }
 
-type AWSConfig struct {
-	accessKeyId     string
-	secretAccessKey string
-	bucketName      string
-}
-
-func Init(mongoDBName, mongoHost, mongoUser, mongoPwd, awsAccessKeyId, awsSecretAccessKey, bucketName string) (*UploadsService, error) {
+func Init(mongoDBName, mongoHost, mongoUser, mongoPwd string) (*UploadsService, error) {
 	mc, err := m.NewClientV2(mongoHost, mongoUser, mongoPwd)
 	if err != nil {
 		log.Fatalln(err)
@@ -27,10 +20,5 @@ func Init(mongoDBName, mongoHost, mongoUser, mongoPwd, awsAccessKeyId, awsSecret
 
 	return &UploadsService{
 		Store: newStore,
-		awsConfig: &AWSConfig{
-			accessKeyId:     awsAccessKeyId,
-			secretAccessKey: awsSecretAccessKey,
-			bucketName:      bucketName,
-		},
 	}, nil
 }

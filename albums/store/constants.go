@@ -1,3 +1,3 @@
 package store
 
-var ColSwingUploads = "swingUploads"
+var ColAlbums = "albums"

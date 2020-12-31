@@ -7,12 +7,14 @@ import (
 
 	"github.com/joho/godotenv"
 
+	alb "github.com/tennis-community-api-service/albums"
 	"github.com/tennis-community-api-service/pkg/auth"
 	up "github.com/tennis-community-api-service/uploads"
 )
 
 type UCService struct {
 	up  *up.UploadsService
+	alb *alb.AlbumsService
 	jwt *auth.JWTService
 }
 
@@ -25,14 +27,20 @@ func Init() (svc *UCService, err error) {
 	uploadsDBHost := os.Getenv("UPLOADS_DB_HOST")
 	uploadsDBUser := os.Getenv("UPLOADS_DB_USER")
 	uploadsDBPwd := os.Getenv("UPLOADS_DB_PWD")
+	albumsDBName := os.Getenv("ALBUMS_DB_NAME")
+	albumsDBHost := os.Getenv("ALBUMS_DB_HOST")
+	albumsDBUser := os.Getenv("ALBUMS_DB_USER")
+	albumsDBPwd := os.Getenv("ALBUMS_DB_PWD")
 	jwtKeyPath := os.Getenv("JWT_KEY_PATH")
 	jwtSecretPath := os.Getenv("JWT_SECRET_PATH")
-	awsAccessKeyId := os.Getenv("UPLOADS_AWS_ACCESS_KEY_ID")
-	awsSecretAccessKey := os.Getenv("UPLOADS_AWS_SECRET_ACCESS_KEY")
-	bucketName := os.Getenv("BUCKET_NAME")
 
 	var upSvc *up.UploadsService
-	if upSvc, err = up.Init(uploadsDBName, uploadsDBHost, uploadsDBUser, uploadsDBPwd, awsAccessKeyId, awsSecretAccessKey, bucketName); err != nil {
+	if upSvc, err = up.Init(uploadsDBName, uploadsDBHost, uploadsDBUser, uploadsDBPwd); err != nil {
+		return
+	}
+
+	var albSvc *alb.AlbumsService
+	if albSvc, err = alb.Init(albumsDBName, albumsDBHost, albumsDBUser, albumsDBPwd); err != nil {
 		return
 	}
 
@@ -55,6 +63,7 @@ func Init() (svc *UCService, err error) {
 
 	svc = &UCService{
 		up:  upSvc,
+		alb: albSvc,
 		jwt: jwt,
 	}
 	return

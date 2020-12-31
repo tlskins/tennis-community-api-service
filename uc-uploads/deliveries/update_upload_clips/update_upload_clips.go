@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	api "github.com/tennis-community-api-service/pkg/lambda"
@@ -11,7 +12,9 @@ import (
 
 func main() {
 	ucUp, err := up.Init()
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
 	api.CheckError(http.StatusInternalServerError, err)
-	handler := api.HandleRequest(ucUp.GetSwingUploadURL)
-	lambda.Start(handler)
+	lambda.Start(ucUp.CreateUploadClipVideos)
 }

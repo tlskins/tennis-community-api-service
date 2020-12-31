@@ -21,26 +21,35 @@ func (s *UploadsStore) CreateSwingUpload(data *t.SwingUpload) (upload *t.SwingUp
 	return
 }
 
-func (s *UploadsStore) CreateUploadClipVideos(uploadID string, clips []*t.UploadClipVideo) (upload *t.SwingUpload, err error) {
+func (s *UploadsStore) UpdateSwingUpload(data *t.UpdateSwingUpload) (upload *t.SwingUpload, err error) {
 	sess, c := s.C(ColSwingUploads)
 	defer sess.Close()
 
 	upload = &t.SwingUpload{}
-	err = m.Update(c, upload, m.M{"_id": uploadID}, m.M{
-		"$set": m.M{
-			"updAt":    time.Now(),
-			"clipVids": clips,
-		},
-	})
+	err = m.Update(c, upload, m.M{"upKey": data.UploadKey}, m.M{"$set": data})
 	return
 }
 
-func (s *UploadsStore) CreateUploadSwingVideos(uploadID string, swings []*t.UploadSwingVideo) (upload *t.SwingUpload, err error) {
+// func (s *UploadsStore) CreateUploadClipVideos(uploadID string, clips []*t.UploadClipVideo) (upload *t.SwingUpload, err error) {
+// 	sess, c := s.C(ColSwingUploads)
+// 	defer sess.Close()
+
+// 	upload = &t.SwingUpload{}
+// 	err = m.Update(c, upload, m.M{"_id": uploadID}, m.M{
+// 		"$set": m.M{
+// 			"updAt":    time.Now(),
+// 			"clipVids": clips,
+// 		},
+// 	})
+// 	return
+// }
+
+func (s *UploadsStore) CreateUploadSwingVideos(uploadKey string, swings []*t.UploadSwingVideo) (upload *t.SwingUpload, err error) {
 	sess, c := s.C(ColSwingUploads)
 	defer sess.Close()
 
 	upload = &t.SwingUpload{}
-	err = m.Update(c, upload, m.M{"_id": uploadID}, m.M{
+	err = m.Update(c, upload, m.M{"upKey": uploadKey}, m.M{
 		"$set":  m.M{"updAt": time.Now()},
 		"$push": m.M{"swingVids": m.M{"$each": swings}},
 	})
