@@ -17,23 +17,6 @@ type SwingUpload struct {
 	SwingVideos []*UploadSwingVideo     `bson:"swingVids" json:"swingVideos"`
 }
 
-func (u SwingUpload) SwingClips() (out map[int][]string, finished bool) {
-	out = make(map[int][]string)
-	finished = true
-	for _, clip := range u.ClipVideos {
-		out[clip.ID] = []string{}
-		for _, swing := range u.SwingVideos {
-			if swing.ClipID == clip.ID {
-				out[clip.ID] = append(out[clip.ID], swing.CutURL)
-			}
-		}
-		if len(out[clip.ID]) == 0 {
-			finished = false
-		}
-	}
-	return
-}
-
 type UpdateSwingUpload struct {
 	UploadKey   string                   `bson:"-" json:"uploadKey"`
 	UpdatedAt   time.Time                `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
@@ -51,7 +34,7 @@ type UploadClipVideo struct {
 }
 
 type UploadSwingVideo struct {
-	ID            int       `bson:"id" json:"id"`
+	ID            string    `bson:"id" json:"id"`
 	CreatedAt     time.Time `bson:"crAt" json:"createdAt"`
 	UpdatedAt     time.Time `bson:"updAt" json:"updatedAt"`
 	ClipID        int       `bson:"clipId" json:"clipId"`
@@ -61,7 +44,7 @@ type UploadSwingVideo struct {
 }
 
 type UpdateUploadSwingVideo struct {
-	ID            int       `bson:"-" json:"id"`
+	ID            string    `bson:"-" json:"id"`
 	UpdatedAt     time.Time `bson:"updAt" json:"updatedAt"`
 	ClipID        *int      `bson:"clipId,omitempty" json:"clipId,omitempty"`
 	CutURL        *string   `bson:"cutUrl,omitempty" json:"cutURL,omitempty"`

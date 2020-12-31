@@ -13,7 +13,8 @@ import (
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uploads/types"
 
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
+	uuid "github.com/satori/go.uuid"
 	// "github.com/aws/aws-sdk-go/aws"
 	// "github.com/aws/aws-sdk-go/aws/credentials"
 	// "github.com/aws/aws-sdk-go/aws/session"
@@ -57,7 +58,6 @@ func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, original
 	}
 	newUpload, err := u.Store.CreateSwingUpload(upload)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	fmt.Println("after save create upload")
 	return api.Success(newUpload, http.StatusCreated)
 }
 
@@ -97,7 +97,6 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string
 			ClipURL:   fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
 		}
 	}
-	fmt.Println("after outputs loop")
 	status := enums.SwingUploadStatusClipped
 	update := &t.UpdateSwingUpload{
 		UploadKey:  uploadID,
@@ -110,10 +109,10 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string
 }
 
 // https://tennis-swings.s3.amazonaws.com/tmp/timuserid/2020_12_18_1152_59/tim_ground_profile_wide_1min_540p_clip_1_swing_1.mp4
-func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, outputs []string) (resp *t.SwingUpload, err error) {
+func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, outputs []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
 	var uploadID string
 	now := time.Now()
-	swings := make([]*t.UploadSwingVideo, len(outputs))
+	swings = make([]*t.UploadSwingVideo, len(outputs))
 	for i, videoPath := range outputs {
 		var fileName string
 		uploadID, fileName, err = u.uploadIDFromFileName(videoPath)
@@ -121,7 +120,7 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		rgx := regexp.MustCompile(`clip_(\d{1,})_swing_(\d{1,})..+$`)
 		matches := rgx.FindStringSubmatch(fileName)
 		if len(matches) < 3 {
-			return nil, errors.New("Invalid clip path format")
+			return nil, swings, errors.New("Invalid clip path format")
 		}
 		var swingID, clipID int
 		if clipID, err = strconv.Atoi(matches[1]); err != nil {
@@ -132,7 +131,7 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		}
 		cutURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath)
 		swings[i] = &t.UploadSwingVideo{
-			ID:        clipID + swingID - 1,
+			ID:        uuid.NewV4().String(),
 			CreatedAt: now,
 			UpdatedAt: now,
 			ClipID:    clipID,
@@ -141,22 +140,8 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		}
 	}
 
-	resp, err = u.Store.CreateUploadSwingVideos(uploadID, swings)
-	api.CheckError(http.StatusUnprocessableEntity, err)
-	swingClips, finished := resp.SwingClips()
-	api.CheckError(http.StatusUnprocessableEntity, err)
-
-	spew.Dump(swingClips)
-
-	if finished {
-		finStatus := enums.SwingUploadStatusFinished
-		resp, err = u.Store.UpdateSwingUpload(&t.UpdateSwingUpload{
-			UploadKey: resp.UploadKey,
-			UpdatedAt: time.Now(),
-			Status:    &finStatus,
-		})
-	}
-	return
+	upload, err = u.Store.CreateUploadSwingVideos(uploadID, swings)
+	return upload, swings, err
 }
 
 // func (u *UploadsService) UploadSwingVideoTranscoded(_ context.Context, uploadID, tranUrl string) (resp *t.SwingUpload, err error) {

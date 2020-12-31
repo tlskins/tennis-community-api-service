@@ -2,36 +2,30 @@ package albums
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	t "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/enums"
-	api "github.com/tennis-community-api-service/pkg/lambda"
 )
 
-func (u *AlbumsService) CreateAlbum(ctx context.Context, userID, uploadKey string, swingVideoUrls []string) (resp api.Response, err error) {
+func (u *AlbumsService) CreateAlbum(ctx context.Context, userID, uploadKey string, clips int) (*t.Album, error) {
 	now := time.Now()
-	swingVids := make([]*t.SwingVideo, len(swingVideoUrls))
-	for i, url := range swingVideoUrls {
-		swingVids[i] = &t.SwingVideo{
-			ID:        i,
-			CreatedAt: now,
-			VideoURL:  url,
-			Status:    enums.SwingVideoStatusCreated,
-			Order:     i,
-		}
-	}
+	return u.Store.CreateAlbum(&t.Album{
+		Name:      uploadKey,
+		UploadKey: uploadKey,
+		UserID:    userID,
+		Clips:     clips,
+		CreatedAt: now,
+		UpdatedAt: now,
+		Status:    enums.AlbumStatusProcessing,
+	})
+}
 
-	album := &t.Album{
-		Name:        uploadKey,
-		UserID:      userID,
-		CreatedAt:   now,
-		UpdatedAt:   now,
-		Status:      enums.AlbumStatusCreated,
-		SwingVideos: swingVids,
-	}
-	newAlbum, err := u.Store.CreateAlbum(album)
-	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(newAlbum, http.StatusCreated)
+func (u *AlbumsService) UpdateAlbum(ctx context.Context, data *t.UpdateAlbum) (*t.Album, error) {
+	data.UpdatedAt = time.Now()
+	return u.Store.UpdateAlbum(data)
+}
+
+func (u *AlbumsService) AddVideosToAlbum(ctx context.Context, userID, uploadKey string, swingVideos []*t.SwingVideo) (*t.Album, error) {
+	return u.Store.AddVideosToAlbum(userID, uploadKey, swingVideos)
 }
