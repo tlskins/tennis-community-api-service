@@ -58,6 +58,48 @@ package:
     - ./bin/**
 
 functions:
+  create_swing_upload:
+    handler: bin/create_swing_upload
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+    events:
+      - http:
+          path: uploads
+          method: post
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
+  get_recent_swing_uploads:
+    handler: bin/get_recent_swing_uploads
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+    events:
+      - http:
+          path: uploads
+          method: get
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
   update_upload_clips:
     handler: bin/update_upload_clips
     environment:
@@ -148,27 +190,6 @@ functions:
       - http:
           path: users/{id}/confirm_user
           method: get
-          cors:
-            origin: "http://localhost:3000"
-            allowCredentials: "true"
-
-  create_swing_upload:
-    handler: bin/create_swing_upload
-    environment:
-      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
-      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
-      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
-      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
-      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
-      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
-      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
-      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
-      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
-    events:
-      - http:
-          path: users/create_swing_upload
-          method: post
           cors:
             origin: "http://localhost:3000"
             allowCredentials: "true"

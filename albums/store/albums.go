@@ -41,12 +41,3 @@ func (s *AlbumsStore) AddVideosToAlbum(userId, uploadKey string, swings []*t.Swi
 	})
 	return
 }
-
-// func (s *AlbumsStore) UpdateAlbum(data *t.UpdateSwingUpload) (upload *t.SwingUpload, err error) {
-// 	sess, c := s.C(ColSwingUploads)
-// 	defer sess.Close()
-
-// 	upload = &t.SwingUpload{}
-// 	err = m.Update(c, upload, m.M{"upKey": data.UploadKey}, m.M{"$set": data})
-// 	return
-// }

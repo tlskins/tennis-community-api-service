@@ -13,16 +13,19 @@ type SwingUpload struct {
 	UserID      string                  `bson:"usrId" json:"userId"`
 	Status      enums.SwingUploadStatus `bson:"status" json:"status"`
 	OriginalURL string                  `bson:"origUrl" json:"originalURL"`
+	AlbumID     string                  `bson:"albId,omitempty" json:"albumId,omitempty"`
 	ClipVideos  []*UploadClipVideo      `bson:"clipVids" json:"clipVideos"`
 	SwingVideos []*UploadSwingVideo     `bson:"swingVids" json:"swingVideos"`
 }
 
 type UpdateSwingUpload struct {
-	UploadKey   string                   `bson:"-" json:"uploadKey"`
-	UpdatedAt   time.Time                `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
-	UserID      *string                  `bson:"usrId,omitempty" json:"userId,omitempty"`
+	UploadKey string    `bson:"-" json:"uploadKey"`
+	UserID    string    `bson:"usrId" json:"userId"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
+
 	Status      *enums.SwingUploadStatus `bson:"status,omitempty" json:"status,omitempty"`
 	OriginalURL *string                  `bson:"origUrl,omitempty" json:"originalURL,omitempty"`
+	AlbumID     *string                  `bson:"albId,omitempty" json:"albumId,omitempty"`
 	ClipVideos  *[]*UploadClipVideo      `bson:"clipVids,omitempty" json:"clipVideos,omitempty"`
 	SwingVideos *[]*UploadSwingVideo     `bson:"swingVids,omitempty" json:"swingVideos,omitempty"`
 }

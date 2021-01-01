@@ -1,6 +1,7 @@
 package store
 
 import (
+	"errors"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -8,6 +9,19 @@ import (
 	m "github.com/tennis-community-api-service/pkg/mongo"
 	t "github.com/tennis-community-api-service/uploads/types"
 )
+
+func (s *UploadsStore) GetRecentSwingUploads(userID string) (uploads []*t.SwingUpload, err error) {
+	sess, c := s.C(ColSwingUploads)
+	defer sess.Close()
+
+	uploads = []*t.SwingUpload{}
+	err = m.Aggregate(c, &uploads, []m.M{
+		{"$match": m.M{"usrId": userID}},
+		{"$sort": m.M{"crAt": -1}},
+		{"$limit": 5},
+	})
+	return
+}
 
 func (s *UploadsStore) CreateSwingUpload(data *t.SwingUpload) (upload *t.SwingUpload, err error) {
 	sess, c := s.C(ColSwingUploads)
@@ -25,24 +39,14 @@ func (s *UploadsStore) UpdateSwingUpload(data *t.UpdateSwingUpload) (upload *t.S
 	sess, c := s.C(ColSwingUploads)
 	defer sess.Close()
 
+	if data.UploadKey == "" || data.UserID == "" {
+		return nil, errors.New("Update swing upload missing upload key or user id")
+	}
+
 	upload = &t.SwingUpload{}
-	err = m.Update(c, upload, m.M{"upKey": data.UploadKey}, m.M{"$set": data})
+	err = m.Update(c, upload, m.M{"upKey": data.UploadKey, "usrId": data.UserID}, m.M{"$set": data})
 	return
 }
-
-// func (s *UploadsStore) CreateUploadClipVideos(uploadID string, clips []*t.UploadClipVideo) (upload *t.SwingUpload, err error) {
-// 	sess, c := s.C(ColSwingUploads)
-// 	defer sess.Close()
-
-// 	upload = &t.SwingUpload{}
-// 	err = m.Update(c, upload, m.M{"_id": uploadID}, m.M{
-// 		"$set": m.M{
-// 			"updAt":    time.Now(),
-// 			"clipVids": clips,
-// 		},
-// 	})
-// 	return
-// }
 
 func (s *UploadsStore) CreateUploadSwingVideos(uploadKey string, swings []*t.UploadSwingVideo) (upload *t.SwingUpload, err error) {
 	sess, c := s.C(ColSwingUploads)
@@ -55,17 +59,3 @@ func (s *UploadsStore) CreateUploadSwingVideos(uploadKey string, swings []*t.Upl
 	})
 	return
 }
-
-// func (s *UploadsStore) UploadSwingVideoTranscoded(uploadID, tranUrl string, swingVideoID int) (upload *t.SwingUpload, err error) {
-// 	sess, c := s.C(ColSwingUploads)
-// 	defer sess.Close()
-
-// 	upload = &t.SwingUpload{}
-// 	err = m.Update(c, upload, m.M{"_id": uploadID, "swingVids.id": swingVideoID}, m.M{
-// 		"$set": m.M{
-// 			"updAt":               time.Now(),
-// 			"swingVids.$.tranUrl": tranUrl,
-// 		},
-// 	})
-// 	return
-// }
