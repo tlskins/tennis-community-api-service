@@ -13,7 +13,6 @@ import (
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uploads/types"
 
-	// "github.com/davecgh/go-spew/spew"
 	uuid "github.com/satori/go.uuid"
 	// "github.com/aws/aws-sdk-go/aws"
 	// "github.com/aws/aws-sdk-go/aws/credentials"

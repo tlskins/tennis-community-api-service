@@ -128,6 +128,44 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
 
+  get_album:
+    handler: bin/get_album
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+    events:
+      - http:
+          path: albums/{id}
+          method: get
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
+  get_user_albums:
+    handler: bin/get_user_albums
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+    events:
+      - http:
+          path: albums
+          method: get
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
   create_user:
     handler: bin/create_user
     environment:

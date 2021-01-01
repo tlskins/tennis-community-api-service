@@ -8,6 +8,14 @@ import (
 	"github.com/tennis-community-api-service/pkg/enums"
 )
 
+func (u *AlbumsService) GetUserAlbums(ctx context.Context, userID string) ([]*t.Album, error) {
+	return u.Store.GetAlbumsByUser(userID)
+}
+
+func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, error) {
+	return u.Store.GetAlbum(id)
+}
+
 func (u *AlbumsService) CreateAlbum(ctx context.Context, userID, uploadKey string, clips int) (*t.Album, error) {
 	now := time.Now()
 	return u.Store.CreateAlbum(&t.Album{

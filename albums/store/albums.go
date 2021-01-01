@@ -9,6 +9,24 @@ import (
 	m "github.com/tennis-community-api-service/pkg/mongo"
 )
 
+func (s *AlbumsStore) GetAlbum(id string) (album *t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	album = &t.Album{}
+	err = m.FindOne(c, album, m.M{"_id": id})
+	return
+}
+
+func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	albums = []*t.Album{}
+	err = m.Find(c, &albums, m.M{"userId": userID})
+	return
+}
+
 func (s *AlbumsStore) CreateAlbum(data *t.Album) (album *t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
