@@ -18,6 +18,20 @@ type SwingUpload struct {
 	SwingVideos []*UploadSwingVideo     `bson:"swingVids" json:"swingVideos"`
 }
 
+func (a SwingUpload) IsFinal() bool {
+	finalMap := make(map[int]bool)
+	for _, vid := range a.SwingVideos {
+		finalMap[vid.ClipID] = true
+	}
+	isFinal := true
+	for _, clipFinal := range finalMap {
+		if !clipFinal {
+			isFinal = false
+		}
+	}
+	return isFinal
+}
+
 type UpdateSwingUpload struct {
 	UploadKey string    `bson:"-" json:"uploadKey"`
 	UserID    string    `bson:"usrId" json:"userId"`

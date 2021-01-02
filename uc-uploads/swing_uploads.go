@@ -56,29 +56,32 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.SwingStorag
 }
 
 func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.SwingStorageEvent) (string, error) {
-	upload, swings, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, r.ResponsePayload.Body.Outputs)
+	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, r.ResponsePayload.Body.Outputs)
 	if err != nil {
 		return "error", err
 	}
 
 	now := time.Now()
-	swingVids := make([]*aT.SwingVideo, len(swings))
-	for i, swing := range swings {
-		swingVids[i] = &aT.SwingVideo{
-			ID:        i,
+	swingVids := make([]*aT.SwingVideo, len(swingUploads))
+	for i, swing := range swingUploads {
+		swingVids[i], err = u.alb.CreateSwing(ctx, &aT.SwingVideo{
 			CreatedAt: now,
 			Clip:      swing.ClipID,
 			Swing:     swing.SwingID,
 			VideoURL:  strings.Replace(swing.CutURL, "tmp/", "", 1),
 			Status:    enums.SwingVideoStatusCreated,
+		})
+		if err != nil {
+			return "error", err
 		}
 	}
+
 	album, err := u.alb.AddVideosToAlbum(ctx, upload.UserID, upload.UploadKey, swingVids)
 	if err != nil {
 		return "error", err
 	}
 
-	if album.IsFinal() {
+	if upload.IsFinal() {
 		aStatus := enums.AlbumStatusCreated
 		_, err = u.alb.UpdateAlbum(ctx, &aT.UpdateAlbum{
 			ID:     album.ID,
