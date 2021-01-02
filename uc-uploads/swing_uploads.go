@@ -66,6 +66,8 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.SwingStora
 	for i, swing := range swingUploads {
 		swingVids[i], err = u.alb.CreateSwing(ctx, &aT.SwingVideo{
 			CreatedAt: now,
+			UserID:    upload.UserID,
+			UploadKey: upload.UploadKey,
 			Clip:      swing.ClipID,
 			Swing:     swing.SwingID,
 			VideoURL:  strings.Replace(swing.CutURL, "tmp/", "", 1),
