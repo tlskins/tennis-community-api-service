@@ -166,6 +166,27 @@ functions:
             origin: "http://localhost:3000"
             allowCredentials: "true"
 
+  update_album:
+    handler: bin/update_album
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+    events:
+      - http:
+          path: albums/{id}
+          method: put
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
   create_user:
     handler: bin/create_user
     environment:

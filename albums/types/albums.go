@@ -1,8 +1,10 @@
 package types
 
 import (
-	"github.com/tennis-community-api-service/pkg/enums"
+	"errors"
 	"time"
+
+	"github.com/tennis-community-api-service/pkg/enums"
 )
 
 type Album struct {
@@ -22,11 +24,16 @@ type UpdateAlbum struct {
 	ID        string    `bson:"-" json:"id"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	UserID      *string            `bson:"userId,omitempty" json:"userId,omitempty"`
-	UploadKey   *string            `bson:"upKey,omitempty" json:"uploadKey,omitempty"`
 	Name        *string            `bson:"nm,omitempty" json:"name,omitempty"`
 	Clips       *int               `bson:"clips,omitempty" json:"clips,omitempty"`
 	Status      *enums.AlbumStatus `bson:"status,omitempty" json:"status,omitempty"`
 	Tags        *[]string          `bson:"tags,omitempty" json:"tags,omitempty"`
 	SwingVideos *[]*SwingVideo     `bson:"swingVids,omitempty" json:"swingVideos,omitempty"`
+}
+
+func (a UpdateAlbum) Validate() error {
+	if a.Name != nil && *a.Name == "" {
+		return errors.New("Name cannot be blank")
+	}
+	return nil
 }
