@@ -10,14 +10,15 @@ type SwingVideo struct {
 	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	UserID          string                 `bson:"userId" json:"userId"`
-	UploadKey       string                 `bson:"upKey" json:"uploadKey"`
-	Clip            int                    `bson:"clip" json:"clip"`
-	Swing           int                    `bson:"swing" json:"swing"`
-	VideoURL        string                 `bson:"vidUrl" json:"videoURL"`
-	ContactImageURL string                 `bson:"ctcImgUrl" json:"contactImageURL"`
-	Status          enums.SwingVideoStatus `bson:"status" json:"status"`
-	Tags            []string               `bson:"tags,omitempty" json:"tags,omitempty"`
+	UserID    string                 `bson:"userId" json:"userId"`
+	UploadKey string                 `bson:"upKey" json:"uploadKey"`
+	Clip      int                    `bson:"clip" json:"clip"`
+	Swing     int                    `bson:"swing" json:"swing"`
+	VideoURL  string                 `bson:"vidUrl" json:"videoURL"`
+	GifURL    string                 `bson:"gifUrl" json:"gifURL"`
+	JpgURL    string                 `bson:"jpgUrl" json:"jpgURL"`
+	Status    enums.SwingVideoStatus `bson:"status" json:"status"`
+	Tags      []string               `bson:"tags,omitempty" json:"tags,omitempty"`
 }
 
 type UpdateSwingVideo struct {

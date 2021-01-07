@@ -44,10 +44,10 @@ func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, original
 func (u *UploadsService) uploadIDFromFileName(videoPath string) (userID, uploadID, fileName string, err error) {
 	// upload id from folder path
 	paths := strings.Split(videoPath, "/")
-	if len(paths) < 4 {
+	if len(paths) < 3 {
 		return "", "", "", errors.New("Invalid video path hiearchy format")
 	}
-	return paths[1], paths[2], paths[3], nil
+	return paths[len(paths)-3], paths[len(paths)-2], paths[len(paths)-1], nil
 }
 
 // S3 Events
@@ -89,11 +89,11 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string
 }
 
 // https://tennis-swings.s3.amazonaws.com/tmp/timuserid/2020_12_18_1152_59/tim_ground_profile_wide_1min_540p_clip_1_swing_1.mp4
-func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, outputs []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
+func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, videos, gifs, jpgs []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
 	var uploadID string
 	now := time.Now()
-	swings = make([]*t.UploadSwingVideo, len(outputs))
-	for i, videoPath := range outputs {
+	swings = make([]*t.UploadSwingVideo, len(videos))
+	for i, videoPath := range videos {
 		var fileName string
 		_, uploadID, fileName, err = u.uploadIDFromFileName(videoPath)
 		api.CheckError(http.StatusInternalServerError, err)
@@ -109,14 +109,15 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		if swingID, err = strconv.Atoi(matches[2]); err != nil {
 			return
 		}
-		cutURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath)
 		swings[i] = &t.UploadSwingVideo{
 			ID:        uuid.NewV4().String(),
 			CreatedAt: now,
 			UpdatedAt: now,
 			ClipID:    clipID,
 			SwingID:   swingID,
-			CutURL:    cutURL,
+			CutURL:    fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
+			GifURL:    fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, gifs[i]),
+			JpgURL:    fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, jpgs[i]),
 		}
 	}
 

@@ -78,6 +78,17 @@ func (j *JWTService) IncludeLambdaAuth(ctx context.Context, req *api.Request) (c
 	return ctx, nil
 }
 
+func (j *JWTService) IncludeLambdaWSAuth(ctx context.Context, req *api.WebsocketRequest) (context.Context, error) {
+	authVal := req.QueryStringParameters["Authorization"]
+	var err error
+	var claims *CustomClaims
+	if claims, err = j.Decode(authVal); err != nil {
+		return ctx, err
+	}
+	ctx = context.WithValue(ctx, AccessTokenKey, claims)
+	return ctx, nil
+}
+
 func ClaimsFromContext(ctx context.Context) (authorized bool, claims *CustomClaims) {
 	if ctx.Value(AccessTokenKey) != nil {
 		return true, ctx.Value(AccessTokenKey).(*CustomClaims)

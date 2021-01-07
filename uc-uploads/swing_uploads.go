@@ -34,7 +34,7 @@ func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp
 	return api.Success(upload, http.StatusCreated)
 }
 
-func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.SwingStorageEvent) (string, error) {
+func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipEvent) (string, error) {
 	upload, err := u.up.CreateUploadClipVideos(ctx, r.ResponsePayload.Body.Bucket, r.ResponsePayload.Body.Outputs)
 	if err != nil {
 		return "error", err
@@ -55,8 +55,9 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.SwingStorag
 	return "success", nil
 }
 
-func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.SwingStorageEvent) (string, error) {
-	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, r.ResponsePayload.Body.Outputs)
+func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwingEvent) (string, error) {
+	videos, gifs, jpgs := r.Outputs()
+	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, videos, gifs, jpgs)
 	if err != nil {
 		return "error", err
 	}
@@ -71,6 +72,8 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.SwingStora
 			Clip:      swing.ClipID,
 			Swing:     swing.SwingID,
 			VideoURL:  strings.Replace(swing.CutURL, "tmp/", "", 1),
+			GifURL:    swing.GifURL,
+			JpgURL:    swing.JpgURL,
 			Status:    enums.SwingVideoStatusCreated,
 		})
 		if err != nil {

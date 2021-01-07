@@ -51,19 +51,19 @@ type UploadClipVideo struct {
 }
 
 type UploadSwingVideo struct {
-	ID            string    `bson:"id" json:"id"`
-	CreatedAt     time.Time `bson:"crAt" json:"createdAt"`
-	UpdatedAt     time.Time `bson:"updAt" json:"updatedAt"`
-	ClipID        int       `bson:"clipId" json:"clipId"`
-	SwingID       int       `bson:"swId" json:"swingId"`
-	CutURL        string    `bson:"cutUrl" json:"cutURL"`
-	TranscodedURL string    `bson:"tranUrl" json:"transcodedURL"`
+	ID        string    `bson:"id" json:"id"`
+	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
+	ClipID    int       `bson:"clipId" json:"clipId"`
+	SwingID   int       `bson:"swId" json:"swingId"`
+	CutURL    string    `bson:"cutUrl" json:"cutURL"`
+	GifURL    string    `bson:"gifUrl" json:"gifURL"`
+	JpgURL    string    `bson:"jpgUrl" json:"jpgURL"`
 }
 
 type UpdateUploadSwingVideo struct {
-	ID            string    `bson:"-" json:"id"`
-	UpdatedAt     time.Time `bson:"updAt" json:"updatedAt"`
-	ClipID        *int      `bson:"clipId,omitempty" json:"clipId,omitempty"`
-	CutURL        *string   `bson:"cutUrl,omitempty" json:"cutURL,omitempty"`
-	TranscodedURL *string   `bson:"tranUrl,omitempty" json:"transcodedURL,omitempty"`
+	ID        string    `bson:"-" json:"id"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
+	ClipID    *int      `bson:"clipId,omitempty" json:"clipId,omitempty"`
+	CutURL    *string   `bson:"cutUrl,omitempty" json:"cutURL,omitempty"`
 }
