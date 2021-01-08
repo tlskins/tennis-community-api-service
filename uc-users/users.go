@@ -81,9 +81,30 @@ func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Respo
 		ID:           user.ID,
 		Status:       &status,
 		LastLoggedIn: &now,
-		UpdatedAt:    now,
+		UpdatedAt:    &now,
 	})
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
+	return api.Success(user, http.StatusOK)
+}
+
+func (u *UCService) GetUser(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	user, err := u.usr.GetUser(ctx, claims.Subject)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(user, http.StatusOK)
+}
+
+func (u *UCService) ClearUserNotifications(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := &t.ClearNotificationsReq{}
+	api.Parse(r, req)
+
+	user, err := u.usr.ClearUserNotifications(ctx, claims.Subject, req.Uploads)
+	api.CheckError(http.StatusUnprocessableEntity, err)
 	return api.Success(user, http.StatusOK)
 }

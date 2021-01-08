@@ -37,11 +37,24 @@ func (s *UsersStore) CreateUser(data *t.User) (user *t.User, err error) {
 	return
 }
 
-func (s *UsersStore) UpdateUser(data *t.UpdateUser) (upload *t.User, err error) {
+func (s *UsersStore) UpdateUser(data *t.UpdateUser) (user *t.User, err error) {
 	sess, c := s.C(ColUsers)
 	defer sess.Close()
 
-	upload = &t.User{}
-	err = m.Update(c, upload, m.M{"_id": data.ID}, m.M{"$set": data})
+	user = &t.User{}
+	err = m.Update(c, user, m.M{"_id": data.ID}, m.M{"$set": data})
+	return
+}
+
+func (s *UsersStore) AddUploadNote(userID string, note *t.UploadNote) (user *t.User, err error) {
+	sess, c := s.C(ColUsers)
+	defer sess.Close()
+
+	user = &t.User{}
+	err = m.Update(c, user, m.M{"_id": userID}, m.M{"$push": m.M{"upNotes": m.M{
+		"$each":  []*t.UploadNote{note},
+		"$sort":  m.M{"crAt": -1},
+		"$slice": 10,
+	}}})
 	return
 }

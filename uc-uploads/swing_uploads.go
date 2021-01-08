@@ -2,9 +2,12 @@ package uploads
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
@@ -12,6 +15,7 @@ import (
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uc-uploads/types"
 	uT "github.com/tennis-community-api-service/uploads/types"
+	usrT "github.com/tennis-community-api-service/users/types"
 )
 
 func (u *UCService) GetRecentSwingUploads(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -101,6 +105,21 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 			UploadKey: upload.UploadKey,
 			UserID:    upload.UserID,
 			Status:    &uStatus,
+		})
+		if err != nil {
+			return "error", err
+		}
+
+		_, err = u.usr.AddUploadNotifications(ctx, upload.UserID, &usrT.UploadNote{
+			ID:        uuid.NewV4().String(),
+			CreatedAt: now,
+			UpdatedAt: now,
+			Subject:   fmt.Sprintf("Upload %s has finished processing", upload.UploadKey),
+			Type:      "Upload Complete",
+			UploadID:  upload.ID,
+			UploadKey: upload.UploadKey,
+			AlbumID:   album.ID,
+			UploadAt:  upload.CreatedAt,
 		})
 		if err != nil {
 			return "error", err

@@ -31,3 +31,7 @@ func (r CreateUserReq) Validate() error {
 	}
 	return nil
 }
+
+type ClearNotificationsReq struct {
+	Uploads bool `json:"uploads"`
+}

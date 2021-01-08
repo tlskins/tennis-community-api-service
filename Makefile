@@ -5,6 +5,8 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/create_user uc-users/deliveries/create-user/create_user.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/sign_in uc-users/deliveries/sign-in/sign_in.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/confirm_user uc-users/deliveries/confirm/confirm_user.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/get_user uc-users/deliveries/get-user/get_user.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/clear_notifications uc-users/deliveries/clear-notifications/clear_notifications.go
 
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_recent_swing_uploads uc-uploads/deliveries/get_recent_swing_uploads/get_recent_swing_uploads.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/create_swing_upload uc-uploads/deliveries/create_swing_upload/create_swing_upload.go

@@ -49,6 +49,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
     events:
@@ -70,6 +74,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
     events:
@@ -91,6 +99,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
 
@@ -105,6 +117,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
 
@@ -229,6 +245,50 @@ functions:
       - http:
           path: users/{id}/confirm_user
           method: get
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
+  get_user:
+    handler: bin/get_user
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+    events:
+      - http:
+          path: users
+          method: get
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
+  clear_notifications:
+    handler: bin/clear_notifications
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+    events:
+      - http:
+          path: users/clear_notifications
+          method: put
           cors:
             origin: "http://localhost:3000"
             allowCredentials: "true"

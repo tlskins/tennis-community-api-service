@@ -10,11 +10,13 @@ import (
 	alb "github.com/tennis-community-api-service/albums"
 	"github.com/tennis-community-api-service/pkg/auth"
 	up "github.com/tennis-community-api-service/uploads"
+	usr "github.com/tennis-community-api-service/users"
 )
 
 type UCService struct {
 	up  *up.UploadsService
 	alb *alb.AlbumsService
+	usr *usr.UsersService
 	jwt *auth.JWTService
 }
 
@@ -31,6 +33,10 @@ func Init() (svc *UCService, err error) {
 	albumsDBHost := os.Getenv("ALBUMS_DB_HOST")
 	albumsDBUser := os.Getenv("ALBUMS_DB_USER")
 	albumsDBPwd := os.Getenv("ALBUMS_DB_PWD")
+	usersDBName := os.Getenv("USERS_DB_NAME")
+	usersDBHost := os.Getenv("USERS_DB_HOST")
+	usersDBUser := os.Getenv("USERS_DB_USER")
+	usersDBPwd := os.Getenv("USERS_DB_PWD")
 	jwtKeyPath := os.Getenv("JWT_KEY_PATH")
 	jwtSecretPath := os.Getenv("JWT_SECRET_PATH")
 
@@ -41,6 +47,12 @@ func Init() (svc *UCService, err error) {
 
 	var albSvc *alb.AlbumsService
 	if albSvc, err = alb.Init(albumsDBName, albumsDBHost, albumsDBUser, albumsDBPwd); err != nil {
+		return
+	}
+
+	var usrSvc *usr.UsersService
+	usrSvc, err = usr.Init(usersDBName, usersDBHost, usersDBUser, usersDBPwd)
+	if err != nil {
 		return
 	}
 
@@ -64,6 +76,7 @@ func Init() (svc *UCService, err error) {
 	svc = &UCService{
 		up:  upSvc,
 		alb: albSvc,
+		usr: usrSvc,
 		jwt: jwt,
 	}
 	return

@@ -29,6 +29,9 @@ type User struct {
 
 	// social
 	FriendIds []string `bson:"friendIds" json:"friendIds"`
+
+	// notifications
+	UploadNotes []*UploadNote `bson:"upNotes" json:"uploadNotifications"`
 }
 
 func (u User) GetAuthables() (id, email string, conf bool) {
@@ -36,9 +39,9 @@ func (u User) GetAuthables() (id, email string, conf bool) {
 }
 
 type UpdateUser struct {
-	ID        string    `bson:"-" json:"id"`
-	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
+	ID string `bson:"-" json:"id"`
 
+	UpdatedAt *time.Time        `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
 	Email     *string           `bson:"em,omitempty" json:"email,omitempty"`
 	FirstName *string           `bson:"fnm,omitempty" json:"firstName,omitempty"`
 	LastName  *string           `bson:"lnm,omitempty" json:"lastName,omitempty"`
@@ -58,4 +61,7 @@ type UpdateUser struct {
 
 	// social
 	FriendIds *[]string `bson:"friendIds,omitempty" json:"friendIds,omitempty"`
+
+	// notifications
+	UploadNotes *[]*UploadNote `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
 }
