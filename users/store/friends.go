@@ -39,12 +39,12 @@ func (s *UsersStore) AcceptFriendRequest(acceptorID, reqID string, accept bool) 
 	}
 
 	user = &t.User{}
-	acceptorUpdate := m.M{"$pull": m.M{"frndReqs": m.M{"$elemMatch": m.M{"_id": reqID}}}}
-	targetUpdate := m.M{"$pull": m.M{"frndReqs": m.M{"$elemMatch": m.M{"_id": reqID}}}}
+	acceptorUpdate := m.M{"$pull": m.M{"frndReqs": m.M{"_id": reqID}}}
+	targetUpdate := m.M{"$pull": m.M{"frndReqs": m.M{"_id": reqID}}}
 
 	if accept {
-		acceptorUpdate["$push"] = m.M{"friendIds": req.FromUserID}
-		targetUpdate["$push"] = m.M{"friendIds": req.ToUserID}
+		acceptorUpdate["$addToSet"] = m.M{"friendIds": req.FromUserID}
+		targetUpdate["$addToSet"] = m.M{"friendIds": req.ToUserID}
 	}
 
 	if err = m.Update(c, user, m.M{"_id": acceptorID}, acceptorUpdate); err != nil {
@@ -67,13 +67,12 @@ func (s *UsersStore) SearchFriends(search *string, IDs *[]string, limit, offset 
 	defer sess.Close()
 
 	friends = []*t.Friend{}
-	query := m.M{}
+	query := m.M{"status": "Created"}
 
 	if search != nil {
 		query["$or"] = []m.M{
-			{"em": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
+			{"usrNm": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
 			{"fnm": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
-			{"lnm": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
 		}
 	}
 

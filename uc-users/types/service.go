@@ -11,12 +11,16 @@ type SignInReq struct {
 
 type CreateUserReq struct {
 	Email     string `json:"email"`
+	UserName  string `json:"userName"`
 	Password  string `json:"password"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
 
 func (r CreateUserReq) Validate() error {
+	if len(r.UserName) < 3 {
+		return errors.New("Username must be at least 3 characters long")
+	}
 	if len(r.FirstName) == 0 {
 		return errors.New("Missing first name")
 	}

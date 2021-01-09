@@ -8,7 +8,7 @@ type Friend struct {
 	ID        string    `bson:"_id" json:"id"`
 	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
 
-	Email     string `bson:"em" json:"email"`
+	UserName  string `bson:"usrNm" json:"userName"`
 	FirstName string `bson:"fnm" json:"firstName"`
 	LastName  string `bson:"lnm" json:"lastName"`
 }

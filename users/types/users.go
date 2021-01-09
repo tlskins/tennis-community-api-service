@@ -10,10 +10,12 @@ type User struct {
 	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	Email     string           `bson:"em" json:"email"`
-	FirstName string           `bson:"fnm" json:"firstName"`
-	LastName  string           `bson:"lnm" json:"lastName"`
-	Status    enums.UserStatus `bson:"status" json:"status"`
+	UserName   string           `bson:"usrNm" json:"userName"`
+	Email      string           `bson:"em" json:"email"`
+	LowerEmail string           `bson:"lowEm" json:"lowerEmail"`
+	FirstName  string           `bson:"fnm" json:"firstName"`
+	LastName   string           `bson:"lnm" json:"lastName"`
+	Status     enums.UserStatus `bson:"status" json:"status"`
 
 	// auth
 	EncryptedPassword string     `bson:"pwd" json:"-"`

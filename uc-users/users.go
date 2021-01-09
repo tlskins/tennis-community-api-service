@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/tennis-community-api-service/pkg/auth"
@@ -21,7 +22,9 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 	user := &uT.User{
 		CreatedAt:          now,
 		UpdatedAt:          now,
+		UserName:           req.UserName,
 		Email:              req.Email,
+		LowerEmail:         strings.ToLower(req.Email),
 		FirstName:          req.FirstName,
 		LastName:           req.LastName,
 		Status:             enums.UserStatusPending,
