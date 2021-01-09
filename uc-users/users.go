@@ -107,7 +107,7 @@ func (u *UCService) ClearUserNotifications(ctx context.Context, r *api.Request) 
 	req := &t.ClearNotificationsReq{}
 	api.Parse(r, req)
 
-	user, err := u.usr.ClearUserNotifications(ctx, claims.Subject, req.Uploads)
+	user, err := u.usr.ClearUserNotifications(ctx, claims.Subject, req.Uploads, req.Friends)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return api.Success(user, http.StatusOK)
 }

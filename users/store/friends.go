@@ -9,22 +9,30 @@ import (
 	t "github.com/tennis-community-api-service/users/types"
 )
 
-func (s *UsersStore) SendFriendRequest(req *t.FriendRequest) (err error) {
+func (s *UsersStore) SendFriendRequest(req *t.FriendRequest, note *t.FriendNote) (err error) {
 	sess, c := s.C(ColUsers)
 	defer sess.Close()
 
 	if req.ID == "" {
 		req.ID = uuid.NewV4().String()
 	}
+	if note.ID == "" {
+		note.ID = uuid.NewV4().String()
+	}
 
 	query := m.M{"_id": m.M{"$in": []string{req.FromUserID, req.ToUserID}}}
-	return m.UpdateAll(c, query, m.M{"$push": m.M{"frndReqs": m.M{
+	err = m.UpdateAll(c, query, m.M{"$push": m.M{"frndReqs": m.M{
 		"$each": []*t.FriendRequest{req},
 		"$sort": m.M{"crAt": -1},
 	}}})
+	if err != nil {
+		return
+	}
+
+	return m.Update(c, nil, m.M{"_id": req.ToUserID}, m.M{"$push": m.M{"frndNotes": note}})
 }
 
-func (s *UsersStore) AcceptFriendRequest(acceptorID, reqID string, accept bool) (user *t.User, err error) {
+func (s *UsersStore) AcceptFriendRequest(acceptorID, reqID string, accept bool, note *t.FriendNote) (user *t.User, err error) {
 	sess, c := s.C(ColUsers)
 	defer sess.Close()
 
@@ -43,8 +51,12 @@ func (s *UsersStore) AcceptFriendRequest(acceptorID, reqID string, accept bool) 
 	targetUpdate := m.M{"$pull": m.M{"frndReqs": m.M{"_id": reqID}}}
 
 	if accept {
+		if note.ID == "" {
+			note.ID = uuid.NewV4().String()
+		}
 		acceptorUpdate["$addToSet"] = m.M{"friendIds": req.FromUserID}
 		targetUpdate["$addToSet"] = m.M{"friendIds": req.ToUserID}
+		targetUpdate["$push"] = m.M{"frndNotes": note}
 	}
 
 	if err = m.Update(c, user, m.M{"_id": acceptorID}, acceptorUpdate); err != nil {

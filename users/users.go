@@ -23,7 +23,7 @@ func (u *UsersService) UpdateUser(_ context.Context, data *t.UpdateUser) (resp *
 	return u.Store.UpdateUser(data)
 }
 
-func (u *UsersService) ClearUserNotifications(_ context.Context, id string, uploads bool) (resp *t.User, err error) {
+func (u *UsersService) ClearUserNotifications(_ context.Context, id string, uploads, friends bool) (resp *t.User, err error) {
 	now := time.Now()
 	update := &t.UpdateUser{
 		ID:        id,
@@ -32,6 +32,10 @@ func (u *UsersService) ClearUserNotifications(_ context.Context, id string, uplo
 	if uploads {
 		empty := []*t.UploadNote{}
 		update.UploadNotes = &empty
+	}
+	if friends {
+		empty := []*t.FriendNote{}
+		update.FriendNotes = &empty
 	}
 	return u.Store.UpdateUser(update)
 }

@@ -113,7 +113,6 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 		_, err = u.usr.AddUploadNotifications(ctx, upload.UserID, &usrT.UploadNote{
 			ID:        uuid.NewV4().String(),
 			CreatedAt: now,
-			UpdatedAt: now,
 			Subject:   fmt.Sprintf("Upload %s has finished processing", upload.UploadKey),
 			Type:      "Upload Complete",
 			UploadID:  upload.ID,

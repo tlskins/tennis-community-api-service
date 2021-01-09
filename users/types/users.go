@@ -35,6 +35,7 @@ type User struct {
 
 	// notifications
 	UploadNotes []*UploadNote `bson:"upNotes" json:"uploadNotifications"`
+	FriendNotes []*FriendNote `bson:"frndNotes" json:"friendNotifications"`
 }
 
 func (u User) GetAuthables() (id, email string, conf bool) {
@@ -68,4 +69,5 @@ type UpdateUser struct {
 
 	// notifications
 	UploadNotes *[]*UploadNote `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
+	FriendNotes *[]*FriendNote `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
 }

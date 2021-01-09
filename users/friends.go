@@ -8,15 +8,32 @@ import (
 )
 
 func (u *UsersService) SendFriendRequest(_ context.Context, fromID, toID string) (err error) {
-	return u.Store.SendFriendRequest(&t.FriendRequest{
+	req := &t.FriendRequest{
 		CreatedAt:  time.Now(),
 		FromUserID: fromID,
 		ToUserID:   toID,
-	})
+	}
+	note := &t.FriendNote{
+		CreatedAt: time.Now(),
+		Subject:   "New Friend Request",
+		Type:      "New Friend Request",
+		FriendID:  fromID,
+	}
+	return u.Store.SendFriendRequest(req, note)
 }
 
 func (u *UsersService) AcceptFriendRequest(_ context.Context, acceptorID, reqID string, accept bool) (user *t.User, err error) {
-	return u.Store.AcceptFriendRequest(acceptorID, reqID, accept)
+	var note *t.FriendNote
+	if accept {
+		note = &t.FriendNote{
+			CreatedAt: time.Now(),
+			Subject:   "New Friend",
+			Type:      "New Friend",
+			FriendID:  acceptorID,
+		}
+	}
+
+	return u.Store.AcceptFriendRequest(acceptorID, reqID, accept, note)
 }
 
 func (u *UsersService) Unfriend(_ context.Context, sourceID, targetID string) (err error) {

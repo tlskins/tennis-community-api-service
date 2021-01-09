@@ -7,7 +7,6 @@ import (
 type UploadNote struct {
 	ID        string    `bson:"_id" json:"id"`
 	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
-	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
 	Subject   string    `bson:"subj" json:"subject"`
 	Body      string    `bson:"body" json:"body"`
@@ -16,4 +15,14 @@ type UploadNote struct {
 	UploadKey string    `bson:"upKey" json:"firstName"`
 	AlbumID   string    `bson:"albId" json:"albumId"`
 	UploadAt  time.Time `bson:"upAt" json:"lastName"`
+}
+
+type FriendNote struct {
+	ID        string    `bson:"_id" json:"id"`
+	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
+
+	Subject  string `bson:"subj" json:"subject"`
+	Body     string `bson:"body" json:"body"`
+	Type     string `bson:"tp" json:"type"`
+	FriendID string `bson:"frndId" json:"friendId"`
 }
