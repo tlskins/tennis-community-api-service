@@ -296,7 +296,7 @@ functions:
       API_HOST: ${self:custom.secrets.API_HOST}
     events:
       - http:
-          path: users/friend_reqs
+          path: users/friends/{friendId}
           method: post
           cors:
             origin: "http://localhost:3000"
@@ -318,7 +318,7 @@ functions:
       API_HOST: ${self:custom.secrets.API_HOST}
     events:
       - http:
-          path: users/friend_reqs/{reqId}
+          path: users/friends/requests/{reqId}
           method: post
           cors:
             origin: "http://localhost:3000"
@@ -342,6 +342,28 @@ functions:
       - http:
           path: users/friends/{friendId}
           method: delete
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
+  search_friends:
+    handler: bin/search_friends
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+    events:
+      - http:
+          path: users/friends/search
+          method: put
           cors:
             origin: "http://localhost:3000"
             allowCredentials: "true"

@@ -13,9 +13,9 @@ func (u *UCService) SendFriendRequest(ctx context.Context, r *api.Request) (resp
 	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
 	api.CheckError(http.StatusInternalServerError, err)
 	claims := auth.AuthorizedClaimsFromContext(ctx)
-	req := &t.FriendIdReq{}
-	api.Parse(r, req)
-	err = u.usr.SendFriendRequest(ctx, claims.Subject, req.FriendID)
+	friendID, err := api.GetPathParam("friendId", r)
+	api.CheckError(http.StatusInternalServerError, err)
+	err = u.usr.SendFriendRequest(ctx, claims.Subject, friendID)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return api.Success(nil, http.StatusOK)
 }
@@ -42,4 +42,12 @@ func (u *UCService) Unfriend(ctx context.Context, r *api.Request) (resp api.Resp
 	err = u.usr.Unfriend(ctx, claims.Subject, friendID)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return api.Success(nil, http.StatusOK)
+}
+
+func (u *UCService) SearchFriends(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	req := &t.SearchFriendsReq{}
+	api.Parse(r, req)
+	friends, err := u.usr.SearchFriends(ctx, req.Search, req.IDs, req.Limit, req.Offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(friends, http.StatusOK)
 }

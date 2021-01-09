@@ -22,3 +22,7 @@ func (u *UsersService) AcceptFriendRequest(_ context.Context, acceptorID, reqID 
 func (u *UsersService) Unfriend(_ context.Context, sourceID, targetID string) (err error) {
 	return u.Store.Unfriend(sourceID, targetID)
 }
+
+func (u *UsersService) SearchFriends(_ context.Context, search *string, IDs *[]string, limit, offset int) ([]*t.Friend, error) {
+	return u.Store.SearchFriends(search, IDs, limit, offset)
+}

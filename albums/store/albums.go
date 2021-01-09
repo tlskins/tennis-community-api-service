@@ -23,7 +23,7 @@ func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err err
 	defer sess.Close()
 
 	albums = []*t.Album{}
-	err = m.Find(c, &albums, m.M{"userId": userID})
+	err = c.Find(m.M{"userId": userID}).Sort("-crAt").All(&albums)
 	return
 }
 
