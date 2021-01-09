@@ -1,0 +1,45 @@
+package users
+
+import (
+	"context"
+	"net/http"
+
+	"github.com/tennis-community-api-service/pkg/auth"
+	api "github.com/tennis-community-api-service/pkg/lambda"
+	t "github.com/tennis-community-api-service/uc-users/types"
+)
+
+func (u *UCService) SendFriendRequest(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := &t.FriendIdReq{}
+	api.Parse(r, req)
+	err = u.usr.SendFriendRequest(ctx, claims.Subject, req.FriendID)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(nil, http.StatusOK)
+}
+
+func (u *UCService) AcceptFriendRequest(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := &t.AcceptFriendReq{}
+	api.Parse(r, req)
+	reqID, err := api.GetPathParam("reqId", r)
+	api.CheckError(http.StatusInternalServerError, err)
+	user, err := u.usr.AcceptFriendRequest(ctx, claims.Subject, reqID, req.Accept)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(user, http.StatusOK)
+}
+
+func (u *UCService) Unfriend(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	friendID, err := api.GetPathParam("friendId", r)
+	api.CheckError(http.StatusInternalServerError, err)
+	err = u.usr.Unfriend(ctx, claims.Subject, friendID)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return api.Success(nil, http.StatusOK)
+}

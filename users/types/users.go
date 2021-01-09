@@ -28,7 +28,8 @@ type User struct {
 	AllowVideoComments bool `bson:"allowVidCom" json:"allowVideoComments"`
 
 	// social
-	FriendIds []string `bson:"friendIds" json:"friendIds"`
+	FriendIds      []string         `bson:"friendIds" json:"friendIds"`
+	FriendRequests []*FriendRequest `bson:"frndReqs" json:"friendRequests"`
 
 	// notifications
 	UploadNotes []*UploadNote `bson:"upNotes" json:"uploadNotifications"`
@@ -60,7 +61,8 @@ type UpdateUser struct {
 	AllowVideoComments *bool `bson:"allowVidCom,omitempty" json:"allowVideoComments,omitempty"`
 
 	// social
-	FriendIds *[]string `bson:"friendIds,omitempty" json:"friendIds,omitempty"`
+	FriendIds      *[]string         `bson:"friendIds,omitempty" json:"friendIds,omitempty"`
+	FriendRequests *[]*FriendRequest `bson:"frndReqs,omitempty" json:"friendRequests,omitempty"`
 
 	// notifications
 	UploadNotes *[]*UploadNote `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`

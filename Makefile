@@ -8,6 +8,10 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_user uc-users/deliveries/get-user/get_user.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/clear_notifications uc-users/deliveries/clear-notifications/clear_notifications.go
 
+	env GOOS=linux go build -ldflags="-s -w" -o bin/send_friend_req uc-users/deliveries/send-friend-req/send_friend_req.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/accept_friend_req uc-users/deliveries/accept-friend-req/accept_friend_req.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/unfriend uc-users/deliveries/unfriend/unfriend.go
+
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_recent_swing_uploads uc-uploads/deliveries/get_recent_swing_uploads/get_recent_swing_uploads.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/create_swing_upload uc-uploads/deliveries/create_swing_upload/create_swing_upload.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/update_upload_clips uc-uploads/deliveries/update_upload_clips/update_upload_clips.go

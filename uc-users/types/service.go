@@ -35,3 +35,11 @@ func (r CreateUserReq) Validate() error {
 type ClearNotificationsReq struct {
 	Uploads bool `json:"uploads"`
 }
+
+type FriendIdReq struct {
+	FriendID string `json:"friendID"`
+}
+
+type AcceptFriendReq struct {
+	Accept bool `json:"accept"`
+}
