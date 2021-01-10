@@ -128,6 +128,23 @@ functions:
             origin: "http://localhost:3000"
             allowCredentials: "true"
 
+  create_album:
+    handler: bin/create_album
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+    events:
+      - http:
+          path: albums
+          method: post
+          cors:
+            origin: "http://localhost:3000"
+            allowCredentials: "true"
+
   get_user_albums:
     handler: bin/get_user_albums
     environment:

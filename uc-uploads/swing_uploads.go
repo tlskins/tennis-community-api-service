@@ -43,7 +43,7 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 	if err != nil {
 		return "error", err
 	}
-	album, err := u.alb.CreateAlbum(ctx, upload.UserID, upload.UploadKey, len(upload.ClipVideos))
+	album, err := u.alb.CreateAlbumFromUpload(ctx, upload.UserID, upload.UploadKey)
 	if err != nil {
 		return "error", err
 	}

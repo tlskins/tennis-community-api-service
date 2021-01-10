@@ -16,17 +16,24 @@ func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, erro
 	return u.Store.GetAlbum(id)
 }
 
-func (u *AlbumsService) CreateAlbum(ctx context.Context, userID, uploadKey string, clips int) (*t.Album, error) {
+func (u *AlbumsService) CreateAlbumFromUpload(ctx context.Context, userID, uploadKey string) (*t.Album, error) {
 	now := time.Now()
 	return u.Store.CreateAlbum(&t.Album{
 		Name:      uploadKey,
 		UploadKey: uploadKey,
 		UserID:    userID,
-		Clips:     clips,
+		// Clips:     clips,
 		CreatedAt: now,
 		UpdatedAt: now,
 		Status:    enums.AlbumStatusProcessing,
 	})
+}
+
+func (u *AlbumsService) CreateAlbum(ctx context.Context, data *t.Album) (*t.Album, error) {
+	now := time.Now()
+	data.CreatedAt = now
+	data.UpdatedAt = now
+	return u.Store.CreateAlbum(data)
 }
 
 func (u *AlbumsService) UpdateAlbum(ctx context.Context, data *t.UpdateAlbum) (*t.Album, error) {

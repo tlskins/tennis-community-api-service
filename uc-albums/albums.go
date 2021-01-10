@@ -10,6 +10,7 @@ import (
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
 	api "github.com/tennis-community-api-service/pkg/lambda"
+	t "github.com/tennis-community-api-service/uc-albums/types"
 )
 
 func (u *UCService) GetUserAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -19,6 +20,18 @@ func (u *UCService) GetUserAlbums(ctx context.Context, r *api.Request) (resp api
 	albums, err := u.alb.GetUserAlbums(ctx, claims.Subject)
 	api.CheckError(http.StatusInternalServerError, err)
 	return api.Success(albums, http.StatusOK)
+}
+
+func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := t.CreateAlbumReq{UserID: claims.Subject}
+	api.ParseAndValidate(r, &req)
+	albumReq := aT.Album(req)
+	album, err := u.alb.CreateAlbum(ctx, &albumReq)
+	api.CheckError(http.StatusInternalServerError, err)
+	return api.Success(album, http.StatusOK)
 }
 
 func (u *UCService) GetAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
