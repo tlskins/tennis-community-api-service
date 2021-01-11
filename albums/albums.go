@@ -12,6 +12,14 @@ func (u *AlbumsService) GetUserAlbums(ctx context.Context, userID string) ([]*t.
 	return u.Store.GetAlbumsByUser(userID)
 }
 
+func (u *AlbumsService) GetPublicAlbums(ctx context.Context) ([]*t.Album, error) {
+	return u.Store.GetPublicAlbums()
+}
+
+func (u *AlbumsService) GetFriendsAlbums(ctx context.Context, userID string) ([]*t.Album, error) {
+	return u.Store.GetFriendsAlbums(userID)
+}
+
 func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, error) {
 	return u.Store.GetAlbum(id)
 }

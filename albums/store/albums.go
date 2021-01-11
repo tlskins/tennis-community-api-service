@@ -27,6 +27,24 @@ func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err err
 	return
 }
 
+func (s *AlbumsStore) GetPublicAlbums() (albums []*t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	albums = []*t.Album{}
+	err = c.Find(m.M{"public": true}).Sort("-crAt").All(&albums)
+	return
+}
+
+func (s *AlbumsStore) GetFriendsAlbums(userID string) (albums []*t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	albums = []*t.Album{}
+	err = c.Find(m.M{"frndIds": userID}).Sort("-crAt").All(&albums)
+	return
+}
+
 func (s *AlbumsStore) CreateAlbum(data *t.Album) (album *t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()

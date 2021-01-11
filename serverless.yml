@@ -118,6 +118,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
     events:
@@ -135,6 +139,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
     events:
@@ -156,6 +164,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
     events:
@@ -177,6 +189,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
     events:
