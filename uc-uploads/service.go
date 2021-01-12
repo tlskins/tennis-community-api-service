@@ -9,15 +9,19 @@ import (
 
 	alb "github.com/tennis-community-api-service/albums"
 	"github.com/tennis-community-api-service/pkg/auth"
+	api "github.com/tennis-community-api-service/pkg/lambda"
 	up "github.com/tennis-community-api-service/uploads"
 	usr "github.com/tennis-community-api-service/users"
 )
 
+// deploy
+
 type UCService struct {
-	up  *up.UploadsService
-	alb *alb.AlbumsService
-	usr *usr.UsersService
-	jwt *auth.JWTService
+	up   *up.UploadsService
+	alb  *alb.AlbumsService
+	usr  *usr.UsersService
+	jwt  *auth.JWTService
+	Resp *api.Responder
 }
 
 func Init() (svc *UCService, err error) {
@@ -39,6 +43,7 @@ func Init() (svc *UCService, err error) {
 	usersDBPwd := os.Getenv("USERS_DB_PWD")
 	jwtKeyPath := os.Getenv("JWT_KEY_PATH")
 	jwtSecretPath := os.Getenv("JWT_SECRET_PATH")
+	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
 	var upSvc *up.UploadsService
 	if upSvc, err = up.Init(uploadsDBName, uploadsDBHost, uploadsDBUser, uploadsDBPwd); err != nil {
@@ -73,11 +78,15 @@ func Init() (svc *UCService, err error) {
 		return nil, err
 	}
 
+	// init responder
+	responder := &api.Responder{Origin: allowedOrigin}
+
 	svc = &UCService{
-		up:  upSvc,
-		alb: albSvc,
-		usr: usrSvc,
-		jwt: jwt,
+		up:   upSvc,
+		alb:  albSvc,
+		usr:  usrSvc,
+		jwt:  jwt,
+		Resp: responder,
 	}
 	return
 }

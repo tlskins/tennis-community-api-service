@@ -12,6 +12,5 @@ import (
 func main() {
 	ucAlb, err := alb.Init()
 	api.CheckError(http.StatusInternalServerError, err)
-	handler := api.HandleRequest(ucAlb.UpdateAlbum)
-	lambda.Start(handler)
+	lambda.Start(ucAlb.Resp.HandleRequest(ucAlb.UpdateAlbum))
 }

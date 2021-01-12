@@ -12,6 +12,5 @@ import (
 func main() {
 	ucUsr, err := usr.Init()
 	api.CheckError(http.StatusInternalServerError, err)
-	handler := api.HandleRequest(ucUsr.GetUser)
-	lambda.Start(handler)
+	lambda.Start(ucUsr.Resp.HandleRequest(ucUsr.GetUser))
 }

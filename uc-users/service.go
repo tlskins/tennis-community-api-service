@@ -9,14 +9,18 @@ import (
 
 	"github.com/tennis-community-api-service/pkg/auth"
 	"github.com/tennis-community-api-service/pkg/email"
+	api "github.com/tennis-community-api-service/pkg/lambda"
 	usr "github.com/tennis-community-api-service/users"
 )
+
+// deploy
 
 type UCService struct {
 	usr         *usr.UsersService
 	jwt         *auth.JWTService
 	emailClient *email.EmailClient
 	hostName    string
+	Resp        *api.Responder
 }
 
 func Init() (svc *UCService, err error) {
@@ -35,6 +39,7 @@ func Init() (svc *UCService, err error) {
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
 	hostName := os.Getenv("API_HOST")
+	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
 	var usrSvc *usr.UsersService
 	usrSvc, err = usr.Init(usersDBName, usersDBHost, usersDBUser, usersDBPwd)
@@ -66,11 +71,15 @@ func Init() (svc *UCService, err error) {
 		return nil, err
 	}
 
+	// init responder
+	responder := &api.Responder{Origin: allowedOrigin}
+
 	svc = &UCService{
 		usr:         usrSvc,
 		jwt:         jwt,
 		emailClient: emailClient,
 		hostName:    hostName,
+		Resp:        responder,
 	}
 	return
 }

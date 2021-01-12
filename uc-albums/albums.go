@@ -39,7 +39,7 @@ func (u *UCService) GetAlbums(ctx context.Context, r *api.Request) (resp api.Res
 		albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, claims.Subject)
 		api.CheckError(http.StatusInternalServerError, err)
 	}
-	return api.Success(albumResp, http.StatusOK)
+	return u.Resp.Success(albumResp, http.StatusOK)
 }
 
 func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -55,21 +55,20 @@ func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	user, err := u.usr.GetUser(ctx, claims.Subject)
 	api.CheckError(http.StatusInternalServerError, err)
 	if len(album.FriendIDs) > 0 {
-		note := &uT.FriendNote{
+		err = u.usr.AddFriendNoteToUsers(ctx, album.FriendIDs, &uT.FriendNote{
 			CreatedAt: time.Now(),
 			Subject:   fmt.Sprintf("%s has shared the album %s with you!", user.UserName, album.Name),
-		}
-		err = u.usr.AddFriendNoteToUsers(ctx, album.FriendIDs, note)
+		})
 		api.CheckError(http.StatusInternalServerError, err)
 	}
-	return api.Success(album, http.StatusOK)
+	return u.Resp.Success(album, http.StatusOK)
 }
 
 func (u *UCService) GetAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	id := r.PathParameters["id"]
 	album, err := u.alb.GetAlbum(ctx, id)
 	api.CheckError(http.StatusInternalServerError, err)
-	return api.Success(album, http.StatusOK)
+	return u.Resp.Success(album, http.StatusOK)
 }
 
 func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -85,5 +84,5 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	}
 	album, err = u.alb.UpdateAlbum(ctx, req)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(album, http.StatusOK)
+	return u.Resp.Success(album, http.StatusOK)
 }

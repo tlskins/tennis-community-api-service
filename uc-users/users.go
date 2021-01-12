@@ -49,7 +49,7 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 	)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
-	return api.Success(usrResp, http.StatusCreated)
+	return u.Resp.Success(usrResp, http.StatusCreated)
 }
 
 func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -70,7 +70,7 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	user.AuthToken = authToken
 
-	return api.Success(user, http.StatusOK)
+	return u.Resp.Success(user, http.StatusOK)
 }
 
 func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -88,7 +88,7 @@ func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Respo
 	})
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
-	return api.Success(user, http.StatusOK)
+	return u.Resp.Success(user, http.StatusOK)
 }
 
 func (u *UCService) GetUser(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -97,7 +97,7 @@ func (u *UCService) GetUser(ctx context.Context, r *api.Request) (resp api.Respo
 	claims := auth.AuthorizedClaimsFromContext(ctx)
 	user, err := u.usr.GetUser(ctx, claims.Subject)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(user, http.StatusOK)
+	return u.Resp.Success(user, http.StatusOK)
 }
 
 func (u *UCService) ClearUserNotifications(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -109,5 +109,5 @@ func (u *UCService) ClearUserNotifications(ctx context.Context, r *api.Request) 
 
 	user, err := u.usr.ClearUserNotifications(ctx, claims.Subject, req.Uploads, req.Friends)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(user, http.StatusOK)
+	return u.Resp.Success(user, http.StatusOK)
 }

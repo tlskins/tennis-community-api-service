@@ -13,13 +13,8 @@ import (
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uploads/types"
 
-	uuid "github.com/satori/go.uuid"
-	// "github.com/aws/aws-sdk-go/aws"
-	// "github.com/aws/aws-sdk-go/aws/credentials"
-	// "github.com/aws/aws-sdk-go/aws/session"
-	// "github.com/aws/aws-sdk-go/service/s3"
-	// "github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
+	uuid "github.com/satori/go.uuid"
 )
 
 func (u *UploadsService) GetRecentSwingUploads(ctx context.Context, userId string) (uploads []*t.SwingUpload, err error) {
@@ -28,16 +23,20 @@ func (u *UploadsService) GetRecentSwingUploads(ctx context.Context, userId strin
 
 // https://tennis-swings.s3.amazonaws.com/originals/b687e24a-6e73-4679-b2cb-2e0aa5e4c109/2020_12_30_01_33_51/test.mp4
 
-func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, originalURL string) (resp *t.SwingUpload, err error) {
+func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, originalURL, albumName string, friendIds []string, isPublic, isFriends bool) (resp *t.SwingUpload, err error) {
 	now := time.Now()
 	paths := strings.Split(originalURL, "/")
 	return u.Store.CreateSwingUpload(&t.SwingUpload{
-		CreatedAt:   now,
-		UpdatedAt:   now,
-		UploadKey:   paths[len(paths)-2],
-		UserID:      userId,
-		Status:      enums.SwingUploadStatusOriginal,
-		OriginalURL: originalURL,
+		CreatedAt:           now,
+		UpdatedAt:           now,
+		UploadKey:           paths[len(paths)-2],
+		UserID:              userId,
+		Status:              enums.SwingUploadStatusOriginal,
+		OriginalURL:         originalURL,
+		AlbumName:           albumName,
+		IsPublic:            isPublic,
+		IsViewableByFriends: isFriends,
+		FriendIDs:           friendIds,
 	})
 }
 

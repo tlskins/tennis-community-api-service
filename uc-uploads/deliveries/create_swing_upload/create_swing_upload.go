@@ -12,6 +12,5 @@ import (
 func main() {
 	ucUp, err := up.Init()
 	api.CheckError(http.StatusInternalServerError, err)
-	handler := api.HandleRequest(ucUp.CreateSwingUpload)
-	lambda.Start(handler)
+	lambda.Start(ucUp.Resp.HandleRequest(ucUp.CreateSwingUpload))
 }

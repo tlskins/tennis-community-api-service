@@ -4,7 +4,7 @@ service: tennis-community-api-service
 #org: your-org-name
 
 custom:
-  secrets: ${file(config.prod.yml)}
+  secrets: ${file(config.staging.yml)}
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -13,6 +13,7 @@ frameworkVersion: "2"
 provider:
   name: aws
   runtime: go1.x
+  stage: ${self:custom.secrets.ENV}
 
 # you can overwrite defaults here
 #  stage: dev
@@ -42,12 +43,13 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: uploads
           method: post
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   get_recent_swing_uploads:
@@ -67,12 +69,13 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: uploads
           method: get
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   update_upload_clips:
@@ -92,6 +95,7 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
 
   update_upload_swings:
     handler: bin/update_upload_swings
@@ -110,6 +114,7 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
 
   get_album:
     handler: bin/get_album
@@ -124,12 +129,13 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: albums/{id}
           method: get
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   create_album:
@@ -145,12 +151,13 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: albums
           method: post
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   get_user_albums:
@@ -170,12 +177,13 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: albums
           method: get
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   update_album:
@@ -195,12 +203,13 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: albums/{id}
           method: put
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   create_user:
@@ -217,12 +226,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users
           method: post
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   sign_in:
@@ -239,12 +249,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/sign_in
           method: post
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   confirm_user:
@@ -261,12 +272,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/{id}/confirm_user
           method: get
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   get_user:
@@ -283,12 +295,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users
           method: get
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   clear_notifications:
@@ -305,12 +318,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/clear_notifications
           method: put
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   send_friend_req:
@@ -327,12 +341,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/friends/{friendId}
           method: post
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   accept_friend_req:
@@ -349,12 +364,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/friends/requests/{reqId}
           method: post
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   unfriend:
@@ -371,12 +387,13 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/friends/{friendId}
           method: delete
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   search_friends:
@@ -393,10 +410,11 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
           path: users/friends/search
           method: put
           cors:
-            origin: "http://localhost:3000"
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"

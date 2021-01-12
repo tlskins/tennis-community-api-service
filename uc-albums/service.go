@@ -9,13 +9,17 @@ import (
 
 	alb "github.com/tennis-community-api-service/albums"
 	"github.com/tennis-community-api-service/pkg/auth"
+	api "github.com/tennis-community-api-service/pkg/lambda"
 	usr "github.com/tennis-community-api-service/users"
 )
 
+// deploy
+
 type UCService struct {
-	usr *usr.UsersService
-	alb *alb.AlbumsService
-	jwt *auth.JWTService
+	usr  *usr.UsersService
+	alb  *alb.AlbumsService
+	jwt  *auth.JWTService
+	Resp *api.Responder
 }
 
 func Init() (svc *UCService, err error) {
@@ -33,6 +37,7 @@ func Init() (svc *UCService, err error) {
 	usersDBPwd := os.Getenv("USERS_DB_PWD")
 	jwtKeyPath := os.Getenv("JWT_KEY_PATH")
 	jwtSecretPath := os.Getenv("JWT_SECRET_PATH")
+	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
 	var albSvc *alb.AlbumsService
 	if albSvc, err = alb.Init(albumsDBName, albumsDBHost, albumsDBUser, albumsDBPwd); err != nil {
@@ -62,10 +67,14 @@ func Init() (svc *UCService, err error) {
 		return nil, err
 	}
 
+	// init responder
+	responder := &api.Responder{Origin: allowedOrigin}
+
 	svc = &UCService{
-		usr: usrSvc,
-		alb: albSvc,
-		jwt: jwt,
+		usr:  usrSvc,
+		alb:  albSvc,
+		jwt:  jwt,
+		Resp: responder,
 	}
 	return
 }

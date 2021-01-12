@@ -16,7 +16,11 @@ func (r GetSwingUploadURLReq) Validate() error {
 }
 
 type CreateSwingUploadReq struct {
-	OriginalURL string `bson:"origUrl" json:"originalURL"`
+	OriginalURL         string   `bson:"origUrl" json:"originalURL"`
+	AlbumName           string   `bson:"albNm" json:"albumName"`
+	IsPublic            bool     `bson:"public" json:"isPublic"`
+	IsViewableByFriends bool     `bson:"frndView" json:"isViewableByFriends"`
+	FriendIDs           []string `bson:"frndIds" json:"friendIds"`
 }
 
 func (r CreateSwingUploadReq) Validate() error {

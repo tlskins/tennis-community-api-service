@@ -17,7 +17,7 @@ func (u *UCService) SendFriendRequest(ctx context.Context, r *api.Request) (resp
 	api.CheckError(http.StatusInternalServerError, err)
 	err = u.usr.SendFriendRequest(ctx, claims.Subject, friendID)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(nil, http.StatusOK)
+	return u.Resp.Success(nil, http.StatusOK)
 }
 
 func (u *UCService) AcceptFriendRequest(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -30,7 +30,7 @@ func (u *UCService) AcceptFriendRequest(ctx context.Context, r *api.Request) (re
 	api.CheckError(http.StatusInternalServerError, err)
 	user, err := u.usr.AcceptFriendRequest(ctx, claims.Subject, reqID, req.Accept)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(user, http.StatusOK)
+	return u.Resp.Success(user, http.StatusOK)
 }
 
 func (u *UCService) Unfriend(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -41,7 +41,7 @@ func (u *UCService) Unfriend(ctx context.Context, r *api.Request) (resp api.Resp
 	api.CheckError(http.StatusInternalServerError, err)
 	err = u.usr.Unfriend(ctx, claims.Subject, friendID)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(nil, http.StatusOK)
+	return u.Resp.Success(nil, http.StatusOK)
 }
 
 func (u *UCService) SearchFriends(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -49,5 +49,5 @@ func (u *UCService) SearchFriends(ctx context.Context, r *api.Request) (resp api
 	api.Parse(r, req)
 	friends, err := u.usr.SearchFriends(ctx, req.Search, req.IDs, req.Limit, req.Offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return api.Success(friends, http.StatusOK)
+	return u.Resp.Success(friends, http.StatusOK)
 }

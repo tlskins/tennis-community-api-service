@@ -6,16 +6,20 @@ import (
 )
 
 type SwingUpload struct {
-	ID          string                  `bson:"_id" json:"id"`
-	CreatedAt   time.Time               `bson:"crAt" json:"createdAt"`
-	UpdatedAt   time.Time               `bson:"updAt" json:"updatedAt"`
-	UploadKey   string                  `bson:"upKey" json:"uploadKey"`
-	UserID      string                  `bson:"usrId" json:"userId"`
-	Status      enums.SwingUploadStatus `bson:"status" json:"status"`
-	OriginalURL string                  `bson:"origUrl" json:"originalURL"`
-	AlbumID     string                  `bson:"albId,omitempty" json:"albumId,omitempty"`
-	ClipVideos  []*UploadClipVideo      `bson:"clipVids" json:"clipVideos"`
-	SwingVideos []*UploadSwingVideo     `bson:"swingVids" json:"swingVideos"`
+	ID                  string                  `bson:"_id" json:"id"`
+	CreatedAt           time.Time               `bson:"crAt" json:"createdAt"`
+	UpdatedAt           time.Time               `bson:"updAt" json:"updatedAt"`
+	UploadKey           string                  `bson:"upKey" json:"uploadKey"`
+	UserID              string                  `bson:"usrId" json:"userId"`
+	Status              enums.SwingUploadStatus `bson:"status" json:"status"`
+	OriginalURL         string                  `bson:"origUrl" json:"originalURL"`
+	AlbumID             string                  `bson:"albId,omitempty" json:"albumId,omitempty"`
+	AlbumName           string                  `bson:"albNm" json:"albumName"`
+	IsPublic            bool                    `bson:"public" json:"isPublic"`
+	IsViewableByFriends bool                    `bson:"frndView" json:"isViewableByFriends"`
+	FriendIDs           []string                `bson:"frndIds" json:"friendIds"`
+	ClipVideos          []*UploadClipVideo      `bson:"clipVids" json:"clipVideos"`
+	SwingVideos         []*UploadSwingVideo     `bson:"swingVids" json:"swingVideos"`
 }
 
 func (a SwingUpload) IsFinal() bool {
@@ -37,11 +41,15 @@ type UpdateSwingUpload struct {
 	UserID    string    `bson:"usrId" json:"userId"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	Status      *enums.SwingUploadStatus `bson:"status,omitempty" json:"status,omitempty"`
-	OriginalURL *string                  `bson:"origUrl,omitempty" json:"originalURL,omitempty"`
-	AlbumID     *string                  `bson:"albId,omitempty" json:"albumId,omitempty"`
-	ClipVideos  *[]*UploadClipVideo      `bson:"clipVids,omitempty" json:"clipVideos,omitempty"`
-	SwingVideos *[]*UploadSwingVideo     `bson:"swingVids,omitempty" json:"swingVideos,omitempty"`
+	Status              *enums.SwingUploadStatus `bson:"status,omitempty" json:"status,omitempty"`
+	OriginalURL         *string                  `bson:"origUrl,omitempty" json:"originalURL,omitempty"`
+	AlbumID             *string                  `bson:"albId,omitempty" json:"albumId,omitempty"`
+	AlbumName           *string                  `bson:"albNm,omitempty" json:"albumName,omitempty"`
+	IsPublic            *bool                    `bson:"public,omitempty" json:"isPublic,omitempty"`
+	IsViewableByFriends *bool                    `bson:"frndView,omitempty" json:"isViewableByFriends,omitempty"`
+	FriendIDs           *[]string                `bson:"frndIds,omitempty" json:"friendIds,omitempty"`
+	ClipVideos          *[]*UploadClipVideo      `bson:"clipVids,omitempty" json:"clipVideos,omitempty"`
+	SwingVideos         *[]*UploadSwingVideo     `bson:"swingVids,omitempty" json:"swingVideos,omitempty"`
 }
 
 type UploadClipVideo struct {
