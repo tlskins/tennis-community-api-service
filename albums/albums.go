@@ -24,16 +24,22 @@ func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, erro
 	return u.Store.GetAlbum(id)
 }
 
-func (u *AlbumsService) CreateAlbumFromUpload(ctx context.Context, userID, uploadKey string) (*t.Album, error) {
+func (u *AlbumsService) CreateAlbumFromUpload(ctx context.Context, userID, uploadKey, albumName string, isPublic, isFriends bool, friendIDs []string) (*t.Album, error) {
 	now := time.Now()
+	name := albumName
+	if name == "" {
+		name = uploadKey
+	}
 	return u.Store.CreateAlbum(&t.Album{
-		Name:      uploadKey,
-		UploadKey: uploadKey,
-		UserID:    userID,
-		// Clips:     clips,
-		CreatedAt: now,
-		UpdatedAt: now,
-		Status:    enums.AlbumStatusProcessing,
+		Name:                name,
+		UploadKey:           uploadKey,
+		UserID:              userID,
+		CreatedAt:           now,
+		UpdatedAt:           now,
+		Status:              enums.AlbumStatusProcessing,
+		IsPublic:            isPublic,
+		IsViewableByFriends: isFriends,
+		FriendIDs:           friendIDs,
 	})
 }
 

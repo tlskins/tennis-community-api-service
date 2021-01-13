@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	"regexp"
 )
 
 type SignInReq struct {
@@ -16,6 +17,8 @@ type CreateUserReq struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
+
+var invalidUserNameChars = []string{"@", "#", " ", "	", "%", "/", `\\`}
 
 func (r CreateUserReq) Validate() error {
 	if len(r.UserName) < 3 {
@@ -32,6 +35,12 @@ func (r CreateUserReq) Validate() error {
 	}
 	if len(r.Password) == 0 {
 		return errors.New("Missing password")
+	}
+	for _, char := range invalidUserNameChars {
+		re := regexp.MustCompile(char)
+		if re.Match([]byte(r.UserName)) {
+			return errors.New(`Username cannot include any of the following special characters: spaces, tabs, @, #, %, \, /`)
+		}
 	}
 	return nil
 }

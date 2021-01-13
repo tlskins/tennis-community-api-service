@@ -51,7 +51,15 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 	if err != nil {
 		return "error", err
 	}
-	album, err := u.alb.CreateAlbumFromUpload(ctx, upload.UserID, upload.UploadKey)
+	album, err := u.alb.CreateAlbumFromUpload(
+		ctx,
+		upload.UserID,
+		upload.UploadKey,
+		upload.AlbumName,
+		upload.IsPublic,
+		upload.IsViewableByFriends,
+		upload.FriendIDs,
+	)
 	if err != nil {
 		return "error", err
 	}
@@ -141,12 +149,33 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 			if err != nil {
 				return "error get user", err
 			}
+
 			err = u.usr.AddFriendNoteToUsers(ctx, album.FriendIDs, &usrT.FriendNote{
 				CreatedAt: time.Now(),
 				Subject:   fmt.Sprintf("%s has shared the album %s with you!", user.UserName, album.Name),
+				Type:      "Shared Album",
 			})
 			if err != nil {
-				return "error AddFriendNoteToUsers", err
+				fmt.Printf("error AddFriendNoteToUsers: %s\n", err.Error())
+			}
+
+			for _, friendID := range album.FriendIDs {
+				friend, softErr := u.usr.GetUser(ctx, friendID)
+				if softErr != nil {
+					fmt.Printf("error getting friend: %s\n", softErr.Error())
+				}
+				softErr = u.emailClient.SendEmail(
+					friend.Email,
+					fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
+					fmt.Sprintf(`%s %s,
+Your friend %s %s has has shared the album %s with you.
+View At:
+%s/albums/%s
+					`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin, album.ID),
+				)
+				if softErr != nil {
+					fmt.Printf("error sending friend email: %s\n", softErr.Error())
+				}
 			}
 		}
 	}

@@ -42,9 +42,10 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 		user.Email,
 		"Welcome to Tennis Community",
 		fmt.Sprintf(`
-		Welcome to Tennis Community!\n\n
-		Please follow this link to confirm your account:\n\n
-		%s
+Welcome to Tennis Community!
+Please follow this link to confirm your account:
+
+%s
 		`, fmt.Sprintf("%susers/%s/confirm_user", u.hostName, user.ID)),
 	)
 	api.CheckError(http.StatusUnprocessableEntity, err)

@@ -25,6 +25,10 @@ package:
   include:
     - ./bin/**
 
+####################################################################################
+# UPLOADS FUNCTIONS
+####################################################################################
+
 functions:
   create_swing_upload:
     handler: bin/create_swing_upload
@@ -43,6 +47,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
@@ -69,6 +77,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
@@ -95,6 +107,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
 
   update_upload_swings:
@@ -114,7 +130,15 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+
+  ####################################################################################
+  # ALBUMS FUNCTIONS
+  ####################################################################################
 
   get_album:
     handler: bin/get_album
@@ -129,6 +153,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
@@ -151,6 +179,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
@@ -177,6 +209,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
@@ -203,6 +239,10 @@ functions:
       USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
@@ -212,6 +252,9 @@ functions:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
+  ####################################################################################
+  # USERS FUNCTIONS
+  ####################################################################################
   create_user:
     handler: bin/create_user
     environment:

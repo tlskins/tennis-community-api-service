@@ -9,6 +9,7 @@ import (
 
 	alb "github.com/tennis-community-api-service/albums"
 	"github.com/tennis-community-api-service/pkg/auth"
+	"github.com/tennis-community-api-service/pkg/email"
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	up "github.com/tennis-community-api-service/uploads"
 	usr "github.com/tennis-community-api-service/users"
@@ -17,11 +18,12 @@ import (
 // deploy
 
 type UCService struct {
-	up   *up.UploadsService
-	alb  *alb.AlbumsService
-	usr  *usr.UsersService
-	jwt  *auth.JWTService
-	Resp *api.Responder
+	up          *up.UploadsService
+	alb         *alb.AlbumsService
+	usr         *usr.UsersService
+	jwt         *auth.JWTService
+	emailClient *email.EmailClient
+	Resp        *api.Responder
 }
 
 func Init() (svc *UCService, err error) {
@@ -43,6 +45,10 @@ func Init() (svc *UCService, err error) {
 	usersDBPwd := os.Getenv("USERS_DB_PWD")
 	jwtKeyPath := os.Getenv("JWT_KEY_PATH")
 	jwtSecretPath := os.Getenv("JWT_SECRET_PATH")
+	fromEmail := os.Getenv("FROM_EMAIL")
+	emailPwd := os.Getenv("EMAIL_PWD")
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
 
 	var upSvc *up.UploadsService
@@ -57,6 +63,13 @@ func Init() (svc *UCService, err error) {
 
 	var usrSvc *usr.UsersService
 	usrSvc, err = usr.Init(usersDBName, usersDBHost, usersDBUser, usersDBPwd)
+	if err != nil {
+		return
+	}
+
+	// Email
+	var emailClient *email.EmailClient
+	emailClient, err = email.NewEmailClient(fromEmail, emailPwd, smtpHost, smtpPort)
 	if err != nil {
 		return
 	}
@@ -82,11 +95,12 @@ func Init() (svc *UCService, err error) {
 	responder := &api.Responder{Origin: allowedOrigin}
 
 	svc = &UCService{
-		up:   upSvc,
-		alb:  albSvc,
-		usr:  usrSvc,
-		jwt:  jwt,
-		Resp: responder,
+		up:          upSvc,
+		alb:         albSvc,
+		usr:         usrSvc,
+		jwt:         jwt,
+		emailClient: emailClient,
+		Resp:        responder,
 	}
 	return
 }

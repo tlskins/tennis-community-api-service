@@ -58,8 +58,29 @@ func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.R
 		err = u.usr.AddFriendNoteToUsers(ctx, album.FriendIDs, &uT.FriendNote{
 			CreatedAt: time.Now(),
 			Subject:   fmt.Sprintf("%s has shared the album %s with you!", user.UserName, album.Name),
+			Type:      "Shared Album",
 		})
 		api.CheckError(http.StatusInternalServerError, err)
+
+		for _, friendID := range album.FriendIDs {
+			friend, softErr := u.usr.GetUser(ctx, friendID)
+			if softErr != nil {
+				fmt.Printf("error getting friend: %s\n", softErr.Error())
+			}
+			softErr = u.emailClient.SendEmail(
+				friend.Email,
+				fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
+				fmt.Sprintf(`
+%s %s,
+Your friend %s %s has has shared the album %s with you.
+View At
+%s/albums/%s
+				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin, album.ID),
+			)
+			if softErr != nil {
+				fmt.Printf("error sending friend email: %s\n", softErr.Error())
+			}
+		}
 	}
 	return u.Resp.Success(album, http.StatusOK)
 }

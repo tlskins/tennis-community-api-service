@@ -23,17 +23,15 @@ type SwingUpload struct {
 }
 
 func (a SwingUpload) IsFinal() bool {
-	finalMap := make(map[int]bool)
-	for _, vid := range a.SwingVideos {
-		finalMap[vid.ClipID] = true
-	}
-	isFinal := true
-	for _, clipFinal := range finalMap {
-		if !clipFinal {
-			isFinal = false
+	clipVidsCount := 0
+	swingMap := map[int]bool{}
+	for _, swing := range a.SwingVideos {
+		if !swingMap[swing.ClipID] {
+			swingMap[swing.ClipID] = true
+			clipVidsCount++
 		}
 	}
-	return isFinal
+	return clipVidsCount == len(a.ClipVideos)
 }
 
 type UpdateSwingUpload struct {
