@@ -107,3 +107,35 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return u.Resp.Success(album, http.StatusOK)
 }
+
+func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := &t.PostCommentReq{UserID: claims.Subject, AlbumID: r.PathParameters["id"]}
+	api.ParseAndValidate(r, req)
+	now := time.Now()
+
+	var album *aT.Album
+	if req.SwingID == "" {
+		album, err = u.alb.PostCommentToAlbum(ctx, req.AlbumID, &aT.Comment{
+			ReplyID:   req.ReplyID,
+			UserID:    req.UserID,
+			CreatedAt: now,
+			UpdatedAt: now,
+			Frame:     req.Frame,
+			Text:      req.Text,
+		})
+	} else {
+		album, err = u.alb.PostCommentToSwing(ctx, req.AlbumID, req.SwingID, &aT.Comment{
+			ReplyID:   req.ReplyID,
+			UserID:    req.UserID,
+			CreatedAt: now,
+			UpdatedAt: now,
+			Frame:     req.Frame,
+			Text:      req.Text,
+		})
+	}
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return u.Resp.Success(album, http.StatusOK)
+}

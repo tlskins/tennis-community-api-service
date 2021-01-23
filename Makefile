@@ -22,6 +22,7 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_album uc-albums/deliveries/get_album/get_album.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/create_album uc-albums/deliveries/create_album/create_album.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/update_album uc-albums/deliveries/update_album/update_album.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/post_comment uc-albums/deliveries/post_comment/post_comment.go
 
 	cp ./id_rsa bin/id_rsa
 	cp ./id_rsa.pub bin/id_rsa.pub

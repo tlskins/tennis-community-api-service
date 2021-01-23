@@ -38,3 +38,28 @@ type AlbumsResp struct {
 	FriendsAlbums []*aT.Album `json:"friendsAlbums"`
 	PublicAlbums  []*aT.Album `json:"publicAlbums"`
 }
+
+type PostCommentReq struct {
+	UserID  string `json:"userId"`
+	AlbumID string `json:"albumId"`
+	SwingID string `json:"swingId,omitempty"`
+	ReplyID string `json:"replyId,omitempty"`
+	Frame   int    `json:"frame"`
+	Text    string `json:"text"`
+}
+
+func (r PostCommentReq) Validate() error {
+	if r.UserID == "" {
+		return errors.New("Missing user")
+	}
+	if r.AlbumID == "" {
+		return errors.New("Missing album")
+	}
+	if r.Text == "" {
+		return errors.New("Missing comment text")
+	}
+	if len(r.Text) > 500 {
+		return errors.New("Comment must be less than 500 characters")
+	}
+	return nil
+}

@@ -77,3 +77,35 @@ func (s *AlbumsStore) AddVideosToAlbum(userId, uploadKey string, swings []*t.Swi
 	})
 	return
 }
+
+func (s *AlbumsStore) PostCommentToAlbum(albumID string, comment *t.Comment) (album *t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	if comment.ID == "" {
+		comment.ID = uuid.NewV4().String()
+	}
+
+	album = &t.Album{}
+	err = m.Update(c, album, m.M{"_id": albumID}, m.M{
+		"$set":  m.M{"updAt": time.Now()},
+		"$push": m.M{"cmnts": comment},
+	})
+	return
+}
+
+func (s *AlbumsStore) PostCommentToSwing(albumID, swingID string, comment *t.Comment) (album *t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	if comment.ID == "" {
+		comment.ID = uuid.NewV4().String()
+	}
+
+	album = &t.Album{}
+	err = m.Update(c, album, m.M{"_id": albumID, "swingVids._id": swingID}, m.M{
+		"$set":  m.M{"updAt": time.Now()},
+		"$push": m.M{"swingVids.$.cmnts": comment},
+	})
+	return
+}

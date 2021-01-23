@@ -58,3 +58,11 @@ func (u *AlbumsService) UpdateAlbum(ctx context.Context, data *t.UpdateAlbum) (*
 func (u *AlbumsService) AddVideosToAlbum(ctx context.Context, userID, uploadKey string, swingVideos []*t.SwingVideo) (*t.Album, error) {
 	return u.Store.AddVideosToAlbum(userID, uploadKey, swingVideos)
 }
+
+func (u *AlbumsService) PostCommentToAlbum(ctx context.Context, albumID string, comment *t.Comment) (*t.Album, error) {
+	return u.Store.PostCommentToAlbum(albumID, comment)
+}
+
+func (u *AlbumsService) PostCommentToSwing(ctx context.Context, albumID, swingID string, comment *t.Comment) (*t.Album, error) {
+	return u.Store.PostCommentToSwing(albumID, swingID, comment)
+}

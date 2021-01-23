@@ -19,12 +19,14 @@ type SwingVideo struct {
 	JpgURL    string                 `bson:"jpgUrl" json:"jpgURL"`
 	Status    enums.SwingVideoStatus `bson:"status" json:"status"`
 	Tags      []string               `bson:"tags,omitempty" json:"tags,omitempty"`
+	Comments  []*Comment             `bson:"cmnts" json:"comments"`
 }
 
 type UpdateSwingVideo struct {
 	ID        string    `bson:"_id" json:"id"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	Status *enums.SwingVideoStatus `bson:"status,omitempty" json:"status,omitempty"`
-	Tags   *[]string               `bson:"tags,omitempty" json:"tags,omitempty"`
+	Status   *enums.SwingVideoStatus `bson:"status,omitempty" json:"status,omitempty"`
+	Tags     *[]string               `bson:"tags,omitempty" json:"tags,omitempty"`
+	Comments *[]*Comment             `bson:"cmnts,omitempty" json:"comments,omitempty"`
 }

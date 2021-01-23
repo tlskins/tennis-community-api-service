@@ -85,23 +85,6 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 
 	now := time.Now()
 	swingVids := make([]*aT.SwingVideo, len(swingUploads))
-	for i, swing := range swingUploads {
-		swingVids[i], err = u.alb.CreateSwing(ctx, &aT.SwingVideo{
-			CreatedAt: now,
-			UserID:    upload.UserID,
-			UploadKey: upload.UploadKey,
-			Clip:      swing.ClipID,
-			Swing:     swing.SwingID,
-			VideoURL:  swing.CutURL,
-			GifURL:    swing.GifURL,
-			JpgURL:    swing.JpgURL,
-			Status:    enums.SwingVideoStatusCreated,
-		})
-		if err != nil {
-			return "error CreateSwing", err
-		}
-	}
-
 	album, err := u.alb.AddVideosToAlbum(ctx, upload.UserID, upload.UploadKey, swingVids)
 	if err != nil {
 		return "error AddVideosToAlbum", err
