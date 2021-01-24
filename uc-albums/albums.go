@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	// "github.com/davecgh/go-spew/spew"
+	uuid "github.com/satori/go.uuid"
 
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
@@ -137,5 +137,45 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 		})
 	}
 	api.CheckError(http.StatusUnprocessableEntity, err)
+
+	albumUser, err := u.usr.GetUser(ctx, album.UserID)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	friend, err := u.usr.GetUser(ctx, claims.Subject)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+
+	noteFound := false
+	notes := albumUser.CommentNotes
+	for _, note := range notes {
+		if note.AlbumID == req.AlbumID && note.FriendID == friend.ID {
+			noteFound = true
+			note.NumComments++
+			if req.SwingID != "" {
+				note.SwingIDs = append(note.SwingIDs, req.SwingID)
+			}
+			break
+		}
+	}
+	if !noteFound {
+		note := &uT.CommentNote{
+			ID:              uuid.NewV4().String(),
+			CreatedAt:       time.Now(),
+			FriendID:        claims.Subject,
+			FriendFirstName: friend.FirstName,
+			FriendUserName:  friend.UserName,
+			AlbumID:         req.AlbumID,
+			AlbumName:       album.Name,
+			NumComments:     1,
+		}
+		if req.SwingID != "" {
+			note.SwingIDs = []string{req.SwingID}
+		}
+		notes = append(notes, note)
+	}
+	albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
+		ID:           albumUser.ID,
+		CommentNotes: &notes,
+	})
+	api.CheckError(http.StatusUnprocessableEntity, err)
+
 	return u.Resp.Success(album, http.StatusOK)
 }

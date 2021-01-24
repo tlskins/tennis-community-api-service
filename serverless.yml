@@ -4,7 +4,7 @@ service: tennis-community-api-service
 #org: your-org-name
 
 custom:
-  secrets: ${file(config.staging.yml)}
+  secrets: ${file(config.dev.yml)}
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -377,8 +377,8 @@ functions:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
-  clear_notifications:
-    handler: bin/clear_notifications
+  remove_notification:
+    handler: bin/remove_notification
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -394,7 +394,7 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
-          path: users/clear_notifications
+          path: users/remove_notification
           method: put
           cors:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}

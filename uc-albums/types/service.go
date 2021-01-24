@@ -44,7 +44,7 @@ type PostCommentReq struct {
 	AlbumID string `json:"albumId"`
 	SwingID string `json:"swingId,omitempty"`
 	ReplyID string `json:"replyId,omitempty"`
-	Frame   int    `json:"frame"`
+	Frame   int    `json:"frame,omitempty"`
 	Text    string `json:"text"`
 }
 

@@ -34,8 +34,9 @@ type User struct {
 	FriendRequests []*FriendRequest `bson:"frndReqs" json:"friendRequests"`
 
 	// notifications
-	UploadNotes []*UploadNote `bson:"upNotes" json:"uploadNotifications"`
-	FriendNotes []*FriendNote `bson:"frndNotes" json:"friendNotifications"`
+	UploadNotes  []*UploadNote  `bson:"upNotes" json:"uploadNotifications"`
+	FriendNotes  []*FriendNote  `bson:"frndNotes" json:"friendNotifications"`
+	CommentNotes []*CommentNote `bson:"commentNotes" json:"commentNotifications"`
 }
 
 func (u User) GetAuthables() (id, email string, conf bool) {
@@ -68,6 +69,7 @@ type UpdateUser struct {
 	FriendRequests *[]*FriendRequest `bson:"frndReqs,omitempty" json:"friendRequests,omitempty"`
 
 	// notifications
-	UploadNotes *[]*UploadNote `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
-	FriendNotes *[]*FriendNote `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
+	UploadNotes  *[]*UploadNote  `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
+	FriendNotes  *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
+	CommentNotes *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
 }

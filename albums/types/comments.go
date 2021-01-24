@@ -10,6 +10,6 @@ type Comment struct {
 	UserID    string    `bson:"userId" json:"userId"`
 	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
-	Frame     int       `bson:"frame" json:"frame"`
+	Frame     int       `bson:"frame,omitempty" json:"frame,omitempty"`
 	Text      string    `bson:"txt" json:"text"`
 }

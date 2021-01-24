@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	uuid "github.com/satori/go.uuid"
 
 	aT "github.com/tennis-community-api-service/albums/types"
@@ -76,7 +75,6 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 }
 
 func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwingEvent) (string, error) {
-	spew.Dump(r)
 	videos, gifs, jpgs := r.Outputs()
 	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, videos, gifs, jpgs)
 	if err != nil {

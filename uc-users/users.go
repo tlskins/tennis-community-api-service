@@ -101,14 +101,23 @@ func (u *UCService) GetUser(ctx context.Context, r *api.Request) (resp api.Respo
 	return u.Resp.Success(user, http.StatusOK)
 }
 
-func (u *UCService) ClearUserNotifications(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
 	api.CheckError(http.StatusInternalServerError, err)
 	claims := auth.AuthorizedClaimsFromContext(ctx)
-	req := &t.ClearNotificationsReq{}
-	api.Parse(r, req)
+	req := &t.RemoveNotificationReq{}
+	api.ParseAndValidate(r, req)
 
-	user, err := u.usr.ClearUserNotifications(ctx, claims.Subject, req.Uploads, req.Friends)
-	api.CheckError(http.StatusUnprocessableEntity, err)
+	var user *uT.User
+	if len(req.UploadNoteID) > 0 {
+		user, err = u.usr.RemoveUploadNote(ctx, claims.Subject, req.UploadNoteID)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+	} else if len(req.FriendNoteID) > 0 {
+		user, err = u.usr.RemoveFriendNote(ctx, claims.Subject, req.FriendNoteID)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+	} else if len(req.CommentNoteID) > 0 {
+		user, err = u.usr.RemoveCommentNote(ctx, claims.Subject, req.CommentNoteID)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+	}
 	return u.Resp.Success(user, http.StatusOK)
 }

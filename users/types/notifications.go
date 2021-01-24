@@ -26,3 +26,16 @@ type FriendNote struct {
 	Type     string `bson:"tp" json:"type"`
 	FriendID string `bson:"frndId" json:"friendId"`
 }
+
+type CommentNote struct {
+	ID        string    `bson:"_id" json:"id"`
+	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
+
+	FriendID        string   `bson:"frndId" json:"friendId"`
+	FriendFirstName string   `bson:"frndFirst" json:"friendFirstName"`
+	FriendUserName  string   `bson:"frndUsr" json:"friendUserName"`
+	AlbumID         string   `bson:"albumId" json:"albumId"`
+	AlbumName       string   `bson:"albumNm" json:"albumName"`
+	SwingIDs        []string `bson:"swingIds" json:"swingIds"`
+	NumComments     int      `bson:"numComms" json:"numComments"`
+}

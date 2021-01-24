@@ -45,9 +45,27 @@ func (r CreateUserReq) Validate() error {
 	return nil
 }
 
-type ClearNotificationsReq struct {
-	Uploads bool `json:"uploads"`
-	Friends bool `json:"friends"`
+type RemoveNotificationReq struct {
+	UploadNoteID  string `json:"uploadNotificationId"`
+	FriendNoteID  string `json:"friendNotificationId"`
+	CommentNoteID string `json:"commentNotificationId"`
+}
+
+func (r RemoveNotificationReq) Validate() error {
+	count := 0
+	if len(r.UploadNoteID) > 0 {
+		count++
+	}
+	if len(r.FriendNoteID) > 0 {
+		count++
+	}
+	if len(r.CommentNoteID) > 0 {
+		count++
+	}
+	if count > 1 {
+		return errors.New("Can only remove one notification at a time")
+	}
+	return nil
 }
 
 type AcceptFriendReq struct {

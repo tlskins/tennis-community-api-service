@@ -6,7 +6,7 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/sign_in uc-users/deliveries/sign-in/sign_in.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/confirm_user uc-users/deliveries/confirm/confirm_user.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_user uc-users/deliveries/get-user/get_user.go
-	env GOOS=linux go build -ldflags="-s -w" -o bin/clear_notifications uc-users/deliveries/clear-notifications/clear_notifications.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/remove_notification uc-users/deliveries/remove-notification/remove-notification.go
 
 	env GOOS=linux go build -ldflags="-s -w" -o bin/send_friend_req uc-users/deliveries/send-friend-req/send_friend_req.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/accept_friend_req uc-users/deliveries/accept-friend-req/accept_friend_req.go
