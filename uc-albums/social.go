@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
-
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
 	api "github.com/tennis-community-api-service/pkg/lambda"
@@ -40,7 +38,7 @@ func (u *UCService) shareAlbum(ctx context.Context, album *aT.Album) (err error)
 				fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
 				fmt.Sprintf(`
 %s %s,
-Your friend %s %s has has shared the album %s with you.
+Your friend %s %s has shared the album %s with you.
 View At
 %s/albums/%s
 				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin, album.ID),
@@ -61,6 +59,7 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 	api.ParseAndValidate(r, req)
 	now := time.Now()
 
+	// add comment to album in store
 	var album *aT.Album
 	if req.SwingID == "" {
 		album, err = u.alb.PostCommentToAlbum(ctx, req.AlbumID, &aT.Comment{
@@ -83,44 +82,43 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 	}
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
-	albumUser, err := u.usr.GetUser(ctx, album.UserID)
-	api.CheckError(http.StatusUnprocessableEntity, err)
-	friend, err := u.usr.GetUser(ctx, claims.Subject)
-	api.CheckError(http.StatusUnprocessableEntity, err)
+	// only send notifications if post to another user's album
+	if album.UserID != claims.Subject {
+		// add comment notification to user in store
+		albumUser, err := u.usr.GetUser(ctx, album.UserID)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+		friend, err := u.usr.GetUser(ctx, claims.Subject)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+		albumUser.AddCommentNote(friend, album.ID, album.Name, req.SwingID)
+		albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
+			ID:           albumUser.ID,
+			CommentNotes: &albumUser.CommentNotes,
+		})
+		api.CheckError(http.StatusUnprocessableEntity, err)
 
-	noteFound := false
-	notes := albumUser.CommentNotes
-	for _, note := range notes {
-		if note.AlbumID == req.AlbumID && note.FriendID == friend.ID {
-			noteFound = true
-			note.NumComments++
-			if req.SwingID != "" {
-				note.SwingIDs = append(note.SwingIDs, req.SwingID)
+		// send email if new comment on album
+		note := friend.AddMyRecentComment(album.ID, album.Name, req.SwingID)
+		albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
+			ID:               friend.ID,
+			MyRecentComments: &friend.MyRecentComments,
+		})
+		api.CheckError(http.StatusUnprocessableEntity, err)
+		if note.NumComments == 1 {
+			softErr := u.emailClient.SendEmail(
+				friend.Email,
+				fmt.Sprintf("Tennis Community - %s Commented on your album %s!", friend.UserName, album.Name),
+				fmt.Sprintf(`
+%s %s,
+Your friend %s %s has commented on the album %s.
+View At
+%s/albums/%s
+		`, albumUser.FirstName, albumUser.LastName, friend.FirstName, friend.LastName, album.Name, u.Resp.Origin, album.ID),
+			)
+			if softErr != nil {
+				fmt.Printf("error sending album user email: %s\n", softErr.Error())
 			}
-			break
 		}
 	}
-	if !noteFound {
-		note := &uT.CommentNote{
-			ID:              uuid.NewV4().String(),
-			CreatedAt:       time.Now(),
-			FriendID:        claims.Subject,
-			FriendFirstName: friend.FirstName,
-			FriendUserName:  friend.UserName,
-			AlbumID:         req.AlbumID,
-			AlbumName:       album.Name,
-			NumComments:     1,
-		}
-		if req.SwingID != "" {
-			note.SwingIDs = []string{req.SwingID}
-		}
-		notes = append(notes, note)
-	}
-	albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
-		ID:           albumUser.ID,
-		CommentNotes: &notes,
-	})
-	api.CheckError(http.StatusUnprocessableEntity, err)
 
 	return u.Resp.Success(album, http.StatusOK)
 }

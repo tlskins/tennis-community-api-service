@@ -3,6 +3,8 @@ package types
 import (
 	"github.com/tennis-community-api-service/pkg/enums"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 type User struct {
@@ -34,13 +36,89 @@ type User struct {
 	FriendRequests []*FriendRequest `bson:"frndReqs" json:"friendRequests"`
 
 	// notifications
-	UploadNotes  []*UploadNote  `bson:"upNotes" json:"uploadNotifications"`
-	FriendNotes  []*FriendNote  `bson:"frndNotes" json:"friendNotifications"`
-	CommentNotes []*CommentNote `bson:"commentNotes" json:"commentNotifications"`
+	UploadNotes      []*UploadNote  `bson:"upNotes" json:"uploadNotifications"`
+	FriendNotes      []*FriendNote  `bson:"frndNotes" json:"friendNotifications"`
+	CommentNotes     []*CommentNote `bson:"commentNotes" json:"commentNotifications"`
+	MyRecentComments []*CommentNote `bson:"recComms" json:"myRecentComments"`
 }
 
 func (u User) GetAuthables() (id, email string, conf bool) {
 	return u.ID, u.Email, u.Status != enums.UserStatusPending
+}
+
+func (u *User) AddCommentNote(friend *User, albumID, albumName, swingID string) {
+	noteFound := false
+	for _, note := range u.CommentNotes {
+		if note.AlbumID == albumID && note.FriendID == friend.ID {
+			noteFound = true
+			note.NumComments++
+			note.UpdatedAt = time.Now()
+			if swingID != "" {
+				note.SwingIDs = append(note.SwingIDs, swingID)
+			}
+			break
+		}
+	}
+	if !noteFound {
+		now := time.Now()
+		note := &CommentNote{
+			ID:              uuid.NewV4().String(),
+			CreatedAt:       now,
+			UpdatedAt:       now,
+			FriendID:        friend.ID,
+			FriendFirstName: friend.FirstName,
+			FriendUserName:  friend.UserName,
+			AlbumID:         albumID,
+			AlbumName:       albumName,
+			NumComments:     1,
+		}
+		if swingID != "" {
+			note.SwingIDs = []string{swingID}
+		}
+		u.CommentNotes = append(u.CommentNotes, note)
+	}
+}
+
+func (u *User) AddMyRecentComment(albumID, albumName, swingID string) *CommentNote {
+	now := time.Now()
+	cutoff := now.Add(time.Duration(-3) * time.Hour)
+	recentCutoff := now.AddDate(0, 0, -14)
+	recentNotes := []*CommentNote{}
+	var note *CommentNote
+
+	// keep recent and find existing note
+	for _, n := range u.MyRecentComments {
+		if n.AlbumID == albumID && n.CreatedAt.After(cutoff) {
+			n.NumComments++
+			n.UpdatedAt = time.Now()
+			if swingID != "" {
+				n.SwingIDs = append(n.SwingIDs, swingID)
+			}
+			note = n
+		}
+		if n.CreatedAt.After(recentCutoff) {
+			recentNotes = append(recentNotes, n)
+		}
+	}
+
+	// create note if new comment
+	if note == nil {
+		note = &CommentNote{
+			ID:          uuid.NewV4().String(),
+			CreatedAt:   now,
+			UpdatedAt:   now,
+			AlbumID:     albumID,
+			AlbumName:   albumName,
+			NumComments: 1,
+		}
+		if swingID != "" {
+			note.SwingIDs = []string{swingID}
+		}
+		recentNotes = append(recentNotes, note)
+	}
+
+	u.MyRecentComments = recentNotes
+	return note
 }
 
 type UpdateUser struct {
@@ -69,7 +147,8 @@ type UpdateUser struct {
 	FriendRequests *[]*FriendRequest `bson:"frndReqs,omitempty" json:"friendRequests,omitempty"`
 
 	// notifications
-	UploadNotes  *[]*UploadNote  `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
-	FriendNotes  *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
-	CommentNotes *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
+	UploadNotes      *[]*UploadNote  `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
+	FriendNotes      *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
+	CommentNotes     *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
+	MyRecentComments *[]*CommentNote `bson:"recComms,omitempty" json:"myRecentComments,omitempty"`
 }

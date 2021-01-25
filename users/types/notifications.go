@@ -30,10 +30,11 @@ type FriendNote struct {
 type CommentNote struct {
 	ID        string    `bson:"_id" json:"id"`
 	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	FriendID        string   `bson:"frndId" json:"friendId"`
-	FriendFirstName string   `bson:"frndFirst" json:"friendFirstName"`
-	FriendUserName  string   `bson:"frndUsr" json:"friendUserName"`
+	FriendID        string   `bson:"frndId,omitempty" json:"friendId,omitempty"`
+	FriendFirstName string   `bson:"frndFirst,omitempty" json:"friendFirstName,omitempty"`
+	FriendUserName  string   `bson:"frndUsr,omitempty" json:"friendUserName,omitempty"`
 	AlbumID         string   `bson:"albumId" json:"albumId"`
 	AlbumName       string   `bson:"albumNm" json:"albumName"`
 	SwingIDs        []string `bson:"swingIds" json:"swingIds"`
