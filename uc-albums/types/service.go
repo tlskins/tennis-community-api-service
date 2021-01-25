@@ -26,6 +26,11 @@ func (r CreateAlbumReq) Validate() error {
 	return nil
 }
 
+type UpdateAlbumReq struct {
+	*aT.UpdateAlbum
+	ShareAlbum bool `json:"shareAlbum"`
+}
+
 type SearchAlbumsReq struct {
 	UserID         string `json:"userId"`
 	ExcludeFriends bool   `json:"excludeFriends"`
