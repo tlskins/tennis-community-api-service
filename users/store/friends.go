@@ -85,6 +85,7 @@ func (s *UsersStore) SearchFriends(search *string, IDs *[]string, limit, offset 
 		query["$or"] = []m.M{
 			{"usrNm": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
 			{"fnm": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
+			{"lnm": m.M{"$regex": fmt.Sprintf("(?i)%s", *search)}},
 		}
 	}
 
