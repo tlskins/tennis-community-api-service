@@ -120,5 +120,5 @@ View At
 		}
 	}
 
-	return u.Resp.Success(album, http.StatusOK)
+	return u.Resp.Success(r, album, http.StatusOK)
 }

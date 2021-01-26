@@ -35,7 +35,7 @@ func (u *UCService) GetAlbums(ctx context.Context, r *api.Request) (resp api.Res
 		albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, claims.Subject)
 		api.CheckError(http.StatusInternalServerError, err)
 	}
-	return u.Resp.Success(albumResp, http.StatusOK)
+	return u.Resp.Success(r, albumResp, http.StatusOK)
 }
 
 func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -49,15 +49,14 @@ func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	api.CheckError(http.StatusInternalServerError, err)
 	err = u.shareAlbum(ctx, album)
 	api.CheckError(http.StatusInternalServerError, err)
-
-	return u.Resp.Success(album, http.StatusOK)
+	return u.Resp.Success(r, album, http.StatusOK)
 }
 
 func (u *UCService) GetAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	id := r.PathParameters["id"]
 	album, err := u.alb.GetAlbum(ctx, id)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(album, http.StatusOK)
+	return u.Resp.Success(r, album, http.StatusOK)
 }
 
 func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -78,5 +77,5 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 		err = u.shareAlbum(ctx, album)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
-	return u.Resp.Success(album, http.StatusOK)
+	return u.Resp.Success(r, album, http.StatusOK)
 }

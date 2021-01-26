@@ -6,22 +6,15 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type Request events.APIGatewayProxyRequest
 
 type Response events.APIGatewayProxyResponse
-
-func corsHeaders(origin string) map[string]string {
-	return map[string]string{
-		"Access-Control-Allow-Origin":      origin,
-		"Access-Control-Allow-Credentials": "true",
-		"Access-Control-Allow-Methods":     "OPTIONS,POST,GET",
-		"Access-Control-Allow-Headers":     "Content-Type",
-	}
-}
 
 func Parse(req *Request, out interface{}) {
 	var jsonBytes []byte
@@ -61,8 +54,29 @@ type Responder struct {
 	Origin string
 }
 
+func corsHeaders(req *Request, originsStr string) map[string]string {
+	spew.Dump(req.Headers["origin"])
+	spew.Dump(originsStr)
+
+	origins := strings.Split(originsStr, ",")
+	respOrigin := origins[0]
+	for _, origin := range origins {
+		if origin == req.Headers["origin"] {
+			respOrigin = origin
+		}
+	}
+	spew.Dump(respOrigin)
+
+	return map[string]string{
+		"Access-Control-Allow-Origin":      respOrigin,
+		"Access-Control-Allow-Credentials": "true",
+		"Access-Control-Allow-Methods":     "OPTIONS,POST,GET",
+		"Access-Control-Allow-Headers":     "Content-Type",
+	}
+}
+
 // Fail returns an internal server error with the error message
-func (r Responder) Fail(msg string, status int) (Response, error) {
+func (r Responder) Fail(req *Request, msg string, status int) (Response, error) {
 	e := make(map[string]string, 0)
 	e["message"] = msg
 
@@ -72,21 +86,21 @@ func (r Responder) Fail(msg string, status int) (Response, error) {
 
 	return Response{
 		Body:       string(body),
-		Headers:    corsHeaders(r.Origin),
+		Headers:    corsHeaders(req, r.Origin),
 		StatusCode: status,
 	}, nil
 }
 
 // Success returns a valid response
-func (r Responder) Success(data interface{}, status int) (Response, error) {
+func (r Responder) Success(req *Request, data interface{}, status int) (Response, error) {
 	body, err := json.Marshal(data)
 	if err != nil {
-		return r.Fail(err.Error(), http.StatusInternalServerError)
+		return r.Fail(req, err.Error(), http.StatusInternalServerError)
 	}
 
 	return Response{
 		Body:       string(body),
-		Headers:    corsHeaders(r.Origin),
+		Headers:    corsHeaders(req, r.Origin),
 		StatusCode: status,
 	}, nil
 }
@@ -97,11 +111,11 @@ func (responder Responder) HandleRequest(handle func(context.Context, *Request) 
 			if r := recover(); r != nil {
 				debug.PrintStack()
 				if e, ok := r.(Error); ok {
-					resp, err = responder.Fail(e.String(), e.Code)
+					resp, err = responder.Fail(req, e.String(), e.Code)
 				} else if e, ok := r.(error); ok {
-					resp, err = responder.Fail(e.Error(), http.StatusInternalServerError)
+					resp, err = responder.Fail(req, e.Error(), http.StatusInternalServerError)
 				} else {
-					resp, err = responder.Fail("unknown error", http.StatusInternalServerError)
+					resp, err = responder.Fail(req, "unknown error", http.StatusInternalServerError)
 				}
 			}
 		}()

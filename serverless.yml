@@ -4,7 +4,7 @@ service: tennis-community-api-service
 #org: your-org-name
 
 custom:
-  secrets: ${file(config.dev.yml)}
+  secrets: ${file(config.staging.yml)}
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -14,6 +14,11 @@ provider:
   name: aws
   runtime: go1.x
   stage: ${self:custom.secrets.ENV}
+  versionFunctions: false # dont store versions of all funcs
+
+plugins:
+  - serverless-prune-plugin # plugin to remove older versions from provider
+  # sls prune -n 5
 
 # you can overwrite defaults here
 #  stage: dev

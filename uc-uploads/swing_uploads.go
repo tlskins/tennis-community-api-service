@@ -23,7 +23,7 @@ func (u *UCService) GetRecentSwingUploads(ctx context.Context, r *api.Request) (
 	claims := auth.AuthorizedClaimsFromContext(ctx)
 	uploads, err := u.up.GetRecentSwingUploads(ctx, claims.Subject)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(uploads, http.StatusCreated)
+	return u.Resp.Success(r, uploads, http.StatusCreated)
 }
 
 func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -42,7 +42,7 @@ func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp
 		req.IsViewableByFriends,
 	)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(upload, http.StatusCreated)
+	return u.Resp.Success(r, upload, http.StatusCreated)
 }
 
 func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipEvent) (string, error) {
