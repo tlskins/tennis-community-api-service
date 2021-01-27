@@ -41,6 +41,8 @@ func Init() (svc *UCService, err error) {
 	jwtSecretPath := os.Getenv("JWT_SECRET_PATH")
 	fromEmail := os.Getenv("FROM_EMAIL")
 	emailPwd := os.Getenv("EMAIL_PWD")
+	smtpUser := os.Getenv("SMTP_USER")
+	smtpPassword := os.Getenv("SMTP_PWD")
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
@@ -58,7 +60,7 @@ func Init() (svc *UCService, err error) {
 
 	// Email
 	var emailClient *email.EmailClient
-	emailClient, err = email.NewEmailClient(fromEmail, emailPwd, smtpHost, smtpPort)
+	emailClient, err = email.NewEmailClient(fromEmail, emailPwd, smtpHost, smtpPort, smtpUser, smtpPassword)
 	if err != nil {
 		return
 	}
