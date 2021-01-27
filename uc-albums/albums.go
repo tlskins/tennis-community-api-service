@@ -15,8 +15,10 @@ import (
 func (u *UCService) GetAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
 	api.CheckError(http.StatusInternalServerError, err)
-	claims := auth.AuthorizedClaimsFromContext(ctx)
-	req := t.SearchAlbumsReq{UserID: claims.Subject}
+	req := t.SearchAlbumsReq{}
+	if authorized, claims := auth.ClaimsFromContext(ctx); authorized {
+		req.UserID = claims.Subject
+	}
 	api.Parse(r, &req)
 
 	albumResp := t.AlbumsResp{
@@ -25,16 +27,19 @@ func (u *UCService) GetAlbums(ctx context.Context, r *api.Request) (resp api.Res
 		FriendsAlbums: []*aT.Album{},
 		PublicAlbums:  []*aT.Album{},
 	}
-	albumResp.MyAlbums, err = u.alb.GetUserAlbums(ctx, claims.Subject)
-	api.CheckError(http.StatusInternalServerError, err)
+	if req.UserID != "" {
+		albumResp.MyAlbums, err = u.alb.GetUserAlbums(ctx, req.UserID)
+		api.CheckError(http.StatusInternalServerError, err)
+		if !req.ExcludeFriends {
+			albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, req.UserID)
+			api.CheckError(http.StatusInternalServerError, err)
+		}
+	}
 	if !req.ExcludePublic {
 		albumResp.PublicAlbums, err = u.alb.GetPublicAlbums(ctx)
 		api.CheckError(http.StatusInternalServerError, err)
 	}
-	if !req.ExcludeFriends {
-		albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, claims.Subject)
-		api.CheckError(http.StatusInternalServerError, err)
-	}
+
 	return u.Resp.Success(r, albumResp, http.StatusOK)
 }
 
