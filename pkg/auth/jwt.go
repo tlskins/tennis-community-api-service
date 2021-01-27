@@ -79,7 +79,7 @@ func (j *JWTService) IncludeLambdaAuth(ctx context.Context, req *api.Request) (c
 }
 
 func ClaimsFromContext(ctx context.Context) (authorized bool, claims *CustomClaims) {
-	if ctx.Value(AccessTokenKey) != nil {
+	if ctx.Value(AccessTokenKey) != nil && ctx.Value(AccessTokenKey).(*CustomClaims) != nil {
 		return true, ctx.Value(AccessTokenKey).(*CustomClaims)
 	}
 	return false, nil
