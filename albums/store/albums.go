@@ -18,6 +18,13 @@ func (s *AlbumsStore) GetAlbum(id string) (album *t.Album, err error) {
 	return
 }
 
+func (s *AlbumsStore) DeleteAlbum(id string) (err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	return m.Remove(c, m.M{"_id": id})
+}
+
 func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
@@ -69,6 +76,12 @@ func (s *AlbumsStore) UpdateAlbum(data *t.UpdateAlbum) (album *t.Album, err erro
 func (s *AlbumsStore) AddVideosToAlbum(userId, uploadKey string, swings []*t.SwingVideo) (album *t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
+
+	for _, swing := range swings {
+		if swing.ID == "" {
+			swing.ID = uuid.NewV4().String()
+		}
+	}
 
 	album = &t.Album{}
 	err = m.Update(c, album, m.M{"userId": userId, "upKey": uploadKey}, m.M{

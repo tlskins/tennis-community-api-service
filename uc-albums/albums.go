@@ -64,6 +64,20 @@ func (u *UCService) GetAlbum(ctx context.Context, r *api.Request) (resp api.Resp
 	return u.Resp.Success(r, album, http.StatusOK)
 }
 
+func (u *UCService) DeleteAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	id := r.PathParameters["id"]
+	album, err := u.alb.GetAlbum(ctx, id)
+	if album.UserID != claims.Subject {
+		api.CheckError(http.StatusUnauthorized, errors.New("Unable to delete an album that does not belong to you"))
+	}
+	u.alb.DeleteAlbum(ctx, id)
+	api.CheckError(http.StatusInternalServerError, err)
+	return u.Resp.Success(r, nil, http.StatusOK)
+}
+
 func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
 	api.CheckError(http.StatusInternalServerError, err)

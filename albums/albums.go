@@ -24,6 +24,10 @@ func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, erro
 	return u.Store.GetAlbum(id)
 }
 
+func (u *AlbumsService) DeleteAlbum(ctx context.Context, id string) error {
+	return u.Store.DeleteAlbum(id)
+}
+
 func (u *AlbumsService) CreateAlbumFromUpload(ctx context.Context, userID, uploadKey, albumName string, isPublic, isFriends bool, friendIDs []string) (*t.Album, error) {
 	now := time.Now()
 	name := albumName
