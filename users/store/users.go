@@ -1,6 +1,8 @@
 package store
 
 import (
+	"time"
+
 	uuid "github.com/satori/go.uuid"
 
 	m "github.com/tennis-community-api-service/pkg/mongo"
@@ -43,5 +45,14 @@ func (s *UsersStore) UpdateUser(data *t.UpdateUser) (user *t.User, err error) {
 
 	user = &t.User{}
 	err = m.Update(c, user, m.M{"_id": data.ID}, m.M{"$set": data})
+	return
+}
+
+func (s *UsersStore) RecentUsers(start, end time.Time, limit, offset int) (users []*t.User, err error) {
+	sess, c := s.C(ColUsers)
+	defer sess.Close()
+
+	users = []*t.User{}
+	m.Find(c, &users, m.M{"crAt": m.M{"$gte": start, "$lt": end}})
 	return
 }

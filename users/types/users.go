@@ -25,6 +25,7 @@ type User struct {
 	AuthToken         string     `bson:"-" json:"authToken"`
 
 	// permissions
+	IsAdmin            bool `bson:"admin" json:"isAdmin"`
 	AllowSuggestions   bool `bson:"allowSug" json:"allowSuggestions"`
 	AllowFlagging      bool `bson:"allowFlag" json:"allowFlagging"`
 	AllowPublicAlbums  bool `bson:"allowPubAlb" json:"allowPublicAlbums"`
@@ -42,8 +43,8 @@ type User struct {
 	MyRecentComments []*CommentNote `bson:"recComms" json:"myRecentComments"`
 }
 
-func (u User) GetAuthables() (id, email string, conf bool) {
-	return u.ID, u.Email, u.Status != enums.UserStatusPending
+func (u User) GetAuthables() (id, email string, conf, isAdmin bool) {
+	return u.ID, u.Email, u.Status != enums.UserStatusPending, u.IsAdmin
 }
 
 func (u *User) AddCommentNote(friend *User, albumID, albumName, swingID string) {

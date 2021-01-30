@@ -70,3 +70,15 @@ func (u *AlbumsService) PostCommentToAlbum(ctx context.Context, albumID string, 
 func (u *AlbumsService) PostCommentToSwing(ctx context.Context, albumID, swingID string, comment *t.Comment) (*t.Album, error) {
 	return u.Store.PostCommentToSwing(albumID, swingID, comment)
 }
+
+func (u *AlbumsService) RecentAlbums(ctx context.Context, start, end time.Time, limit, offset int) ([]*t.Album, error) {
+	return u.Store.RecentAlbums(start, end, limit, offset)
+}
+
+func (u *AlbumsService) RecentAlbumComments(ctx context.Context, start, end time.Time, limit, offset int) ([]*t.Comment, error) {
+	return u.Store.RecentAlbumComments(start, end, limit, offset)
+}
+
+func (u *AlbumsService) RecentSwingComments(ctx context.Context, start, end time.Time, limit, offset int) ([]*t.Comment, error) {
+	return u.Store.RecentSwingComments(start, end, limit, offset)
+}

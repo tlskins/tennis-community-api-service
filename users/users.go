@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"time"
 
 	t "github.com/tennis-community-api-service/users/types"
 )
@@ -36,4 +37,8 @@ func (u *UsersService) RemoveFriendNote(_ context.Context, userID, noteID string
 
 func (u *UsersService) RemoveCommentNote(_ context.Context, userID, noteID string) (resp *t.User, err error) {
 	return u.Store.RemoveCommentNote(userID, noteID)
+}
+
+func (u *UsersService) RecentUsers(_ context.Context, start, end time.Time, limit, offset int) ([]*t.User, error) {
+	return u.Store.RecentUsers(start, end, limit, offset)
 }

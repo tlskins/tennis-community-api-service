@@ -122,3 +122,55 @@ func (s *AlbumsStore) PostCommentToSwing(albumID, swingID string, comment *t.Com
 	})
 	return
 }
+
+func (s *AlbumsStore) RecentAlbums(start, end time.Time, limit, offset int) (albums []*t.Album, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	albums = []*t.Album{}
+	query := m.M{"crAt": m.M{"$gte": start, "$lt": end}}
+
+	if limit > 0 {
+		err = c.Find(query).Skip(offset).Limit(limit).All(&albums)
+	} else {
+		err = m.Find(c, &albums, query, nil)
+	}
+	return
+}
+
+func (s *AlbumsStore) RecentAlbumComments(start, end time.Time, limit, offset int) (comments []*t.Comment, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	comments = []*t.Comment{}
+
+	m.Aggregate(c, &comments, []m.M{
+		m.M{"$match": m.M{"updAt": m.M{"$gte": start}}},
+		m.M{"$unwind": "$cmnts"},
+		m.M{"$match": m.M{"cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		m.M{"$skip": offset},
+		m.M{"$limit": limit},
+		m.M{"$addFields": m.M{"cmnts.albumId": "$_id"}},
+		m.M{"$replaceRoot": "$cmnts"},
+	})
+	return
+}
+
+func (s *AlbumsStore) RecentSwingComments(start, end time.Time, limit, offset int) (comments []*t.Comment, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	comments = []*t.Comment{}
+
+	m.Aggregate(c, &comments, []m.M{
+		m.M{"$match": m.M{"updAt": m.M{"$gte": start}}},
+		m.M{"$unwind": "$swingVids"},
+		m.M{"$unwind": "$swingVids.cmnts"},
+		m.M{"$match": m.M{"swingVids.cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		m.M{"$skip": offset},
+		m.M{"$limit": limit},
+		m.M{"$addFields": m.M{"cmnts.albumId": "$_id", "cmnts.swingId": "$swingVids._id"}},
+		m.M{"$replaceRoot": "$swingVids.cmnts"},
+	})
+	return
+}
