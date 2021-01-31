@@ -650,10 +650,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      MODERATION_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
-      MODERATION__DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
-      MODERATION__DB_USER: ${self:custom.secrets.USERS_DB_USER}
-      MODERATION__DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
@@ -672,10 +672,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      MODERATION_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
-      MODERATION__DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
-      MODERATION__DB_USER: ${self:custom.secrets.USERS_DB_USER}
-      MODERATION__DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
@@ -694,10 +694,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      MODERATION_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
-      MODERATION__DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
-      MODERATION__DB_USER: ${self:custom.secrets.USERS_DB_USER}
-      MODERATION__DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
@@ -716,10 +716,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      MODERATION_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
-      MODERATION__DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
-      MODERATION__DB_USER: ${self:custom.secrets.USERS_DB_USER}
-      MODERATION__DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
@@ -738,10 +738,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      MODERATION_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
-      MODERATION__DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
-      MODERATION__DB_USER: ${self:custom.secrets.USERS_DB_USER}
-      MODERATION__DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
@@ -760,10 +760,10 @@ functions:
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
       ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
       ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
-      MODERATION_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
-      MODERATION__DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
-      MODERATION__DB_USER: ${self:custom.secrets.USERS_DB_USER}
-      MODERATION__DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
