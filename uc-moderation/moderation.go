@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	mT "github.com/tennis-community-api-service/moderation/types"
@@ -81,7 +82,16 @@ func (u *UCService) RecentFlaggedComments(ctx context.Context, r *api.Request) (
 	}
 	req := &t.RecentFlaggedCommentsReq{}
 	api.Parse(r, req)
-	flags, err := u.mod.RecentFlaggedComments(ctx, req.Start, req.End, req.Resolved, req.Limit, req.Offset)
+	limit, err := strconv.Atoi(req.Limit)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	offset, err := strconv.Atoi(req.Offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	var resolved *bool
+	if req.Resolved != nil {
+		res := *req.Resolved == "true"
+		resolved = &res
+	}
+	flags, err := u.mod.RecentFlaggedComments(ctx, req.Start, req.End, resolved, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return u.Resp.Success(r, flags, http.StatusOK)
 }
@@ -95,7 +105,16 @@ func (u *UCService) RecentFlaggedAlbums(ctx context.Context, r *api.Request) (re
 	}
 	req := &t.RecentFlaggedAlbumsReq{}
 	api.Parse(r, req)
-	flags, err := u.mod.RecentFlaggedAlbums(ctx, req.Start, req.End, req.Resolved, req.Limit, req.Offset)
+	limit, err := strconv.Atoi(req.Limit)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	offset, err := strconv.Atoi(req.Offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	var resolved *bool
+	if req.Resolved != nil {
+		res := *req.Resolved == "true"
+		resolved = &res
+	}
+	flags, err := u.mod.RecentFlaggedAlbums(ctx, req.Start, req.End, resolved, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return u.Resp.Success(r, flags, http.StatusOK)
 }

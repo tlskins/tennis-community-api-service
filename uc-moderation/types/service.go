@@ -7,15 +7,15 @@ import (
 type RecentFlaggedCommentsReq struct {
 	Start    time.Time `json:"start"`
 	End      time.Time `json:"end"`
-	Resolved *bool     `json:"resolved,omitempty"`
-	Limit    int       `json:"limit"`
-	Offset   int       `json:"offset"`
+	Resolved *string   `json:"resolved,omitempty"`
+	Limit    string    `json:"limit"`
+	Offset   string    `json:"offset"`
 }
 
 type RecentFlaggedAlbumsReq struct {
 	Start    time.Time `json:"start"`
 	End      time.Time `json:"end"`
-	Resolved *bool     `json:"resolved,omitempty"`
-	Limit    int       `json:"limit"`
-	Offset   int       `json:"offset"`
+	Resolved *string   `json:"resolved,omitempty"`
+	Limit    string    `json:"limit"`
+	Offset   string    `json:"offset"`
 }
