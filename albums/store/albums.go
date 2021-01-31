@@ -34,12 +34,17 @@ func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err err
 	return
 }
 
-func (s *AlbumsStore) GetPublicAlbums() (albums []*t.Album, err error) {
+func (s *AlbumsStore) GetPublicAlbums(homeApproved *bool) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
 	albums = []*t.Album{}
-	err = c.Find(m.M{"public": true}).Sort("-crAt").All(&albums)
+	query := m.M{"public": true}
+
+	if homeApproved != nil {
+		query["home"] = *homeApproved
+	}
+	err = c.Find(query).Sort("-crAt").All(&albums)
 	return
 }
 

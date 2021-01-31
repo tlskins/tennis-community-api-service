@@ -31,15 +31,16 @@ func (u *UCService) GetAlbums(ctx context.Context, r *api.Request) (resp api.Res
 	if req.UserID != "" {
 		albumResp.MyAlbums, err = u.alb.GetUserAlbums(ctx, req.UserID)
 		api.CheckError(http.StatusInternalServerError, err)
-		if !req.ExcludeFriends {
-			albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, req.UserID)
-			api.CheckError(http.StatusInternalServerError, err)
-		}
-	}
-	if !req.ExcludePublic {
-		albumResp.PublicAlbums, err = u.alb.GetPublicAlbums(ctx)
+		albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, req.UserID)
 		api.CheckError(http.StatusInternalServerError, err)
 	}
+	var homeApproved *bool
+	if req.HomeApproved != nil {
+		appr := *req.HomeApproved == "true"
+		homeApproved = &appr
+	}
+	albumResp.PublicAlbums, err = u.alb.GetPublicAlbums(ctx, homeApproved)
+	api.CheckError(http.StatusInternalServerError, err)
 
 	return u.Resp.Success(r, albumResp, http.StatusOK)
 }

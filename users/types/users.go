@@ -25,12 +25,10 @@ type User struct {
 	AuthToken         string     `bson:"-" json:"authToken"`
 
 	// permissions
-	IsAdmin            bool `bson:"admin" json:"isAdmin"`
-	AllowSuggestions   bool `bson:"allowSug" json:"allowSuggestions"`
-	AllowFlagging      bool `bson:"allowFlag" json:"allowFlagging"`
-	AllowPublicAlbums  bool `bson:"allowPubAlb" json:"allowPublicAlbums"`
-	AllowAlbumComments bool `bson:"allowAlbCom" json:"allowAlbumComments"`
-	AllowVideoComments bool `bson:"allowVidCom" json:"allowVideoComments"`
+	IsAdmin             bool `bson:"admin" json:"isAdmin"`
+	DisableComments     bool `bson:"noComms" json:"disableComments"`
+	DisablePublicAlbums bool `bson:"noPubAlb" json:"disablePublicAlbums"`
+	Warnings            int  `bson:"warns" json:"warnings"`
 
 	// social
 	FriendIds      []string         `bson:"friendIds" json:"friendIds"`
@@ -137,11 +135,9 @@ type UpdateUser struct {
 	AuthToken         *string    `bson:"-" json:"authToken,omitempty"`
 
 	// permissions
-	AllowSuggestions   *bool `bson:"allowSug,omitempty" json:"allowSuggestions,omitempty"`
-	AllowFlagging      *bool `bson:"allowFlag,omitempty" json:"allowFlagging,omitempty"`
-	AllowPublicAlbums  *bool `bson:"allowPubAlb,omitempty" json:"allowPublicAlbums,omitempty"`
-	AllowAlbumComments *bool `bson:"allowAlbCom,omitempty" json:"allowAlbumComments,omitempty"`
-	AllowVideoComments *bool `bson:"allowVidCom,omitempty" json:"allowVideoComments,omitempty"`
+	DisableComments     bool `bson:"noComms,omitempty" json:"disableComments,omitempty"`
+	DisablePublicAlbums bool `bson:"noPubAlb,omitempty" json:"disablePublicAlbums,omitempty"`
+	Warnings            int  `bson:"warns,omitempty" json:"warnings,omitempty"`
 
 	// social
 	FriendIds      *[]string         `bson:"friendIds,omitempty" json:"friendIds,omitempty"`

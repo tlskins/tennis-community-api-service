@@ -22,19 +22,14 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 
 	now := time.Now()
 	user := &uT.User{
-		CreatedAt:          now,
-		UpdatedAt:          now,
-		UserName:           req.UserName,
-		Email:              req.Email,
-		LowerEmail:         strings.ToLower(req.Email),
-		FirstName:          req.FirstName,
-		LastName:           req.LastName,
-		Status:             enums.UserStatusPending,
-		AllowSuggestions:   true,
-		AllowFlagging:      true,
-		AllowPublicAlbums:  true,
-		AllowAlbumComments: true,
-		AllowVideoComments: true,
+		CreatedAt:  now,
+		UpdatedAt:  now,
+		UserName:   req.UserName,
+		Email:      req.Email,
+		LowerEmail: strings.ToLower(req.Email),
+		FirstName:  req.FirstName,
+		LastName:   req.LastName,
+		Status:     enums.UserStatusPending,
 	}
 	user.EncryptedPassword, err = auth.EncryptPassword(req.Password)
 	api.CheckError(http.StatusUnprocessableEntity, err)

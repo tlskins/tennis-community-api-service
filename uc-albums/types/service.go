@@ -32,9 +32,8 @@ type UpdateAlbumReq struct {
 }
 
 type SearchAlbumsReq struct {
-	UserID         string `json:"userId"`
-	ExcludeFriends bool   `json:"excludeFriends"`
-	ExcludePublic  bool   `json:"excludePublic"`
+	UserID       string  `json:"userId"`
+	HomeApproved *string `json:"homeApproved"`
 }
 
 type AlbumsResp struct {
