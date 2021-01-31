@@ -131,7 +131,7 @@ func (s *AlbumsStore) RecentAlbums(start, end time.Time, limit, offset int) (alb
 	query := m.M{"crAt": m.M{"$gte": start, "$lt": end}}
 
 	if limit > 0 {
-		err = c.Find(query).Skip(offset).Limit(limit).All(&albums)
+		err = c.Find(query).Sort("-crAt").Skip(offset).Limit(limit).All(&albums)
 	} else {
 		err = m.Find(c, &albums, query, nil)
 	}
@@ -148,6 +148,7 @@ func (s *AlbumsStore) RecentAlbumComments(start, end time.Time, limit, offset in
 		m.M{"$match": m.M{"updAt": m.M{"$gte": start}}},
 		m.M{"$unwind": "$cmnts"},
 		m.M{"$match": m.M{"cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		m.M{"$sort": m.M{"cmnts.crAt": -1}},
 		m.M{"$skip": offset},
 		m.M{"$limit": limit},
 		m.M{"$addFields": m.M{"cmnts.albumId": "$_id"}},
@@ -167,6 +168,7 @@ func (s *AlbumsStore) RecentSwingComments(start, end time.Time, limit, offset in
 		m.M{"$unwind": "$swingVids"},
 		m.M{"$unwind": "$swingVids.cmnts"},
 		m.M{"$match": m.M{"swingVids.cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		m.M{"$sort": m.M{"swingVids.cmnts.crAt": -1}},
 		m.M{"$skip": offset},
 		m.M{"$limit": limit},
 		m.M{"$addFields": m.M{"cmnts.albumId": "$_id", "cmnts.swingId": "$swingVids._id"}},

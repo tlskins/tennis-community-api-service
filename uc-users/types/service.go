@@ -3,6 +3,7 @@ package types
 import (
 	"errors"
 	"regexp"
+	"time"
 )
 
 type SignInReq struct {
@@ -77,4 +78,11 @@ type SearchFriendsReq struct {
 	Search *string   `json:"search"`
 	Offset int       `json:"offset"`
 	Limit  int       `json:"limit"`
+}
+
+type RecentUsersReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Offset string    `json:"offset"`
+	Limit  string    `json:"limit"`
 }

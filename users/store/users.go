@@ -53,6 +53,12 @@ func (s *UsersStore) RecentUsers(start, end time.Time, limit, offset int) (users
 	defer sess.Close()
 
 	users = []*t.User{}
-	m.Find(c, &users, m.M{"crAt": m.M{"$gte": start, "$lt": end}})
+	query := m.M{"crAt": m.M{"$gte": start, "$lt": end}}
+
+	if limit > 0 {
+		err = c.Find(query).Sort("-crAt").Skip(offset).Limit(limit).All(&users)
+	} else {
+		err = m.Find(c, &users, query, nil)
+	}
 	return
 }

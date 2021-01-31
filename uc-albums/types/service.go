@@ -68,3 +68,24 @@ func (r PostCommentReq) Validate() error {
 	}
 	return nil
 }
+
+type RecentAlbumsReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Limit  string    `json:"limit"`
+	Offset string    `json:"offset"`
+}
+
+type RecentAlbumCommentsReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Limit  string    `json:"limit"`
+	Offset string    `json:"offset"`
+}
+
+type RecentSwingCommentsReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Limit  string    `json:"limit"`
+	Offset string    `json:"offset"`
+}

@@ -2,8 +2,10 @@ package users
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -120,4 +122,22 @@ func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) 
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
 	return u.Resp.Success(r, user, http.StatusOK)
+}
+
+func (u *UCService) RecentUsers(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	if !claims.IsAdmin {
+		api.CheckError(http.StatusUnauthorized, errors.New("Must be admin"))
+	}
+	req := &t.RecentUsersReq{}
+	api.Parse(r, req)
+	limit, err := strconv.Atoi(req.Limit)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	offset, err := strconv.Atoi(req.Offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	users, err := u.usr.RecentUsers(ctx, req.Start, req.End, limit, offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return u.Resp.Success(r, users, http.StatusOK)
 }
