@@ -152,7 +152,7 @@ func (s *AlbumsStore) RecentAlbumComments(start, end time.Time, limit, offset in
 		m.M{"$skip": offset},
 		m.M{"$limit": limit},
 		m.M{"$addFields": m.M{"cmnts.albumId": "$_id"}},
-		m.M{"$replaceRoot": "$cmnts"},
+		m.M{"$replaceRoot": m.M{"newRoot": "$cmnts"}},
 	})
 	return
 }
@@ -171,8 +171,8 @@ func (s *AlbumsStore) RecentSwingComments(start, end time.Time, limit, offset in
 		m.M{"$sort": m.M{"swingVids.cmnts.crAt": -1}},
 		m.M{"$skip": offset},
 		m.M{"$limit": limit},
-		m.M{"$addFields": m.M{"cmnts.albumId": "$_id", "cmnts.swingId": "$swingVids._id"}},
-		m.M{"$replaceRoot": "$swingVids.cmnts"},
+		m.M{"$addFields": m.M{"swingVids.cmnts.albumId": "$_id", "swingVids.cmnts.swingId": "$swingVids._id"}},
+		m.M{"$replaceRoot": m.M{"newRoot": "$swingVids.cmnts"}},
 	})
 	return
 }
