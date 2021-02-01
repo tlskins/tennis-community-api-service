@@ -18,6 +18,7 @@ type User struct {
 	FirstName  string           `bson:"fnm" json:"firstName"`
 	LastName   string           `bson:"lnm" json:"lastName"`
 	Status     enums.UserStatus `bson:"status" json:"status"`
+	IconNumber int              `bson:"icon" json:"iconNumber"`
 
 	// auth
 	EncryptedPassword string     `bson:"pwd" json:"-"`
@@ -123,11 +124,12 @@ func (u *User) AddMyRecentComment(albumID, albumName, swingID string) *CommentNo
 type UpdateUser struct {
 	ID string `bson:"-" json:"id"`
 
-	UpdatedAt *time.Time        `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
-	Email     *string           `bson:"em,omitempty" json:"email,omitempty"`
-	FirstName *string           `bson:"fnm,omitempty" json:"firstName,omitempty"`
-	LastName  *string           `bson:"lnm,omitempty" json:"lastName,omitempty"`
-	Status    *enums.UserStatus `bson:"status,omitempty" json:"status,omitempty"`
+	UpdatedAt  *time.Time        `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
+	Email      *string           `bson:"em,omitempty" json:"email,omitempty"`
+	FirstName  *string           `bson:"fnm,omitempty" json:"firstName,omitempty"`
+	LastName   *string           `bson:"lnm,omitempty" json:"lastName,omitempty"`
+	Status     *enums.UserStatus `bson:"status,omitempty" json:"status,omitempty"`
+	IconNumber *int              `bson:"icon,omitempty" json:"iconNumber,omitempty"`
 
 	// auth
 	EncryptedPassword *string    `bson:"pwd,omitempty" json:"-"`
