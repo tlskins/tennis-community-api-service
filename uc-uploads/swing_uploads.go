@@ -161,7 +161,7 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 				}
 				softErr = u.emailClient.SendEmail(
 					friend.Email,
-					fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
+					fmt.Sprintf("Hive Tennis - %s Shared An Album With You!", user.UserName),
 					fmt.Sprintf(`%s %s,
 Your friend %s %s has has shared the album %s with you.
 View At:

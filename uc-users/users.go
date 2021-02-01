@@ -37,9 +37,9 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	err = u.emailClient.SendEmail(
 		user.Email,
-		"Welcome to Tennis Community",
+		"Welcome to Hive Tennis",
 		fmt.Sprintf(`
-Welcome to Tennis Community!
+Welcome to Hive Tennis!
 Please follow this link to confirm your account:
 
 %s

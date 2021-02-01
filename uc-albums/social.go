@@ -35,7 +35,7 @@ func (u *UCService) shareAlbum(ctx context.Context, album *aT.Album) (err error)
 			}
 			softErr = u.emailClient.SendEmail(
 				friend.Email,
-				fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
+				fmt.Sprintf("Hive Tennis - %s Shared An Album With You!", user.UserName),
 				fmt.Sprintf(`
 %s %s,
 Your friend %s %s has shared the album %s with you.
@@ -106,7 +106,7 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 		if note.NumComments == 1 {
 			softErr := u.emailClient.SendEmail(
 				friend.Email,
-				fmt.Sprintf("Tennis Community - %s Commented on your album %s!", friend.UserName, album.Name),
+				fmt.Sprintf("Hive Tennis - %s Commented on your album %s!", friend.UserName, album.Name),
 				fmt.Sprintf(`
 %s %s,
 Your friend %s %s has commented on the album %s.
