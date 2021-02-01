@@ -4,7 +4,7 @@ service: tennis-community-api-service
 #org: your-org-name
 
 custom:
-  secrets: ${file(config.staging.yml)}
+  secrets: ${file(config.dev.yml)}
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -38,7 +38,7 @@ package:
 
 functions:
   create_swing_upload:
-    handler: entrypoints/create_swing_upload/create_swing_upload.go
+    handler: entrypoints/uploads/create_swing_upload/create_swing_upload.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -68,7 +68,7 @@ functions:
             allowCredentials: "true"
 
   get_recent_swing_uploads:
-    handler: entrypoints/get_recent_swing_uploads/get_recent_swing_uploads.go
+    handler: entrypoints/uploads/get_recent_swing_uploads/get_recent_swing_uploads.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -98,7 +98,7 @@ functions:
             allowCredentials: "true"
 
   update_upload_clips:
-    handler: entrypoints/update_upload_clips/update_upload_clips.go
+    handler: entrypoints/uploads/update_upload_clips/update_upload_clips.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -121,7 +121,7 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
 
   update_upload_swings:
-    handler: entrypoints/update_upload_swings/update_upload_swings.go
+    handler: entrypoints/uploads/update_upload_swings/update_upload_swings.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -148,7 +148,7 @@ functions:
   ####################################################################################
 
   get_album:
-    handler: entrypoints/get_album/get_album.go
+    handler: entrypoints/albums/get_album/get_album.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -174,7 +174,7 @@ functions:
             allowCredentials: "true"
 
   create_album:
-    handler: entrypoints/create_album/create_album.go
+    handler: entrypoints/albums/create_album/create_album.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -200,7 +200,7 @@ functions:
             allowCredentials: "true"
 
   delete_album:
-    handler: entrypoints/delete_album/delete_album.go
+    handler: entrypoints/albums/delete_album/delete_album.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -226,7 +226,7 @@ functions:
             allowCredentials: "true"
 
   get_user_albums:
-    handler: entrypoints/get_user_albums/get_user_albums.go
+    handler: entrypoints/albums/get_user_albums/get_user_albums.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -256,7 +256,7 @@ functions:
             allowCredentials: "true"
 
   update_album:
-    handler: entrypoints/update_album/update_album.go
+    handler: entrypoints/albums/update_album/update_album.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -286,7 +286,7 @@ functions:
             allowCredentials: "true"
 
   post_comment:
-    handler: entrypoints/post_comment/post_comment.go
+    handler: entrypoints/albums/post_comment/post_comment.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -316,7 +316,7 @@ functions:
             allowCredentials: "true"
 
   recent_albums:
-    handler: entrypoints/recent_albums/recent_albums.go
+    handler: entrypoints/albums/recent_albums/recent_albums.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -346,7 +346,7 @@ functions:
             allowCredentials: "true"
 
   recent_album_comments:
-    handler: entrypoints/recent_album_comments/recent_album_comments.go
+    handler: entrypoints/albums/recent_album_comments/recent_album_comments.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -376,7 +376,7 @@ functions:
             allowCredentials: "true"
 
   recent_swing_comments:
-    handler: entrypoints/recent_swing_comments/recent_swing_comments.go
+    handler: entrypoints/albums/recent_swing_comments/recent_swing_comments.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -410,7 +410,7 @@ functions:
   ####################################################################################
 
   create_user:
-    handler: entrypoints/create_user/create_user.go
+    handler: entrypoints/users/create_user/create_user.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -433,7 +433,7 @@ functions:
             allowCredentials: "true"
 
   sign_in:
-    handler: entrypoints/sign_in/sign_in.go
+    handler: entrypoints/users/sign_in/sign_in.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -456,7 +456,7 @@ functions:
             allowCredentials: "true"
 
   confirm_user:
-    handler: entrypoints/confirm_user/confirm_user.go
+    handler: entrypoints/users/confirm_user/confirm_user.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -479,7 +479,7 @@ functions:
             allowCredentials: "true"
 
   get_user:
-    handler: entrypoints/get_user/get_user.go
+    handler: entrypoints/users/get_user/get_user.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -502,7 +502,7 @@ functions:
             allowCredentials: "true"
 
   remove_notification:
-    handler: entrypoints/remove_notification/remove_notification.go
+    handler: entrypoints/users/remove_notification/remove_notification.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -525,7 +525,7 @@ functions:
             allowCredentials: "true"
 
   send_friend_req:
-    handler: entrypoints/send_friend_req/send_friend_req.go
+    handler: entrypoints/users/send_friend_req/send_friend_req.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -548,7 +548,7 @@ functions:
             allowCredentials: "true"
 
   accept_friend_req:
-    handler: entrypoints/accept_friend_req/accept_friend_req.go
+    handler: entrypoints/users/accept_friend_req/accept_friend_req.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -571,7 +571,7 @@ functions:
             allowCredentials: "true"
 
   unfriend:
-    handler: entrypoints/unfriend/unfriend.go
+    handler: entrypoints/users/unfriend/unfriend.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -594,7 +594,7 @@ functions:
             allowCredentials: "true"
 
   search_friends:
-    handler: entrypoints/search_friends/search_friends.go
+    handler: entrypoints/users/search_friends/search_friends.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -617,7 +617,7 @@ functions:
             allowCredentials: "true"
 
   recent_users:
-    handler: entrypoints/recent_users/recent_users.go
+    handler: entrypoints/users/recent_users/recent_users.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -644,7 +644,7 @@ functions:
   ####################################################################################
 
   create_comment_flag:
-    handler: entrypoints/create_comment_flag/create_comment_flag.go
+    handler: entrypoints/moderation/create_comment_flag/create_comment_flag.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -666,7 +666,7 @@ functions:
             allowCredentials: "true"
 
   create_album_flag:
-    handler: entrypoints/create_album_flag/create_album_flag.go
+    handler: entrypoints/moderation/create_album_flag/create_album_flag.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -688,7 +688,7 @@ functions:
             allowCredentials: "true"
 
   update_comment_flag:
-    handler: entrypoints/update_comment_flag/update_comment_flag.go
+    handler: entrypoints/moderation/update_comment_flag/update_comment_flag.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -710,7 +710,7 @@ functions:
             allowCredentials: "true"
 
   update_album_flag:
-    handler: entrypoints/update_album_flag/update_album_flag.go
+    handler: entrypoints/moderation/update_album_flag/update_album_flag.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -732,7 +732,7 @@ functions:
             allowCredentials: "true"
 
   recent_flagged_comments:
-    handler: entrypoints/recent_flagged_comments/recent_flagged_comments.go
+    handler: entrypoints/moderation/recent_flagged_comments/recent_flagged_comments.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -754,7 +754,7 @@ functions:
             allowCredentials: "true"
 
   recent_flagged_albums:
-    handler: entrypoints/recent_flagged_albums/recent_flagged_albums.go
+    handler: entrypoints/moderation/recent_flagged_albums/recent_flagged_albums.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
