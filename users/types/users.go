@@ -40,6 +40,17 @@ type User struct {
 	FriendNotes      []*FriendNote  `bson:"frndNotes" json:"friendNotifications"`
 	CommentNotes     []*CommentNote `bson:"commentNotes" json:"commentNotifications"`
 	MyRecentComments []*CommentNote `bson:"recComms" json:"myRecentComments"`
+
+	// profile
+	HasProfile        bool    `bson:"prof" json:"hasProfile"`
+	IsPublic          bool    `bson:"pub" json:"isPublic"`
+	RightHanded       bool    `bson:"rgtHnd" json:"rightHanded"`
+	BirthYear         int     `bson:"birthYr" json:"birthYear"`
+	Gender            string  `bson:"gender" json:"gender"`
+	USTALevel         float64 `bson:"ustaLvl" json:"USTALevel"`
+	LocationString    string  `bson:"locStr" json:"locationString"`
+	LocationLongitude float64 `bson:"locLng" json:"locationLongitude"`
+	LocationLatitude  float64 `bson:"locLat" json:"locationLatitude"`
 }
 
 func (u User) GetAuthables() (id, email string, conf, isAdmin bool) {
@@ -150,4 +161,15 @@ type UpdateUser struct {
 	FriendNotes      *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
 	CommentNotes     *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
 	MyRecentComments *[]*CommentNote `bson:"recComms,omitempty" json:"myRecentComments,omitempty"`
+
+	// profile
+	HasProfile        *bool    `bson:"prof,omitempty" json:"hasProfile,omitempty"`
+	IsPublic          *bool    `bson:"pub,omitempty" json:"isPublic,omitempty"`
+	RightHanded       *bool    `bson:"rgtHnd,omitempty" json:"rightHanded,omitempty"`
+	BirthYear         *int     `bson:"birthYr,omitempty" json:"birthYear,omitempty"`
+	Gender            *string  `bson:"gender,omitempty" json:"gender,omitempty"`
+	USTALevel         *float64 `bson:"ustaLvl,omitempty" json:"USTALevel,omitempty"`
+	LocationString    *string  `bson:"locStr,omitempty" json:"locationString,omitempty"`
+	LocationLongitude *float64 `bson:"locLng,omitempty" json:"locationLongitude,omitempty"`
+	LocationLatitude  *float64 `bson:"locLat,omitempty" json:"locationLatitude,omitempty"`
 }
