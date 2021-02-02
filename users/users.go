@@ -23,6 +23,10 @@ func (u *UsersService) UpdateUser(_ context.Context, data *t.UpdateUser) (resp *
 	return u.Store.UpdateUser(data)
 }
 
+func (u *UsersService) UpdateUserProfile(_ context.Context, data *t.UpdateUserProfile) (resp *t.User, err error) {
+	return u.Store.UpdateUserProfile(data)
+}
+
 func (u *UsersService) AddUploadNotifications(_ context.Context, id string, note *t.UploadNote) (resp *t.User, err error) {
 	return u.Store.AddUploadNote(id, note)
 }

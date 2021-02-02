@@ -4,6 +4,8 @@ import (
 	"errors"
 	"regexp"
 	"time"
+
+	uT "github.com/tennis-community-api-service/users/types"
 )
 
 type SignInReq struct {
@@ -43,6 +45,28 @@ func (r CreateUserReq) Validate() error {
 			return errors.New(`Username cannot include any of the following special characters: spaces, tabs, @, #, %, \, /`)
 		}
 	}
+	return nil
+}
+
+type UpdateUserProfileReq uT.UpdateUserProfile
+
+func (r UpdateUserProfileReq) Validate() error {
+	if len(r.UserName) < 3 {
+		return errors.New("Username must be at least 3 characters long")
+	}
+	if len(r.FirstName) == 0 {
+		return errors.New("Missing first name")
+	}
+	if len(r.LastName) == 0 {
+		return errors.New("Missing last name")
+	}
+	for _, char := range invalidUserNameChars {
+		re := regexp.MustCompile(char)
+		if re.Match([]byte(r.UserName)) {
+			return errors.New(`Username cannot include any of the following special characters: spaces, tabs, @, #, %, \, /`)
+		}
+	}
+
 	return nil
 }
 

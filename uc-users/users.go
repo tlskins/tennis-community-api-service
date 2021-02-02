@@ -50,6 +50,19 @@ Please follow this link to confirm your account:
 	return u.Resp.Success(r, usrResp, http.StatusCreated)
 }
 
+func (u *UCService) UpdateUserProfile(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := t.UpdateUserProfileReq{ID: claims.Subject}
+	api.ParseAndValidate(r, &req)
+
+	usrReq := uT.UpdateUserProfile(req)
+	user, err := u.usr.UpdateUserProfile(ctx, &usrReq)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return u.Resp.Success(r, user, http.StatusOK)
+}
+
 func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	req := &t.SignInReq{}
 	api.Parse(r, req)
@@ -79,10 +92,9 @@ func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Respo
 	now := time.Now()
 	status := enums.UserStatusCreated
 	user, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
-		ID:           user.ID,
-		Status:       &status,
-		LastLoggedIn: &now,
-		UpdatedAt:    &now,
+		ID:        user.ID,
+		Status:    &status,
+		UpdatedAt: now,
 	})
 	api.CheckError(http.StatusUnprocessableEntity, err)
 

@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/tennis-community-api-service/pkg/enums"
 	"time"
+
+	"github.com/tennis-community-api-service/pkg/enums"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -42,15 +43,15 @@ type User struct {
 	MyRecentComments []*CommentNote `bson:"recComms" json:"myRecentComments"`
 
 	// profile
-	HasProfile        bool    `bson:"prof" json:"hasProfile"`
-	IsPublic          bool    `bson:"pub" json:"isPublic"`
-	RightHanded       bool    `bson:"rgtHnd" json:"rightHanded"`
-	BirthYear         int     `bson:"birthYr" json:"birthYear"`
-	Gender            string  `bson:"gender" json:"gender"`
-	USTALevel         float64 `bson:"ustaLvl" json:"USTALevel"`
-	LocationString    string  `bson:"locStr" json:"locationString"`
-	LocationLongitude float64 `bson:"locLng" json:"locationLongitude"`
-	LocationLatitude  float64 `bson:"locLat" json:"locationLatitude"`
+	IsPublic    bool     `bson:"pub" json:"isPublic"`
+	RightHanded *bool    `bson:"rgtHnd" json:"rightHanded"`
+	BirthYear   *int     `bson:"birthYr" json:"birthYear"`
+	Gender      *string  `bson:"gender" json:"gender"`
+	USTALevel   *float64 `bson:"ustaLvl" json:"ustaLevel"`
+	State       *string  `bson:"state" json:"state"`
+	City        *string  `bson:"city" json:"city"`
+	Longitude   *float64 `bson:"lng" json:"longitude"`
+	Latitude    *float64 `bson:"lat" json:"latitue"`
 }
 
 func (u User) GetAuthables() (id, email string, conf, isAdmin bool) {
@@ -133,14 +134,11 @@ func (u *User) AddMyRecentComment(albumID, albumName, swingID string) *CommentNo
 }
 
 type UpdateUser struct {
-	ID string `bson:"-" json:"id"`
+	ID        string    `bson:"-" json:"id"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	UpdatedAt  *time.Time        `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
-	Email      *string           `bson:"em,omitempty" json:"email,omitempty"`
-	FirstName  *string           `bson:"fnm,omitempty" json:"firstName,omitempty"`
-	LastName   *string           `bson:"lnm,omitempty" json:"lastName,omitempty"`
-	Status     *enums.UserStatus `bson:"status,omitempty" json:"status,omitempty"`
-	IconNumber *int              `bson:"icon,omitempty" json:"iconNumber,omitempty"`
+	Email  *string           `bson:"em,omitempty" json:"email,omitempty"`
+	Status *enums.UserStatus `bson:"status,omitempty" json:"status,omitempty"`
 
 	// auth
 	EncryptedPassword *string    `bson:"pwd,omitempty" json:"-"`
@@ -161,15 +159,25 @@ type UpdateUser struct {
 	FriendNotes      *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
 	CommentNotes     *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
 	MyRecentComments *[]*CommentNote `bson:"recComms,omitempty" json:"myRecentComments,omitempty"`
+}
+
+type UpdateUserProfile struct {
+	ID        string    `bson:"-" json:"id"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
+
+	UserName   string `bson:"usrNm" json:"userName"`
+	FirstName  string `bson:"fnm" json:"firstName"`
+	LastName   string `bson:"lnm" json:"lastName"`
+	IconNumber int    `bson:"icon" json:"iconNumber"`
 
 	// profile
-	HasProfile        *bool    `bson:"prof,omitempty" json:"hasProfile,omitempty"`
-	IsPublic          *bool    `bson:"pub,omitempty" json:"isPublic,omitempty"`
-	RightHanded       *bool    `bson:"rgtHnd,omitempty" json:"rightHanded,omitempty"`
-	BirthYear         *int     `bson:"birthYr,omitempty" json:"birthYear,omitempty"`
-	Gender            *string  `bson:"gender,omitempty" json:"gender,omitempty"`
-	USTALevel         *float64 `bson:"ustaLvl,omitempty" json:"USTALevel,omitempty"`
-	LocationString    *string  `bson:"locStr,omitempty" json:"locationString,omitempty"`
-	LocationLongitude *float64 `bson:"locLng,omitempty" json:"locationLongitude,omitempty"`
-	LocationLatitude  *float64 `bson:"locLat,omitempty" json:"locationLatitude,omitempty"`
+	IsPublic    bool     `bson:"pub" json:"isPublic"`
+	RightHanded *bool    `bson:"rgtHnd" json:"rightHanded"`
+	BirthYear   *int     `bson:"birthYr" json:"birthYear"`
+	Gender      *string  `bson:"gender" json:"gender"`
+	USTALevel   *float64 `bson:"ustaLvl" json:"ustaLevel"`
+	State       *string  `bson:"state" json:"state"`
+	City        *string  `bson:"city" json:"city"`
+	Longitude   *float64 `bson:"lng" json:"longitude"`
+	Latitude    *float64 `bson:"lat" json:"latitue"`
 }

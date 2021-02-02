@@ -48,6 +48,15 @@ func (s *UsersStore) UpdateUser(data *t.UpdateUser) (user *t.User, err error) {
 	return
 }
 
+func (s *UsersStore) UpdateUserProfile(data *t.UpdateUserProfile) (user *t.User, err error) {
+	sess, c := s.C(ColUsers)
+	defer sess.Close()
+
+	user = &t.User{}
+	err = m.Update(c, user, m.M{"_id": data.ID}, m.M{"$set": data})
+	return
+}
+
 func (s *UsersStore) RecentUsers(start, end time.Time, limit, offset int) (users []*t.User, err error) {
 	sess, c := s.C(ColUsers)
 	defer sess.Close()
