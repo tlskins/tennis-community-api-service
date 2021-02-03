@@ -32,15 +32,12 @@ type UpdateAlbumReq struct {
 }
 
 type SearchAlbumsReq struct {
-	UserID       string  `json:"userId"`
-	HomeApproved *string `json:"homeApproved"`
-}
-
-type AlbumsResp struct {
-	LastRequestAt time.Time   `json:"lastRequestAt"`
-	MyAlbums      []*aT.Album `json:"myAlbums"`
-	FriendsAlbums []*aT.Album `json:"friendsAlbums"`
-	PublicAlbums  []*aT.Album `json:"publicAlbums"`
+	My           bool  `json:"my"`
+	Friends      bool  `json:"friends"`
+	Public       *bool `json:"isPublic"`
+	HomeApproved *bool `json:"homeApproved"`
+	Limit        int   `json:"limit"`
+	Offset       int   `json:"offset"`
 }
 
 type PostCommentReq struct {

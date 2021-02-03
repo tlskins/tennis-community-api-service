@@ -16,5 +16,5 @@ func main() {
 		fmt.Printf(err.Error())
 	}
 	api.CheckError(http.StatusInternalServerError, err)
-	lambda.Start(ucAlb.GetAlbums)
+	lambda.Start(ucAlb.SearchAlbums)
 }

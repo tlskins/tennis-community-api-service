@@ -225,8 +225,8 @@ functions:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
-  get_user_albums:
-    handler: entrypoints/albums/get_user_albums/get_user_albums.go
+  search_albums:
+    handler: entrypoints/albums/search_albums/search_albums.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -249,8 +249,8 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
-          path: albums
-          method: get
+          path: albums/search
+          method: put
           cors:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"

@@ -8,16 +8,8 @@ import (
 	"github.com/tennis-community-api-service/pkg/enums"
 )
 
-func (u *AlbumsService) GetUserAlbums(ctx context.Context, userID string) ([]*t.Album, error) {
-	return u.Store.GetAlbumsByUser(userID)
-}
-
-func (u *AlbumsService) GetPublicAlbums(ctx context.Context, homeApproved *bool) ([]*t.Album, error) {
-	return u.Store.GetPublicAlbums(homeApproved)
-}
-
-func (u *AlbumsService) GetFriendsAlbums(ctx context.Context, userID string) ([]*t.Album, error) {
-	return u.Store.GetFriendsAlbums(userID)
+func (u *AlbumsService) SearchAlbums(ctx context.Context, userID, friendID string, public, homeApproved *bool, limit, offset int) ([]*t.Album, error) {
+	return u.Store.SearchAlbums(userID, friendID, public, homeApproved, limit, offset)
 }
 
 func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, error) {

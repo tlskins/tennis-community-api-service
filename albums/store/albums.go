@@ -25,35 +25,32 @@ func (s *AlbumsStore) DeleteAlbum(id string) (err error) {
 	return m.Remove(c, m.M{"_id": id})
 }
 
-func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err error) {
+func (s *AlbumsStore) SearchAlbums(userID, friendID string, public, homeApproved *bool, limit, offset int) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
-	albums = []*t.Album{}
-	err = c.Find(m.M{"userId": userID}).Sort("-crAt").All(&albums)
-	return
-}
-
-func (s *AlbumsStore) GetPublicAlbums(homeApproved *bool) (albums []*t.Album, err error) {
-	sess, c := s.C(ColAlbums)
-	defer sess.Close()
-
-	albums = []*t.Album{}
-	query := m.M{"public": true}
-
+	query := m.M{}
+	if userID != "" {
+		query["userId"] = userID
+	}
+	if friendID != "" {
+		query["frndIds"] = friendID
+	}
+	if public != nil {
+		query["public"] = *public
+	}
 	if homeApproved != nil {
 		query["home"] = *homeApproved
 	}
-	err = c.Find(query).Sort("-crAt").All(&albums)
-	return
-}
-
-func (s *AlbumsStore) GetFriendsAlbums(userID string) (albums []*t.Album, err error) {
-	sess, c := s.C(ColAlbums)
-	defer sess.Close()
 
 	albums = []*t.Album{}
-	err = c.Find(m.M{"frndIds": userID}).Sort("-crAt").All(&albums)
+	err = c.Find(m.M{"userId": userID}).Sort("-updAt").All(&albums)
+
+	if limit > 0 {
+		err = c.Find(query).Skip(offset).Sort("-updAt").Limit(limit).All(&albums)
+	} else {
+		err = m.Find(c, &albums, query, nil, []string{"-updAt"})
+	}
 	return
 }
 
@@ -150,14 +147,14 @@ func (s *AlbumsStore) RecentAlbumComments(start, end time.Time, limit, offset in
 	comments = []*t.Comment{}
 
 	m.Aggregate(c, &comments, []m.M{
-		m.M{"$match": m.M{"updAt": m.M{"$gte": start}}},
-		m.M{"$unwind": "$cmnts"},
-		m.M{"$match": m.M{"cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
-		m.M{"$sort": m.M{"cmnts.crAt": -1}},
-		m.M{"$skip": offset},
-		m.M{"$limit": limit},
-		m.M{"$addFields": m.M{"cmnts.albumId": "$_id"}},
-		m.M{"$replaceRoot": m.M{"newRoot": "$cmnts"}},
+		{"$match": m.M{"updAt": m.M{"$gte": start}}},
+		{"$unwind": "$cmnts"},
+		{"$match": m.M{"cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		{"$sort": m.M{"cmnts.crAt": -1}},
+		{"$skip": offset},
+		{"$limit": limit},
+		{"$addFields": m.M{"cmnts.albumId": "$_id"}},
+		{"$replaceRoot": m.M{"newRoot": "$cmnts"}},
 	})
 	return
 }
@@ -169,15 +166,15 @@ func (s *AlbumsStore) RecentSwingComments(start, end time.Time, limit, offset in
 	comments = []*t.Comment{}
 
 	m.Aggregate(c, &comments, []m.M{
-		m.M{"$match": m.M{"updAt": m.M{"$gte": start}}},
-		m.M{"$unwind": "$swingVids"},
-		m.M{"$unwind": "$swingVids.cmnts"},
-		m.M{"$match": m.M{"swingVids.cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
-		m.M{"$sort": m.M{"swingVids.cmnts.crAt": -1}},
-		m.M{"$skip": offset},
-		m.M{"$limit": limit},
-		m.M{"$addFields": m.M{"swingVids.cmnts.albumId": "$_id", "swingVids.cmnts.swingId": "$swingVids._id"}},
-		m.M{"$replaceRoot": m.M{"newRoot": "$swingVids.cmnts"}},
+		{"$match": m.M{"updAt": m.M{"$gte": start}}},
+		{"$unwind": "$swingVids"},
+		{"$unwind": "$swingVids.cmnts"},
+		{"$match": m.M{"swingVids.cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		{"$sort": m.M{"swingVids.cmnts.crAt": -1}},
+		{"$skip": offset},
+		{"$limit": limit},
+		{"$addFields": m.M{"swingVids.cmnts.albumId": "$_id", "swingVids.cmnts.swingId": "$swingVids._id"}},
+		{"$replaceRoot": m.M{"newRoot": "$swingVids.cmnts"}},
 	})
 	return
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
-	"time"
 
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
@@ -13,36 +12,23 @@ import (
 	t "github.com/tennis-community-api-service/uc-albums/types"
 )
 
-func (u *UCService) GetAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+func (u *UCService) SearchAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
 	api.CheckError(http.StatusInternalServerError, err)
 	req := t.SearchAlbumsReq{}
-	if authorized, claims := auth.ClaimsFromContext(ctx); authorized {
-		req.UserID = claims.Subject
-	}
+	_, claims := auth.ClaimsFromContext(ctx)
 	api.Parse(r, &req)
 
-	albumResp := t.AlbumsResp{
-		LastRequestAt: time.Now(),
-		MyAlbums:      []*aT.Album{},
-		FriendsAlbums: []*aT.Album{},
-		PublicAlbums:  []*aT.Album{},
+	var userID, friendID string
+	if req.My {
+		userID = claims.Subject
 	}
-	if req.UserID != "" {
-		albumResp.MyAlbums, err = u.alb.GetUserAlbums(ctx, req.UserID)
-		api.CheckError(http.StatusInternalServerError, err)
-		albumResp.FriendsAlbums, err = u.alb.GetFriendsAlbums(ctx, req.UserID)
-		api.CheckError(http.StatusInternalServerError, err)
+	if req.Friends {
+		friendID = claims.Subject
 	}
-	var homeApproved *bool
-	if req.HomeApproved != nil {
-		appr := *req.HomeApproved == "true"
-		homeApproved = &appr
-	}
-	albumResp.PublicAlbums, err = u.alb.GetPublicAlbums(ctx, homeApproved)
-	api.CheckError(http.StatusInternalServerError, err)
-
-	return u.Resp.Success(r, albumResp, http.StatusOK)
+	albums, err := u.alb.SearchAlbums(ctx, userID, friendID, req.Public, req.HomeApproved, req.Limit, req.Offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return u.Resp.Success(r, albums, http.StatusOK)
 }
 
 func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
