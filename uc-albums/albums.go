@@ -19,14 +19,22 @@ func (u *UCService) SearchAlbums(ctx context.Context, r *api.Request) (resp api.
 	_, claims := auth.ClaimsFromContext(ctx)
 	api.Parse(r, &req)
 
-	var userID, friendID string
+	var userIDs, friendIDs []string
+	var viewableByFriends *bool
 	if req.My {
-		userID = claims.Subject
+		userIDs = append(userIDs, claims.Subject)
+	}
+	if req.Shared {
+		friendIDs = append(friendIDs, claims.Subject)
 	}
 	if req.Friends {
-		friendID = claims.Subject
+		truthy := true
+		viewableByFriends = &truthy
+		user, err := u.usr.GetUser(ctx, claims.Subject)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+		userIDs = append(userIDs, user.FriendIds...)
 	}
-	albums, err := u.alb.SearchAlbums(ctx, userID, friendID, req.Public, req.HomeApproved, req.Limit, req.Offset)
+	albums, err := u.alb.SearchAlbums(ctx, userIDs, friendIDs, req.Public, viewableByFriends, req.HomeApproved, req.Limit, req.Offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return u.Resp.Success(r, albums, http.StatusOK)
 }

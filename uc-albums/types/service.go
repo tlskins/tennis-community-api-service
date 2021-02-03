@@ -34,6 +34,7 @@ type UpdateAlbumReq struct {
 type SearchAlbumsReq struct {
 	My           bool  `json:"my"`
 	Friends      bool  `json:"friends"`
+	Shared       bool  `json:"shared"`
 	Public       *bool `json:"isPublic"`
 	HomeApproved *bool `json:"homeApproved"`
 	Limit        int   `json:"limit"`

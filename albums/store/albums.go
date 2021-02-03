@@ -25,26 +25,28 @@ func (s *AlbumsStore) DeleteAlbum(id string) (err error) {
 	return m.Remove(c, m.M{"_id": id})
 }
 
-func (s *AlbumsStore) SearchAlbums(userID, friendID string, public, homeApproved *bool, limit, offset int) (albums []*t.Album, err error) {
+func (s *AlbumsStore) SearchAlbums(userIDs, friendIDs []string, public, friends, homeApproved *bool, limit, offset int) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
 	query := m.M{}
-	if userID != "" {
-		query["userId"] = userID
+	albums = []*t.Album{}
+
+	if len(userIDs) > 0 {
+		query["userId"] = m.M{"$in": userIDs}
 	}
-	if friendID != "" {
-		query["frndIds"] = friendID
+	if len(friendIDs) > 0 {
+		query["frndIds"] = m.M{"$elemMatch": m.M{"$in": friendIDs}}
 	}
 	if public != nil {
 		query["public"] = *public
 	}
+	if friends != nil {
+		query["frndView"] = *friends
+	}
 	if homeApproved != nil {
 		query["home"] = *homeApproved
 	}
-
-	albums = []*t.Album{}
-	err = c.Find(m.M{"userId": userID}).Sort("-updAt").All(&albums)
 
 	if limit > 0 {
 		err = c.Find(query).Skip(offset).Sort("-updAt").Limit(limit).All(&albums)
