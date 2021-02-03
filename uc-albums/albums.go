@@ -95,6 +95,23 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	return u.Resp.Success(r, album, http.StatusOK)
 }
 
+func (u *UCService) UpdateSwing(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := &aT.UpdateSwingVideo{}
+	api.Parse(r, req)
+
+	album, err := u.alb.GetAlbum(ctx, req.AlbumID)
+	api.CheckError(http.StatusNotFound, err)
+	if album.UserID != claims.Subject {
+		panic(errors.New("Cannot edit another user's album"))
+	}
+	album, err = u.alb.UpdateSwing(ctx, req.AlbumID, req)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return u.Resp.Success(r, album, http.StatusOK)
+}
+
 func (u *UCService) RecentAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
 	api.CheckError(http.StatusInternalServerError, err)

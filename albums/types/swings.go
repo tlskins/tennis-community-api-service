@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/tennis-community-api-service/pkg/enums"
 	"time"
+
+	"github.com/tennis-community-api-service/pkg/enums"
 )
 
 type SwingVideo struct {
@@ -12,6 +13,7 @@ type SwingVideo struct {
 
 	UserID    string                 `bson:"userId" json:"userId"`
 	UploadKey string                 `bson:"upKey" json:"uploadKey"`
+	Name      string                 `bson:"nm" json:"name"`
 	Clip      int                    `bson:"clip" json:"clip"`
 	Swing     int                    `bson:"swing" json:"swing"`
 	VideoURL  string                 `bson:"vidUrl" json:"videoURL"`
@@ -24,9 +26,19 @@ type SwingVideo struct {
 
 type UpdateSwingVideo struct {
 	ID        string    `bson:"_id" json:"id"`
+	AlbumID   string    `bson:"-" json:"albumId"`
+	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	Status   *enums.SwingVideoStatus `bson:"status,omitempty" json:"status,omitempty"`
-	Tags     *[]string               `bson:"tags,omitempty" json:"tags,omitempty"`
-	Comments *[]*Comment             `bson:"cmnts,omitempty" json:"comments,omitempty"`
+	UserID    *string                 `bson:"userId,omitempty" json:"userId,omitempty"`
+	UploadKey *string                 `bson:"upKey,omitempty" json:"uploadKey,omitempty"`
+	Name      *string                 `bson:"nm,omitempty" json:"name,omitempty"`
+	Clip      *int                    `bson:"clip,omitempty" json:"clip,omitempty"`
+	Swing     *int                    `bson:"swing,omitempty" json:"swing,omitempty"`
+	VideoURL  *string                 `bson:"vidUrl,omitempty" json:"videoURL,omitempty"`
+	GifURL    *string                 `bson:"gifUrl,omitempty" json:"gifURL,omitempty"`
+	JpgURL    *string                 `bson:"jpgUrl,omitempty" json:"jpgURL,omitempty"`
+	Status    *enums.SwingVideoStatus `bson:"status,omitempty" json:"status,omitempty"`
+	Tags      *[]string               `bson:"tags,omitempty" json:"tags,omitempty"`
+	Comments  *[]*Comment             `bson:"cmnts,omitempty" json:"comments,omitempty"`
 }

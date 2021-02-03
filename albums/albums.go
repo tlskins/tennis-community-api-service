@@ -74,3 +74,8 @@ func (u *AlbumsService) RecentAlbumComments(ctx context.Context, start, end time
 func (u *AlbumsService) RecentSwingComments(ctx context.Context, start, end time.Time, limit, offset int) ([]*t.Comment, error) {
 	return u.Store.RecentSwingComments(start, end, limit, offset)
 }
+
+func (u *AlbumsService) UpdateSwing(ctx context.Context, albumID string, data *t.UpdateSwingVideo) (*t.Album, error) {
+	data.UpdatedAt = time.Now()
+	return u.Store.UpdateSwing(albumID, data)
+}

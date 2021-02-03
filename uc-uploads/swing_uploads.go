@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -105,9 +106,13 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 	// upload is finished
 	if upload.IsFinal() {
 		aStatus := enums.AlbumStatusCreated
+		for i, swing := range album.SwingVideos {
+			swing.Name = strconv.Itoa(i + 1)
+		}
 		album, err := u.alb.UpdateAlbum(ctx, &aT.UpdateAlbum{
-			ID:     album.ID,
-			Status: &aStatus,
+			ID:          album.ID,
+			Status:      &aStatus,
+			SwingVideos: &album.SwingVideos,
 		})
 		if err != nil {
 			return "error UpdateAlbum", err
@@ -158,6 +163,7 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 				friend, softErr := u.usr.GetUser(ctx, friendID)
 				if softErr != nil {
 					fmt.Printf("error getting friend: %s\n", softErr.Error())
+					continue
 				}
 				softErr = u.emailClient.SendEmail(
 					friend.Email,
