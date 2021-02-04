@@ -110,3 +110,19 @@ type RecentUsersReq struct {
 	Offset string    `json:"offset"`
 	Limit  string    `json:"limit"`
 }
+
+type UserConfirmationReq struct {
+	ID        string `json:"id"`
+	UserName  string `json:"userName"`
+	Password  string `json:"password"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+type UserInvitationReq struct {
+	Email     string `json:"email"`
+	InviterID string `json:"inviterId"`
+	URL       string `json:"url"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}

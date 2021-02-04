@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/tennis-community-api-service/pkg/enums"
@@ -52,6 +54,11 @@ type User struct {
 	City        *string  `bson:"city" json:"city"`
 	Longitude   *float64 `bson:"lng" json:"longitude"`
 	Latitude    *float64 `bson:"lat" json:"latitue"`
+}
+
+func (u User) Name() string {
+	name := fmt.Sprintf("%s %s", u.FirstName, u.LastName)
+	return strings.Trim(name, " ")
 }
 
 func (u User) GetAuthables() (id, email string, conf, isAdmin bool) {

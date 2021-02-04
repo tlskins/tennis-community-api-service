@@ -502,7 +502,53 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
-          path: users/{id}/confirm_user
+          path: confirmations
+          method: post
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  invite_user:
+    handler: entrypoints/users/invite_user/invite_user.go
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: users/invite
+          method: post
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  get_user_confirmation:
+    handler: entrypoints/users/get_user_confirmation/get_user_confirmation.go
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: confirmations/{id}
           method: get
           cors:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}

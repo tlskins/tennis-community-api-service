@@ -3,13 +3,11 @@ package lambda
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"runtime/debug"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type Request events.APIGatewayProxyRequest
@@ -42,37 +40,28 @@ func ParseAndValidate(req *Request, out Validator) {
 	}
 }
 
-func GetPathParam(param string, req *Request) (string, error) {
-	res, ok := req.PathParameters[param]
-	if !ok {
-		return "", fmt.Errorf("Param %s not found", param)
-	}
-	return res, nil
-}
-
 type Responder struct {
-	Origin string
+	OriginStr string
 }
 
-func corsHeaders(req *Request, originsStr string) map[string]string {
-	spew.Dump(req.Headers["origin"])
-	spew.Dump(originsStr)
-
-	origins := strings.Split(originsStr, ",")
-	respOrigin := origins[0]
-	for _, origin := range origins {
-		if origin == req.Headers["origin"] {
-			respOrigin = origin
-		}
-	}
-	spew.Dump(respOrigin)
-
+func (r Responder) corsHeaders(req *Request) map[string]string {
 	return map[string]string{
-		"Access-Control-Allow-Origin":      respOrigin,
+		"Access-Control-Allow-Origin":      r.Origin(req),
 		"Access-Control-Allow-Credentials": "true",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST,GET",
 		"Access-Control-Allow-Headers":     "Content-Type",
 	}
+}
+
+func (r Responder) Origin(req *Request) (origin string) {
+	origins := strings.Split(r.OriginStr, ",")
+	origin = origins[0]
+	for _, str := range origins {
+		if str == req.Headers["origin"] {
+			origin = str
+		}
+	}
+	return
 }
 
 // Fail returns an internal server error with the error message
@@ -86,7 +75,7 @@ func (r Responder) Fail(req *Request, msg string, status int) (Response, error) 
 
 	return Response{
 		Body:       string(body),
-		Headers:    corsHeaders(req, r.Origin),
+		Headers:    r.corsHeaders(req),
 		StatusCode: status,
 	}, nil
 }
@@ -100,7 +89,7 @@ func (r Responder) Success(req *Request, data interface{}, status int) (Response
 
 	return Response{
 		Body:       string(body),
-		Headers:    corsHeaders(req, r.Origin),
+		Headers:    r.corsHeaders(req),
 		StatusCode: status,
 	}, nil
 }

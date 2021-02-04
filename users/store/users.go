@@ -1,6 +1,7 @@
 package store
 
 import (
+	"strings"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -23,7 +24,7 @@ func (s *UsersStore) GetUserByEmail(email string) (user *t.User, err error) {
 	defer sess.Close()
 
 	user = &t.User{}
-	err = m.FindOne(c, user, m.M{"em": email})
+	err = m.FindOne(c, user, m.M{"lowEm": strings.ToLower(email)})
 	return
 }
 

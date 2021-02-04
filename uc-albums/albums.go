@@ -48,7 +48,7 @@ func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	albumReq := aT.Album(req)
 	album, err := u.alb.CreateAlbum(ctx, &albumReq)
 	api.CheckError(http.StatusInternalServerError, err)
-	err = u.shareAlbum(ctx, album)
+	err = u.shareAlbum(ctx, r, album, album.FriendIDs)
 	api.CheckError(http.StatusInternalServerError, err)
 	return u.Resp.Success(r, album, http.StatusOK)
 }
@@ -81,15 +81,30 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	req := &t.UpdateAlbumReq{}
 	api.ParseAndValidate(r, req)
 	req.UpdateAlbum.ID = r.PathParameters["id"]
-	album, err := u.alb.GetAlbum(ctx, req.ID)
+	oldAlbum, err := u.alb.GetAlbum(ctx, req.ID)
 	api.CheckError(http.StatusNotFound, err)
-	if album.UserID != claims.Subject {
+	if oldAlbum.UserID != claims.Subject {
 		panic(errors.New("Cannot edit another user's album"))
 	}
-	album, err = u.alb.UpdateAlbum(ctx, req.UpdateAlbum)
+	album, err := u.alb.UpdateAlbum(ctx, req.UpdateAlbum)
 	api.CheckError(http.StatusUnprocessableEntity, err)
+
 	if req.ShareAlbum {
-		err = u.shareAlbum(ctx, album)
+		// only share with newly shared with friends
+		newFriendIDs := []string{}
+		for _, newFriend := range album.FriendIDs {
+			isNew := true
+			for _, oldFriend := range oldAlbum.FriendIDs {
+				if newFriend == oldFriend {
+					isNew = false
+					break
+				}
+			}
+			if isNew {
+				newFriendIDs = append(newFriendIDs, newFriend)
+			}
+		}
+		err = u.shareAlbum(ctx, r, album, newFriendIDs)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
 	return u.Resp.Success(r, album, http.StatusOK)
