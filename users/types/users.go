@@ -1,8 +1,11 @@
 package types
 
 import (
-	"github.com/tennis-community-api-service/pkg/enums"
+	"fmt"
+	"strings"
 	"time"
+
+	"github.com/tennis-community-api-service/pkg/enums"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -18,6 +21,7 @@ type User struct {
 	FirstName  string           `bson:"fnm" json:"firstName"`
 	LastName   string           `bson:"lnm" json:"lastName"`
 	Status     enums.UserStatus `bson:"status" json:"status"`
+	IconNumber int              `bson:"icon" json:"iconNumber"`
 
 	// auth
 	EncryptedPassword string     `bson:"pwd" json:"-"`
@@ -25,11 +29,10 @@ type User struct {
 	AuthToken         string     `bson:"-" json:"authToken"`
 
 	// permissions
-	AllowSuggestions   bool `bson:"allowSug" json:"allowSuggestions"`
-	AllowFlagging      bool `bson:"allowFlag" json:"allowFlagging"`
-	AllowPublicAlbums  bool `bson:"allowPubAlb" json:"allowPublicAlbums"`
-	AllowAlbumComments bool `bson:"allowAlbCom" json:"allowAlbumComments"`
-	AllowVideoComments bool `bson:"allowVidCom" json:"allowVideoComments"`
+	IsAdmin             bool `bson:"admin" json:"isAdmin"`
+	DisableComments     bool `bson:"noComms" json:"disableComments"`
+	DisablePublicAlbums bool `bson:"noPubAlb" json:"disablePublicAlbums"`
+	Warnings            int  `bson:"warns" json:"warnings"`
 
 	// social
 	FriendIds      []string         `bson:"friendIds" json:"friendIds"`
@@ -40,10 +43,26 @@ type User struct {
 	FriendNotes      []*FriendNote  `bson:"frndNotes" json:"friendNotifications"`
 	CommentNotes     []*CommentNote `bson:"commentNotes" json:"commentNotifications"`
 	MyRecentComments []*CommentNote `bson:"recComms" json:"myRecentComments"`
+
+	// profile
+	IsPublic    bool     `bson:"pub" json:"isPublic"`
+	RightHanded *bool    `bson:"rgtHnd" json:"rightHanded"`
+	BirthYear   *int     `bson:"birthYr" json:"birthYear"`
+	Gender      *string  `bson:"gender" json:"gender"`
+	USTALevel   *float64 `bson:"ustaLvl" json:"ustaLevel"`
+	State       *string  `bson:"state" json:"state"`
+	City        *string  `bson:"city" json:"city"`
+	Longitude   *float64 `bson:"lng" json:"longitude"`
+	Latitude    *float64 `bson:"lat" json:"latitue"`
 }
 
-func (u User) GetAuthables() (id, email string, conf bool) {
-	return u.ID, u.Email, u.Status != enums.UserStatusPending
+func (u User) Name() string {
+	name := fmt.Sprintf("%s %s", u.FirstName, u.LastName)
+	return strings.Trim(name, " ")
+}
+
+func (u User) GetAuthables() (id, email string, conf, isAdmin bool) {
+	return u.ID, u.Email, u.Status != enums.UserStatusPending, u.IsAdmin
 }
 
 func (u *User) AddCommentNote(friend *User, albumID, albumName, swingID string) {
@@ -122,13 +141,11 @@ func (u *User) AddMyRecentComment(albumID, albumName, swingID string) *CommentNo
 }
 
 type UpdateUser struct {
-	ID string `bson:"-" json:"id"`
+	ID        string    `bson:"-" json:"id"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 
-	UpdatedAt *time.Time        `bson:"updAt,omitempty" json:"updatedAt,omitempty"`
-	Email     *string           `bson:"em,omitempty" json:"email,omitempty"`
-	FirstName *string           `bson:"fnm,omitempty" json:"firstName,omitempty"`
-	LastName  *string           `bson:"lnm,omitempty" json:"lastName,omitempty"`
-	Status    *enums.UserStatus `bson:"status,omitempty" json:"status,omitempty"`
+	Email  *string           `bson:"em,omitempty" json:"email,omitempty"`
+	Status *enums.UserStatus `bson:"status,omitempty" json:"status,omitempty"`
 
 	// auth
 	EncryptedPassword *string    `bson:"pwd,omitempty" json:"-"`
@@ -136,11 +153,9 @@ type UpdateUser struct {
 	AuthToken         *string    `bson:"-" json:"authToken,omitempty"`
 
 	// permissions
-	AllowSuggestions   *bool `bson:"allowSug,omitempty" json:"allowSuggestions,omitempty"`
-	AllowFlagging      *bool `bson:"allowFlag,omitempty" json:"allowFlagging,omitempty"`
-	AllowPublicAlbums  *bool `bson:"allowPubAlb,omitempty" json:"allowPublicAlbums,omitempty"`
-	AllowAlbumComments *bool `bson:"allowAlbCom,omitempty" json:"allowAlbumComments,omitempty"`
-	AllowVideoComments *bool `bson:"allowVidCom,omitempty" json:"allowVideoComments,omitempty"`
+	DisableComments     bool `bson:"noComms,omitempty" json:"disableComments,omitempty"`
+	DisablePublicAlbums bool `bson:"noPubAlb,omitempty" json:"disablePublicAlbums,omitempty"`
+	Warnings            int  `bson:"warns,omitempty" json:"warnings,omitempty"`
 
 	// social
 	FriendIds      *[]string         `bson:"friendIds,omitempty" json:"friendIds,omitempty"`
@@ -151,4 +166,25 @@ type UpdateUser struct {
 	FriendNotes      *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
 	CommentNotes     *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
 	MyRecentComments *[]*CommentNote `bson:"recComms,omitempty" json:"myRecentComments,omitempty"`
+}
+
+type UpdateUserProfile struct {
+	ID        string    `bson:"-" json:"id"`
+	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
+
+	UserName   string `bson:"usrNm" json:"userName"`
+	FirstName  string `bson:"fnm" json:"firstName"`
+	LastName   string `bson:"lnm" json:"lastName"`
+	IconNumber int    `bson:"icon" json:"iconNumber"`
+
+	// profile
+	IsPublic    bool     `bson:"pub" json:"isPublic"`
+	RightHanded *bool    `bson:"rgtHnd" json:"rightHanded"`
+	BirthYear   *int     `bson:"birthYr" json:"birthYear"`
+	Gender      *string  `bson:"gender" json:"gender"`
+	USTALevel   *float64 `bson:"ustaLvl" json:"ustaLevel"`
+	State       *string  `bson:"state" json:"state"`
+	City        *string  `bson:"city" json:"city"`
+	Longitude   *float64 `bson:"lng" json:"longitude"`
+	Latitude    *float64 `bson:"lat" json:"latitue"`
 }

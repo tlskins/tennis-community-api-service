@@ -3,6 +3,9 @@ package types
 import (
 	"errors"
 	"regexp"
+	"time"
+
+	uT "github.com/tennis-community-api-service/users/types"
 )
 
 type SignInReq struct {
@@ -45,6 +48,28 @@ func (r CreateUserReq) Validate() error {
 	return nil
 }
 
+type UpdateUserProfileReq uT.UpdateUserProfile
+
+func (r UpdateUserProfileReq) Validate() error {
+	if len(r.UserName) < 3 {
+		return errors.New("Username must be at least 3 characters long")
+	}
+	if len(r.FirstName) == 0 {
+		return errors.New("Missing first name")
+	}
+	if len(r.LastName) == 0 {
+		return errors.New("Missing last name")
+	}
+	for _, char := range invalidUserNameChars {
+		re := regexp.MustCompile(char)
+		if re.Match([]byte(r.UserName)) {
+			return errors.New(`Username cannot include any of the following special characters: spaces, tabs, @, #, %, \, /`)
+		}
+	}
+
+	return nil
+}
+
 type RemoveNotificationReq struct {
 	UploadNoteID  string `json:"uploadNotificationId"`
 	FriendNoteID  string `json:"friendNotificationId"`
@@ -77,4 +102,27 @@ type SearchFriendsReq struct {
 	Search *string   `json:"search"`
 	Offset int       `json:"offset"`
 	Limit  int       `json:"limit"`
+}
+
+type RecentUsersReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Offset string    `json:"offset"`
+	Limit  string    `json:"limit"`
+}
+
+type UserConfirmationReq struct {
+	ID        string `json:"id"`
+	UserName  string `json:"userName"`
+	Password  string `json:"password"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+type UserInvitationReq struct {
+	Email     string `json:"email"`
+	InviterID string `json:"inviterId"`
+	URL       string `json:"url"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }

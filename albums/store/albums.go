@@ -18,30 +18,41 @@ func (s *AlbumsStore) GetAlbum(id string) (album *t.Album, err error) {
 	return
 }
 
-func (s *AlbumsStore) GetAlbumsByUser(userID string) (albums []*t.Album, err error) {
+func (s *AlbumsStore) DeleteAlbum(id string) (err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
-	albums = []*t.Album{}
-	err = c.Find(m.M{"userId": userID}).Sort("-crAt").All(&albums)
-	return
+	return m.Remove(c, m.M{"_id": id})
 }
 
-func (s *AlbumsStore) GetPublicAlbums() (albums []*t.Album, err error) {
+func (s *AlbumsStore) SearchAlbums(userIDs, friendIDs []string, public, friends, homeApproved *bool, limit, offset int) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
+	query := m.M{}
 	albums = []*t.Album{}
-	err = c.Find(m.M{"public": true}).Sort("-crAt").All(&albums)
-	return
-}
 
-func (s *AlbumsStore) GetFriendsAlbums(userID string) (albums []*t.Album, err error) {
-	sess, c := s.C(ColAlbums)
-	defer sess.Close()
+	if len(userIDs) > 0 {
+		query["userId"] = m.M{"$in": userIDs}
+	}
+	if len(friendIDs) > 0 {
+		query["frndIds"] = m.M{"$elemMatch": m.M{"$in": friendIDs}}
+	}
+	if public != nil {
+		query["public"] = *public
+	}
+	if friends != nil {
+		query["frndView"] = *friends
+	}
+	if homeApproved != nil {
+		query["home"] = *homeApproved
+	}
 
-	albums = []*t.Album{}
-	err = c.Find(m.M{"frndIds": userID}).Sort("-crAt").All(&albums)
+	if limit > 0 {
+		err = c.Find(query).Skip(offset).Sort("-updAt").Limit(limit).All(&albums)
+	} else {
+		err = m.Find(c, &albums, query, nil, []string{"-updAt"})
+	}
 	return
 }
 
@@ -70,6 +81,12 @@ func (s *AlbumsStore) AddVideosToAlbum(userId, uploadKey string, swings []*t.Swi
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
+	for _, swing := range swings {
+		if swing.ID == "" {
+			swing.ID = uuid.NewV4().String()
+		}
+	}
+
 	album = &t.Album{}
 	err = m.Update(c, album, m.M{"userId": userId, "upKey": uploadKey}, m.M{
 		"$set":  m.M{"updAt": time.Now()},
@@ -94,18 +111,36 @@ func (s *AlbumsStore) PostCommentToAlbum(albumID string, comment *t.Comment) (al
 	return
 }
 
-func (s *AlbumsStore) PostCommentToSwing(albumID, swingID string, comment *t.Comment) (album *t.Album, err error) {
+func (s *AlbumsStore) RecentAlbums(start, end time.Time, limit, offset int) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
-	if comment.ID == "" {
-		comment.ID = uuid.NewV4().String()
-	}
+	albums = []*t.Album{}
+	query := m.M{"crAt": m.M{"$gte": start, "$lt": end}}
 
-	album = &t.Album{}
-	err = m.Update(c, album, m.M{"_id": albumID, "swingVids._id": swingID}, m.M{
-		"$set":  m.M{"updAt": time.Now()},
-		"$push": m.M{"swingVids.$.cmnts": comment},
+	if limit > 0 {
+		err = c.Find(query).Sort("-crAt").Skip(offset).Limit(limit).All(&albums)
+	} else {
+		err = m.Find(c, &albums, query, nil)
+	}
+	return
+}
+
+func (s *AlbumsStore) RecentAlbumComments(start, end time.Time, limit, offset int) (comments []*t.Comment, err error) {
+	sess, c := s.C(ColAlbums)
+	defer sess.Close()
+
+	comments = []*t.Comment{}
+
+	m.Aggregate(c, &comments, []m.M{
+		{"$match": m.M{"updAt": m.M{"$gte": start}}},
+		{"$unwind": "$cmnts"},
+		{"$match": m.M{"cmnts.crAt": m.M{"$gte": start, "$lt": end}}},
+		{"$sort": m.M{"cmnts.crAt": -1}},
+		{"$skip": offset},
+		{"$limit": limit},
+		{"$addFields": m.M{"cmnts.albumId": "$_id"}},
+		{"$replaceRoot": m.M{"newRoot": "$cmnts"}},
 	})
 	return
 }

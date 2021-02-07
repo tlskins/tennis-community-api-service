@@ -11,6 +11,7 @@ type CustomClaims struct {
 	jwt.StandardClaims
 	Email       string `json:"email"`
 	IsConfirmed bool   `json:"isConfirmed"`
+	IsAdmin     bool   `json:"isAdmin"`
 }
 
 func (c CustomClaims) Valid() error {
@@ -18,12 +19,12 @@ func (c CustomClaims) Valid() error {
 }
 
 type Authable interface {
-	GetAuthables() (id string, email string, conf bool)
+	GetAuthables() (id string, email string, conf, isAdmin bool)
 }
 
 func (j *JWTService) GenAccessToken(a Authable) (accessToken string, err error) {
 	now := time.Now()
-	id, email, conf := a.GetAuthables()
+	id, email, conf, isAdmin := a.GetAuthables()
 	claims := &CustomClaims{
 		jwt.StandardClaims{
 			IssuedAt: now.Unix(),
@@ -32,6 +33,7 @@ func (j *JWTService) GenAccessToken(a Authable) (accessToken string, err error) 
 		},
 		email,
 		conf,
+		isAdmin,
 	}
 
 	return j.Encode(claims)

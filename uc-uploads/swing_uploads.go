@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	uuid "github.com/satori/go.uuid"
@@ -83,6 +84,20 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 
 	now := time.Now()
 	swingVids := make([]*aT.SwingVideo, len(swingUploads))
+	for i, swing := range swingUploads {
+		swingVids[i] = &aT.SwingVideo{
+			CreatedAt: now,
+			UpdatedAt: now,
+			UserID:    upload.UserID,
+			UploadKey: upload.UploadKey,
+			Clip:      swing.ClipID,
+			Swing:     swing.SwingID,
+			VideoURL:  swing.CutURL,
+			GifURL:    swing.GifURL,
+			JpgURL:    swing.JpgURL,
+			Status:    enums.SwingVideoStatusCreated,
+		}
+	}
 	album, err := u.alb.AddVideosToAlbum(ctx, upload.UserID, upload.UploadKey, swingVids)
 	if err != nil {
 		return "error AddVideosToAlbum", err
@@ -91,9 +106,13 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 	// upload is finished
 	if upload.IsFinal() {
 		aStatus := enums.AlbumStatusCreated
+		for i, swing := range album.SwingVideos {
+			swing.Name = strconv.Itoa(i + 1)
+		}
 		album, err := u.alb.UpdateAlbum(ctx, &aT.UpdateAlbum{
-			ID:     album.ID,
-			Status: &aStatus,
+			ID:          album.ID,
+			Status:      &aStatus,
+			SwingVideos: &album.SwingVideos,
 		})
 		if err != nil {
 			return "error UpdateAlbum", err
@@ -144,10 +163,11 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 				friend, softErr := u.usr.GetUser(ctx, friendID)
 				if softErr != nil {
 					fmt.Printf("error getting friend: %s\n", softErr.Error())
+					continue
 				}
 				softErr = u.emailClient.SendEmail(
 					friend.Email,
-					fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
+					fmt.Sprintf("Hive Tennis - %s Shared An Album With You!", user.UserName),
 					fmt.Sprintf(`%s %s,
 Your friend %s %s has has shared the album %s with you.
 View At:

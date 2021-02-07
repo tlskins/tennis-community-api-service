@@ -2,55 +2,28 @@ package users
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
-	"strings"
+	"strconv"
 	"time"
 
 	"github.com/tennis-community-api-service/pkg/auth"
-	"github.com/tennis-community-api-service/pkg/enums"
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uc-users/types"
 	uT "github.com/tennis-community-api-service/users/types"
 )
 
-func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Response, err error) {
-	req := &t.CreateUserReq{}
-	api.ParseAndValidate(r, req)
+func (u *UCService) UpdateUserProfile(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	req := t.UpdateUserProfileReq{ID: claims.Subject}
+	api.ParseAndValidate(r, &req)
 
-	now := time.Now()
-	user := &uT.User{
-		CreatedAt:          now,
-		UpdatedAt:          now,
-		UserName:           req.UserName,
-		Email:              req.Email,
-		LowerEmail:         strings.ToLower(req.Email),
-		FirstName:          req.FirstName,
-		LastName:           req.LastName,
-		Status:             enums.UserStatusPending,
-		AllowSuggestions:   true,
-		AllowFlagging:      true,
-		AllowPublicAlbums:  true,
-		AllowAlbumComments: true,
-		AllowVideoComments: true,
-	}
-	user.EncryptedPassword, err = auth.EncryptPassword(req.Password)
+	usrReq := uT.UpdateUserProfile(req)
+	user, err := u.usr.UpdateUserProfile(ctx, &usrReq)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	usrResp, err := u.usr.CreateUser(ctx, user)
-	api.CheckError(http.StatusUnprocessableEntity, err)
-	err = u.emailClient.SendEmail(
-		user.Email,
-		"Welcome to Tennis Community",
-		fmt.Sprintf(`
-Welcome to Tennis Community!
-Please follow this link to confirm your account:
-
-%s
-		`, fmt.Sprintf("%susers/%s/confirm_user", u.hostName, user.ID)),
-	)
-	api.CheckError(http.StatusUnprocessableEntity, err)
-
-	return u.Resp.Success(r, usrResp, http.StatusCreated)
+	return u.Resp.Success(r, user, http.StatusOK)
 }
 
 func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -70,24 +43,6 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 	})
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	user.AuthToken = authToken
-
-	return u.Resp.Success(r, user, http.StatusOK)
-}
-
-func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Response, err error) {
-	userID, err := api.GetPathParam("id", r)
-	api.CheckError(http.StatusInternalServerError, err)
-	user, err := u.usr.GetUser(ctx, userID)
-	api.CheckError(http.StatusUnprocessableEntity, err)
-	now := time.Now()
-	status := enums.UserStatusCreated
-	user, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
-		ID:           user.ID,
-		Status:       &status,
-		LastLoggedIn: &now,
-		UpdatedAt:    &now,
-	})
-	api.CheckError(http.StatusUnprocessableEntity, err)
 
 	return u.Resp.Success(r, user, http.StatusOK)
 }
@@ -120,4 +75,22 @@ func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) 
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
 	return u.Resp.Success(r, user, http.StatusOK)
+}
+
+func (u *UCService) RecentUsers(ctx context.Context, r *api.Request) (resp api.Response, err error) {
+	ctx, err = u.jwt.IncludeLambdaAuth(ctx, r)
+	api.CheckError(http.StatusInternalServerError, err)
+	claims := auth.AuthorizedClaimsFromContext(ctx)
+	if !claims.IsAdmin {
+		api.CheckError(http.StatusUnauthorized, errors.New("Must be admin"))
+	}
+	req := &t.RecentUsersReq{}
+	api.Parse(r, req)
+	limit, err := strconv.Atoi(req.Limit)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	offset, err := strconv.Atoi(req.Offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	users, err := u.usr.RecentUsers(ctx, req.Start, req.End, limit, offset)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+	return u.Resp.Success(r, users, http.StatusOK)
 }

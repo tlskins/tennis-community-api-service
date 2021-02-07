@@ -17,26 +17,28 @@ provider:
   versionFunctions: false # dont store versions of all funcs
 
 plugins:
-  - serverless-prune-plugin # plugin to remove older versions from provider
-  # sls prune -n 5
+  - serverless-prune-plugin # plugin to remove older versions from provider: sls prune -n 5
+  - serverless-go-build # dont need makefile
 
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
 
 package:
-  exclude:
-    - ./**
+  individually: true # bundle individual functions
+  # exclude:
+  #   - ./**
   include:
-    - ./bin/**
+    - ./id_rsa
+    - ./id_rsa.pub
 
-####################################################################################
-# UPLOADS FUNCTIONS
-####################################################################################
+  ####################################################################################
+  # UPLOADS FUNCTIONS
+  ####################################################################################
 
 functions:
   create_swing_upload:
-    handler: bin/create_swing_upload
+    handler: entrypoints/uploads/create_swing_upload/create_swing_upload.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -66,7 +68,7 @@ functions:
             allowCredentials: "true"
 
   get_recent_swing_uploads:
-    handler: bin/get_recent_swing_uploads
+    handler: entrypoints/uploads/get_recent_swing_uploads/get_recent_swing_uploads.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -96,7 +98,7 @@ functions:
             allowCredentials: "true"
 
   update_upload_clips:
-    handler: bin/update_upload_clips
+    handler: entrypoints/uploads/update_upload_clips/update_upload_clips.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -119,7 +121,7 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
 
   update_upload_swings:
-    handler: bin/update_upload_swings
+    handler: entrypoints/uploads/update_upload_swings/update_upload_swings.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -146,7 +148,7 @@ functions:
   ####################################################################################
 
   get_album:
-    handler: bin/get_album
+    handler: entrypoints/albums/get_album/get_album.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -172,7 +174,7 @@ functions:
             allowCredentials: "true"
 
   create_album:
-    handler: bin/create_album
+    handler: entrypoints/albums/create_album/create_album.go
     environment:
       ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
       ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
@@ -197,8 +199,34 @@ functions:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
-  get_user_albums:
-    handler: bin/get_user_albums
+  delete_album:
+    handler: entrypoints/albums/delete_album/delete_album.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: albums/{id}
+          method: delete
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  search_albums:
+    handler: entrypoints/albums/search_albums/search_albums.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -221,14 +249,14 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
-          path: albums
-          method: get
+          path: albums/search
+          method: put
           cors:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   update_album:
-    handler: bin/update_album
+    handler: entrypoints/albums/update_album/update_album.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -258,7 +286,7 @@ functions:
             allowCredentials: "true"
 
   post_comment:
-    handler: bin/post_comment
+    handler: entrypoints/albums/post_comment/post_comment.go
     environment:
       UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
       UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
@@ -287,11 +315,132 @@ functions:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
+  recent_albums:
+    handler: entrypoints/albums/recent_albums/recent_albums.go
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: albums/recent
+          method: get
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  recent_album_comments:
+    handler: entrypoints/albums/recent_album_comments/recent_album_comments.go
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: albums/comments/recent
+          method: get
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  recent_swing_comments:
+    handler: entrypoints/albums/recent_swing_comments/recent_swing_comments.go
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: swings/comments/recent
+          method: get
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  update_swing:
+    handler: entrypoints/albums/update_swing/update_swing.go
+    environment:
+      UPLOADS_DB_NAME: ${self:custom.secrets.UPLOADS_DB_NAME}
+      UPLOADS_DB_HOST: ${self:custom.secrets.UPLOADS_DB_HOST}
+      UPLOADS_DB_USER: ${self:custom.secrets.UPLOADS_DB_USER}
+      UPLOADS_DB_PWD: ${self:custom.secrets.UPLOADS_DB_PWD}
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: albums/swings
+          method: put
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
   ####################################################################################
   # USERS FUNCTIONS
   ####################################################################################
+
   create_user:
-    handler: bin/create_user
+    handler: entrypoints/users/create_user/create_user.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -314,7 +463,7 @@ functions:
             allowCredentials: "true"
 
   sign_in:
-    handler: bin/sign_in
+    handler: entrypoints/users/sign_in/sign_in.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -337,7 +486,7 @@ functions:
             allowCredentials: "true"
 
   confirm_user:
-    handler: bin/confirm_user
+    handler: entrypoints/users/confirm_user/confirm_user.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -353,14 +502,60 @@ functions:
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
     events:
       - http:
-          path: users/{id}/confirm_user
+          path: confirmations
+          method: post
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  invite_user:
+    handler: entrypoints/users/invite_user/invite_user.go
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: users/invite
+          method: post
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  get_user_confirmation:
+    handler: entrypoints/users/get_user_confirmation/get_user_confirmation.go
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: confirmations/{id}
           method: get
           cors:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"
 
   get_user:
-    handler: bin/get_user
+    handler: entrypoints/users/get_user/get_user.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -383,7 +578,7 @@ functions:
             allowCredentials: "true"
 
   remove_notification:
-    handler: bin/remove_notification
+    handler: entrypoints/users/remove_notification/remove_notification.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -406,7 +601,7 @@ functions:
             allowCredentials: "true"
 
   send_friend_req:
-    handler: bin/send_friend_req
+    handler: entrypoints/users/send_friend_req/send_friend_req.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -429,7 +624,7 @@ functions:
             allowCredentials: "true"
 
   accept_friend_req:
-    handler: bin/accept_friend_req
+    handler: entrypoints/users/accept_friend_req/accept_friend_req.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -452,7 +647,7 @@ functions:
             allowCredentials: "true"
 
   unfriend:
-    handler: bin/unfriend
+    handler: entrypoints/users/unfriend/unfriend.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -475,7 +670,7 @@ functions:
             allowCredentials: "true"
 
   search_friends:
-    handler: bin/search_friends
+    handler: entrypoints/users/search_friends/search_friends.go
     environment:
       USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
       USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
@@ -493,6 +688,188 @@ functions:
       - http:
           path: users/friends/search
           method: put
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  recent_users:
+    handler: entrypoints/users/recent_users/recent_users.go
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: users/recent
+          method: get
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  update_user_profile:
+    handler: entrypoints/users/update_user_profile/update_user_profile.go
+    environment:
+      USERS_DB_NAME: ${self:custom.secrets.USERS_DB_NAME}
+      USERS_DB_HOST: ${self:custom.secrets.USERS_DB_HOST}
+      USERS_DB_USER: ${self:custom.secrets.USERS_DB_USER}
+      USERS_DB_PWD: ${self:custom.secrets.USERS_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
+      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
+      SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
+      API_HOST: ${self:custom.secrets.API_HOST}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: users/profile
+          method: put
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  ####################################################################################
+  # MODERATION FUNCTIONS
+  ####################################################################################
+
+  create_comment_flag:
+    handler: entrypoints/moderation/create_comment_flag/create_comment_flag.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: moderation/comments
+          method: post
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  create_album_flag:
+    handler: entrypoints/moderation/create_album_flag/create_album_flag.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: moderation/albums
+          method: post
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  update_comment_flag:
+    handler: entrypoints/moderation/update_comment_flag/update_comment_flag.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: moderation/comments/{id}
+          method: put
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  update_album_flag:
+    handler: entrypoints/moderation/update_album_flag/update_album_flag.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: moderation/albums/{id}
+          method: put
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  recent_flagged_comments:
+    handler: entrypoints/moderation/recent_flagged_comments/recent_flagged_comments.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: moderation/comments
+          method: get
+          cors:
+            origin: ${self:custom.secrets.ALLOWED_ORIGIN}
+            allowCredentials: "true"
+
+  recent_flagged_albums:
+    handler: entrypoints/moderation/recent_flagged_albums/recent_flagged_albums.go
+    environment:
+      ALBUMS_DB_NAME: ${self:custom.secrets.ALBUMS_DB_NAME}
+      ALBUMS_DB_HOST: ${self:custom.secrets.ALBUMS_DB_HOST}
+      ALBUMS_DB_USER: ${self:custom.secrets.ALBUMS_DB_USER}
+      ALBUMS_DB_PWD: ${self:custom.secrets.ALBUMS_DB_PWD}
+      MODERATION_DB_NAME: ${self:custom.secrets.MODERATION_DB_NAME}
+      MODERATION_DB_HOST: ${self:custom.secrets.MODERATION_DB_HOST}
+      MODERATION_DB_USER: ${self:custom.secrets.MODERATION_DB_USER}
+      MODERATION_DB_PWD: ${self:custom.secrets.MODERATION_DB_PWD}
+      JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
+      JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
+      ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+    events:
+      - http:
+          path: moderation/albums
+          method: get
           cors:
             origin: ${self:custom.secrets.ALLOWED_ORIGIN}
             allowCredentials: "true"

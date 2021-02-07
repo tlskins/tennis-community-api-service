@@ -1,20 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	api "github.com/tennis-community-api-service/pkg/lambda"
-	alb "github.com/tennis-community-api-service/uc-albums"
+	mod "github.com/tennis-community-api-service/uc-moderation"
 
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 func main() {
-	ucAlb, err := alb.Init()
-	if err != nil {
-		fmt.Printf(err.Error())
-	}
+	ucMod, err := mod.Init()
 	api.CheckError(http.StatusInternalServerError, err)
-	lambda.Start(ucAlb.GetAlbums)
+	lambda.Start(ucMod.Resp.HandleRequest(ucMod.CreateAlbumFlag))
 }

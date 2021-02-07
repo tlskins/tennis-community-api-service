@@ -21,8 +21,16 @@ build: gomodgen
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_user_albums uc-albums/deliveries/get_user_albums/get_user_albums.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/get_album uc-albums/deliveries/get_album/get_album.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/create_album uc-albums/deliveries/create_album/create_album.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/delete_album uc-albums/deliveries/delete_album/delete_album.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/update_album uc-albums/deliveries/update_album/update_album.go
 	env GOOS=linux go build -ldflags="-s -w" -o bin/post_comment uc-albums/deliveries/post_comment/post_comment.go
+
+	env GOOS=linux go build -ldflags="-s -w" -o bin/create_comment_flag uc-moderation/deliveries/create_comment_flag/create_comment_flag.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/create_album_flag uc-moderation/deliveries/create_album_flag/create_album_flag.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/update_comment_flag uc-moderation/deliveries/update_comment_flag/update_comment_flag.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/update_album_flag uc-moderation/deliveries/update_album_flag/update_album_flag.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/recent_flagged_comments uc-moderation/deliveries/recent_flagged_comments/recent_flagged_comments.go
+	env GOOS=linux go build -ldflags="-s -w" -o bin/recent_flagged_albums uc-moderation/deliveries/recent_flagged_albums/recent_flagged_albums.go
 
 	cp ./id_rsa bin/id_rsa
 	cp ./id_rsa.pub bin/id_rsa.pub

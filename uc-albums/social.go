@@ -13,13 +13,13 @@ import (
 	uT "github.com/tennis-community-api-service/users/types"
 )
 
-func (u *UCService) shareAlbum(ctx context.Context, album *aT.Album) (err error) {
+func (u *UCService) shareAlbum(ctx context.Context, r *api.Request, album *aT.Album, newFriendIDs []string) (err error) {
 	user, err := u.usr.GetUser(ctx, album.UserID)
 	if err != nil {
 		return err
 	}
-	if len(album.FriendIDs) > 0 {
-		err = u.usr.AddFriendNoteToUsers(ctx, album.FriendIDs, &uT.FriendNote{
+	if len(newFriendIDs) > 0 {
+		err = u.usr.AddFriendNoteToUsers(ctx, newFriendIDs, &uT.FriendNote{
 			CreatedAt: time.Now(),
 			Subject:   fmt.Sprintf("%s has shared the album %s with you!", user.UserName, album.Name),
 			Type:      "Shared Album",
@@ -28,20 +28,20 @@ func (u *UCService) shareAlbum(ctx context.Context, album *aT.Album) (err error)
 			return
 		}
 
-		for _, friendID := range album.FriendIDs {
+		for _, friendID := range newFriendIDs {
 			friend, softErr := u.usr.GetUser(ctx, friendID)
 			if softErr != nil {
 				fmt.Printf("error getting friend: %s\n", softErr.Error())
 			}
 			softErr = u.emailClient.SendEmail(
 				friend.Email,
-				fmt.Sprintf("Tennis Community - %s Shared An Album With You!", user.UserName),
+				fmt.Sprintf("Hive Tennis - %s Shared An Album With You!", user.UserName),
 				fmt.Sprintf(`
 %s %s,
 Your friend %s %s has shared the album %s with you.
 View At
 %s/albums/%s
-				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin, album.ID),
+				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin(r), album.ID),
 			)
 			if softErr != nil {
 				fmt.Printf("error sending friend email: %s\n", softErr.Error())
@@ -106,7 +106,7 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 		if note.NumComments == 1 {
 			softErr := u.emailClient.SendEmail(
 				friend.Email,
-				fmt.Sprintf("Tennis Community - %s Commented on your album %s!", friend.UserName, album.Name),
+				fmt.Sprintf("Hive Tennis - %s Commented on your album %s!", friend.UserName, album.Name),
 				fmt.Sprintf(`
 %s %s,
 Your friend %s %s has commented on the album %s.

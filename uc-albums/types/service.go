@@ -32,16 +32,13 @@ type UpdateAlbumReq struct {
 }
 
 type SearchAlbumsReq struct {
-	UserID         string `json:"userId"`
-	ExcludeFriends bool   `json:"excludeFriends"`
-	ExcludePublic  bool   `json:"excludePublic"`
-}
-
-type AlbumsResp struct {
-	LastRequestAt time.Time   `json:"lastRequestAt"`
-	MyAlbums      []*aT.Album `json:"myAlbums"`
-	FriendsAlbums []*aT.Album `json:"friendsAlbums"`
-	PublicAlbums  []*aT.Album `json:"publicAlbums"`
+	My           bool  `json:"my"`
+	Friends      bool  `json:"friends"`
+	Shared       bool  `json:"shared"`
+	Public       *bool `json:"isPublic"`
+	HomeApproved *bool `json:"homeApproved"`
+	Limit        int   `json:"limit"`
+	Offset       int   `json:"offset"`
 }
 
 type PostCommentReq struct {
@@ -67,4 +64,25 @@ func (r PostCommentReq) Validate() error {
 		return errors.New("Comment must be less than 500 characters")
 	}
 	return nil
+}
+
+type RecentAlbumsReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Limit  string    `json:"limit"`
+	Offset string    `json:"offset"`
+}
+
+type RecentAlbumCommentsReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Limit  string    `json:"limit"`
+	Offset string    `json:"offset"`
+}
+
+type RecentSwingCommentsReq struct {
+	Start  time.Time `json:"start"`
+	End    time.Time `json:"end"`
+	Limit  string    `json:"limit"`
+	Offset string    `json:"offset"`
 }

@@ -83,7 +83,7 @@ func Init() (svc *UCService, err error) {
 	}
 
 	// init responder
-	responder := &api.Responder{Origin: allowedOrigin}
+	responder := &api.Responder{OriginStr: allowedOrigin}
 
 	svc = &UCService{
 		usr:         usrSvc,

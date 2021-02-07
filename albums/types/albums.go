@@ -17,6 +17,7 @@ type Album struct {
 	Status              enums.AlbumStatus `bson:"status" json:"status"`
 	Tags                []string          `bson:"tags" json:"tags"`
 	SwingVideos         []*SwingVideo     `bson:"swingVids" json:"swingVideos"`
+	HomeApproved        bool              `bson:"home" json:"homeApproved"`
 	IsPublic            bool              `bson:"public" json:"isPublic"`
 	IsViewableByFriends bool              `bson:"frndView" json:"isViewableByFriends"`
 	FriendIDs           []string          `bson:"frndIds" json:"friendIds"`
@@ -31,6 +32,7 @@ type UpdateAlbum struct {
 	Status              *enums.AlbumStatus `bson:"status,omitempty" json:"status,omitempty"`
 	Tags                *[]string          `bson:"tags,omitempty" json:"tags,omitempty"`
 	SwingVideos         *[]*SwingVideo     `bson:"swingVids,omitempty" json:"swingVideos,omitempty"`
+	HomeApproved        *bool              `bson:"home,omitempty" json:"homeApproved,omitempty"`
 	IsPublic            *bool              `bson:"public,omitempty" json:"isPublic,omitempty"`
 	IsViewableByFriends *bool              `bson:"frndView,omitempty" json:"isViewableByFriends,omitempty"`
 	FriendIDs           *[]string          `bson:"frndIds,omitempty" json:"friendIds,omitempty"`
