@@ -8,21 +8,19 @@ import (
 
 type EmailClient struct {
 	from         string
-	password     string
 	smtpUser     string
 	smtpPassword string
 	smtpHost     string
 	smtpPort     int
 }
 
-func NewEmailClient(from, password, smtpHost, smtpPort, smtpUser, smtpPassword string) (*EmailClient, error) {
+func NewEmailClient(from, smtpHost, smtpPort, smtpUser, smtpPassword string) (*EmailClient, error) {
 	port, err := strconv.Atoi(smtpPort)
 	if err != nil {
 		return nil, err
 	}
 	return &EmailClient{
 		from:         from,
-		password:     password,
 		smtpUser:     smtpUser,
 		smtpPassword: smtpPassword,
 		smtpHost:     smtpHost,
@@ -34,7 +32,7 @@ func (c EmailClient) SendEmail(to, subject, body string) error {
 	m := gomail.NewMessage()
 	m.SetBody("text/plain", body)
 	m.SetHeaders(map[string][]string{
-		"From":    {m.FormatAddress(c.from, "amdin")},
+		"From":    {m.FormatAddress(c.from, "admin")},
 		"To":      {to},
 		"Subject": {subject},
 	})

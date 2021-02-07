@@ -449,7 +449,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -472,7 +473,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -495,7 +497,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -518,7 +521,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -541,7 +545,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -564,7 +569,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -587,7 +593,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -610,7 +617,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -633,7 +641,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -656,7 +665,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -679,7 +689,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -702,7 +713,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
@@ -725,7 +737,8 @@ functions:
       JWT_KEY_PATH: ${self:custom.secrets.JWT_KEY_PATH}
       JWT_SECRET_PATH: ${self:custom.secrets.JWT_SECRET_PATH}
       FROM_EMAIL: ${self:custom.secrets.FROM_EMAIL}
-      EMAIL_PWD: ${self:custom.secrets.EMAIL_PWD}
+      SMTP_USER: ${self:custom.secrets.SMTP_USER}
+      SMTP_PWD: ${self:custom.secrets.SMTP_PWD}
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       API_HOST: ${self:custom.secrets.API_HOST}
