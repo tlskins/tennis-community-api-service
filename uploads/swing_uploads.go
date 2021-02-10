@@ -28,7 +28,7 @@ func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, original
 	return u.Store.CreateSwingUpload(&t.SwingUpload{
 		CreatedAt:           now,
 		UpdatedAt:           now,
-		UploadKey:           paths[len(paths)-2],
+		UploadKey:           paths[len(paths)-3],
 		UserID:              userId,
 		Status:              enums.SwingUploadStatusOriginal,
 		OriginalURL:         originalURL,
