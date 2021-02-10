@@ -42,7 +42,8 @@ type UploadClipEvent struct {
 
 type UploadSwingEvent struct {
 	ResponsePayload struct {
-		StatusCode int `json:"statusCode"`
+		StatusCode int               `json:"statusCode"`
+		Headers    map[string]string `json:"headers"`
 		Body       struct {
 			Bucket  string         `json:"bucket"`
 			Outputs []*UploadSwing `json:"outputs"`
@@ -50,14 +51,16 @@ type UploadSwingEvent struct {
 	} `json:"responsePayload"`
 }
 
-func (u UploadSwingEvent) Outputs() (videos []string, gifs []string, jpgs []string) {
+func (u UploadSwingEvent) Outputs() (videos []string, gifs []string, jpgs []string, txts []string) {
 	videos = make([]string, len(u.ResponsePayload.Body.Outputs))
 	gifs = make([]string, len(u.ResponsePayload.Body.Outputs))
 	jpgs = make([]string, len(u.ResponsePayload.Body.Outputs))
+	txts = make([]string, len(u.ResponsePayload.Body.Outputs))
 	for i, swing := range u.ResponsePayload.Body.Outputs {
 		videos[i] = swing.Video
 		gifs[i] = swing.Gif
 		jpgs[i] = swing.Jpg
+		txts[i] = swing.Txt
 	}
 	return
 }
@@ -66,4 +69,5 @@ type UploadSwing struct {
 	Video string `json:"video"`
 	Gif   string `json:"gif"`
 	Jpg   string `json:"jpg"`
+	Txt   string `json:"txt"`
 }

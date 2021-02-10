@@ -36,7 +36,7 @@ func (u *UCService) SearchAlbums(ctx context.Context, r *api.Request) (resp api.
 	}
 	albums, err := u.alb.SearchAlbums(ctx, userIDs, friendIDs, req.Public, viewableByFriends, req.HomeApproved, req.Limit, req.Offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, albums, http.StatusOK)
+	return u.Resp.Success(r.Headers, albums, http.StatusOK)
 }
 
 func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -50,14 +50,14 @@ func (u *UCService) CreateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	api.CheckError(http.StatusInternalServerError, err)
 	err = u.shareAlbum(ctx, r, album, album.FriendIDs)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, album, http.StatusOK)
+	return u.Resp.Success(r.Headers, album, http.StatusOK)
 }
 
 func (u *UCService) GetAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	id := r.PathParameters["id"]
 	album, err := u.alb.GetAlbum(ctx, id)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, album, http.StatusOK)
+	return u.Resp.Success(r.Headers, album, http.StatusOK)
 }
 
 func (u *UCService) DeleteAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -71,7 +71,7 @@ func (u *UCService) DeleteAlbum(ctx context.Context, r *api.Request) (resp api.R
 	}
 	u.alb.DeleteAlbum(ctx, id)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, nil, http.StatusOK)
+	return u.Resp.Success(r.Headers, nil, http.StatusOK)
 }
 
 func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -107,7 +107,7 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 		err = u.shareAlbum(ctx, r, album, newFriendIDs)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
-	return u.Resp.Success(r, album, http.StatusOK)
+	return u.Resp.Success(r.Headers, album, http.StatusOK)
 }
 
 func (u *UCService) UpdateSwing(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -124,7 +124,7 @@ func (u *UCService) UpdateSwing(ctx context.Context, r *api.Request) (resp api.R
 	}
 	album, err = u.alb.UpdateSwing(ctx, req.AlbumID, req)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, album, http.StatusOK)
+	return u.Resp.Success(r.Headers, album, http.StatusOK)
 }
 
 func (u *UCService) RecentAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -142,7 +142,7 @@ func (u *UCService) RecentAlbums(ctx context.Context, r *api.Request) (resp api.
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	albums, err := u.alb.RecentAlbums(ctx, req.Start, req.End, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, albums, http.StatusOK)
+	return u.Resp.Success(r.Headers, albums, http.StatusOK)
 }
 
 func (u *UCService) RecentAlbumComments(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -160,7 +160,7 @@ func (u *UCService) RecentAlbumComments(ctx context.Context, r *api.Request) (re
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	comments, err := u.alb.RecentAlbumComments(ctx, req.Start, req.End, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, comments, http.StatusOK)
+	return u.Resp.Success(r.Headers, comments, http.StatusOK)
 }
 
 func (u *UCService) RecentSwingComments(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -178,5 +178,5 @@ func (u *UCService) RecentSwingComments(ctx context.Context, r *api.Request) (re
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	comments, err := u.alb.RecentSwingComments(ctx, req.Start, req.End, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, comments, http.StatusOK)
+	return u.Resp.Success(r.Headers, comments, http.StatusOK)
 }

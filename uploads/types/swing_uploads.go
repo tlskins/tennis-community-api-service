@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/tennis-community-api-service/pkg/enums"
 	"time"
+
+	"github.com/tennis-community-api-service/pkg/enums"
 )
 
 type SwingUpload struct {
@@ -57,14 +58,16 @@ type UploadClipVideo struct {
 }
 
 type UploadSwingVideo struct {
-	ID        string    `bson:"id" json:"id"`
-	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
-	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
-	ClipID    int       `bson:"clipId" json:"clipId"`
-	SwingID   int       `bson:"swId" json:"swingId"`
-	CutURL    string    `bson:"cutUrl" json:"cutURL"`
-	GifURL    string    `bson:"gifUrl" json:"gifURL"`
-	JpgURL    string    `bson:"jpgUrl" json:"jpgURL"`
+	ID               string    `bson:"id" json:"id"`
+	CreatedAt        time.Time `bson:"crAt" json:"createdAt"`
+	UpdatedAt        time.Time `bson:"updAt" json:"updatedAt"`
+	TimestampSeconds int       `bson:"timeSt" json:"timestampSecs"`
+	Frames           int       `bson:"frames" json:"frames"`
+	ClipID           int       `bson:"clipId" json:"clipId"`
+	SwingID          int       `bson:"swId" json:"swingId"`
+	CutURL           string    `bson:"cutUrl" json:"cutURL"`
+	GifURL           string    `bson:"gifUrl" json:"gifURL"`
+	JpgURL           string    `bson:"jpgUrl" json:"jpgURL"`
 }
 
 type UpdateUploadSwingVideo struct {
@@ -72,4 +75,11 @@ type UpdateUploadSwingVideo struct {
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 	ClipID    *int      `bson:"clipId,omitempty" json:"clipId,omitempty"`
 	CutURL    *string   `bson:"cutUrl,omitempty" json:"cutURL,omitempty"`
+}
+
+type SwingUploadMeta struct {
+	TimestampSeconds int
+	Frames           int
+	Swing            int
+	Clip             int
 }

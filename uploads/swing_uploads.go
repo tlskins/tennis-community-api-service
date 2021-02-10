@@ -3,6 +3,7 @@ package uploads
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -21,8 +22,6 @@ func (u *UploadsService) GetRecentSwingUploads(ctx context.Context, userId strin
 	return u.Store.GetRecentSwingUploads(userId)
 }
 
-// https://tennis-swings.s3.amazonaws.com/originals/b687e24a-6e73-4679-b2cb-2e0aa5e4c109/2020_12_30_01_33_51/test.mp4
-
 func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, originalURL, albumName string, friendIds []string, isPublic, isFriends bool) (resp *t.SwingUpload, err error) {
 	now := time.Now()
 	paths := strings.Split(originalURL, "/")
@@ -40,26 +39,25 @@ func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, original
 	})
 }
 
-func (u *UploadsService) uploadIDFromFileName(videoPath string) (userID, uploadID, fileName string, err error) {
+func (u *UploadsService) uploadIDFromFileName(videoPath string) (userID, uploadID, fileLen, fileName string, err error) {
 	// upload id from folder path
 	paths := strings.Split(videoPath, "/")
-	if len(paths) < 3 {
-		return "", "", "", errors.New("Invalid video path hiearchy format")
+	if len(paths) < 4 {
+		return "", "", "", "", errors.New("Invalid video path hiearchy format")
 	}
-	return paths[len(paths)-3], paths[len(paths)-2], paths[len(paths)-1], nil
+	return paths[len(paths)-4], paths[len(paths)-3], paths[len(paths)-2], paths[len(paths)-1], nil
 }
 
 // S3 Events
 
-// https://tennis-swings.s3.amazonaws.com/clips/timuserid/2020_12_18_1152_59/tim_ground_profile_wide_1min_540p_clip_1.mp4
 func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string, outputs []string) (resp *t.SwingUpload, err error) {
-	fmt.Printf("%s %v\n", bucket, outputs)
 	var uploadID, userID string
 	now := time.Now()
 	clips := make([]*t.UploadClipVideo, len(outputs))
 	for i, videoPath := range outputs {
 		var fileName string
-		userID, uploadID, fileName, err = u.uploadIDFromFileName(videoPath)
+		fmt.Printf("videoPath %s\n", videoPath)
+		userID, uploadID, _, fileName, err = u.uploadIDFromFileName(videoPath)
 		api.CheckError(http.StatusInternalServerError, err)
 		// clip id from file name
 		rgx := regexp.MustCompile(`clip_(\d{1,})..+$`)
@@ -87,43 +85,82 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string
 	return
 }
 
-// https://tennis-swings.s3.amazonaws.com/tmp/timuserid/2020_12_18_1152_59/tim_ground_profile_wide_1min_540p_clip_1_swing_1.mp4
-func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, videos, gifs, jpgs []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
+func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, videos, gifs, jpgs, txts []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
 	var uploadID string
 	now := time.Now()
 	swings = make([]*t.UploadSwingVideo, len(videos))
 	for i, videoPath := range videos {
-		var fileName string
-		_, uploadID, fileName, err = u.uploadIDFromFileName(videoPath)
-		api.CheckError(http.StatusInternalServerError, err)
-		rgx := regexp.MustCompile(`clip_(\d{1,})_swing_(\d{1,})..+$`)
-		matches := rgx.FindStringSubmatch(fileName)
-		if len(matches) < 3 {
-			return nil, swings, errors.New("Invalid clip path format")
-		}
-		var swingID, clipID int
-		if clipID, err = strconv.Atoi(matches[1]); err != nil {
+		var meta *t.SwingUploadMeta
+		fmt.Printf("txtURL = %s\n", fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i]))
+		if meta, err = u.parseMetaFile(fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i])); err != nil {
 			return
 		}
-		if swingID, err = strconv.Atoi(matches[2]); err != nil {
-			return
-		}
+		fmt.Printf("after parse meta\n")
 		swings[i] = &t.UploadSwingVideo{
-			ID:        uuid.NewV4().String(),
-			CreatedAt: now,
-			UpdatedAt: now,
-			ClipID:    clipID,
-			SwingID:   swingID,
-			CutURL:    fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
-			GifURL:    fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, gifs[i]),
-			JpgURL:    fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, jpgs[i]),
+			ID:               uuid.NewV4().String(),
+			CreatedAt:        now,
+			UpdatedAt:        now,
+			TimestampSeconds: meta.TimestampSeconds,
+			Frames:           meta.Frames,
+			ClipID:           meta.Clip,
+			SwingID:          meta.Swing,
+			CutURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
+			GifURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, gifs[i]),
+			JpgURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, jpgs[i]),
 		}
 	}
 
 	upload, err = u.Store.CreateUploadSwingVideos(uploadID, swings)
+	fmt.Printf("after store create upload\n")
 	return upload, swings, err
 }
 
 func (u *UploadsService) UpdateSwingUpload(_ context.Context, data *t.UpdateSwingUpload) (upload *t.SwingUpload, err error) {
 	return u.Store.UpdateSwingUpload(data)
+}
+
+func (u *UploadsService) parseMetaFile(txtURL string) (meta *t.SwingUploadMeta, err error) {
+	// download file
+	res, err := http.Get(txtURL)
+	if err != nil {
+		return nil, err
+	}
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	res.Body.Close()
+	fmt.Printf("after body close\n")
+
+	stringContent := string(data)
+	lineEnding := "\n"
+	if windows := strings.Index(stringContent, "\r\n"); windows > -1 {
+		lineEnding = "\r\n"
+	}
+
+	// parse file
+	meta = &t.SwingUploadMeta{}
+	for _, line := range strings.Split(stringContent, lineEnding) {
+		if attr := strings.Split(line, "="); len(attr) > 1 {
+			if attr[0] == "timestamp" {
+				if meta.TimestampSeconds, err = strconv.Atoi(attr[1]); err != nil {
+					return
+				}
+			} else if attr[0] == "frames" {
+				if meta.Frames, err = strconv.Atoi(attr[1]); err != nil {
+					return
+				}
+			} else if attr[0] == "swing" {
+				if meta.Swing, err = strconv.Atoi(attr[1]); err != nil {
+					return
+				}
+			} else if attr[0] == "clip" {
+				if meta.Clip, err = strconv.Atoi(attr[1]); err != nil {
+					return
+				}
+			}
+		}
+	}
+	fmt.Printf("after parse file\n")
+	return meta, err
 }

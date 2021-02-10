@@ -26,7 +26,7 @@ func (u *UCService) CreateCommentFlag(ctx context.Context, r *api.Request) (resp
 	api.Parse(r, &req)
 	flag, err := u.mod.CreateCommentFlag(ctx, &req)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, flag, http.StatusOK)
+	return u.Resp.Success(r.Headers, flag, http.StatusOK)
 }
 
 func (u *UCService) CreateAlbumFlag(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -42,7 +42,7 @@ func (u *UCService) CreateAlbumFlag(ctx context.Context, r *api.Request) (resp a
 	api.Parse(r, &req)
 	flag, err := u.mod.CreateAlbumFlag(ctx, &req)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, flag, http.StatusOK)
+	return u.Resp.Success(r.Headers, flag, http.StatusOK)
 }
 
 func (u *UCService) UpdateCommentFlag(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -56,7 +56,7 @@ func (u *UCService) UpdateCommentFlag(ctx context.Context, r *api.Request) (resp
 	api.Parse(r, req)
 	flag, err := u.mod.UpdateCommentFlag(ctx, req)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, flag, http.StatusOK)
+	return u.Resp.Success(r.Headers, flag, http.StatusOK)
 }
 
 func (u *UCService) UpdateAlbumFlag(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -70,7 +70,7 @@ func (u *UCService) UpdateAlbumFlag(ctx context.Context, r *api.Request) (resp a
 	api.Parse(r, req)
 	flag, err := u.mod.UpdateAlbumFlag(ctx, req)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, flag, http.StatusOK)
+	return u.Resp.Success(r.Headers, flag, http.StatusOK)
 }
 
 func (u *UCService) RecentFlaggedComments(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -93,7 +93,7 @@ func (u *UCService) RecentFlaggedComments(ctx context.Context, r *api.Request) (
 	}
 	flags, err := u.mod.RecentFlaggedComments(ctx, req.Start, req.End, resolved, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, flags, http.StatusOK)
+	return u.Resp.Success(r.Headers, flags, http.StatusOK)
 }
 
 func (u *UCService) RecentFlaggedAlbums(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -116,5 +116,5 @@ func (u *UCService) RecentFlaggedAlbums(ctx context.Context, r *api.Request) (re
 	}
 	flags, err := u.mod.RecentFlaggedAlbums(ctx, req.Start, req.End, resolved, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, flags, http.StatusOK)
+	return u.Resp.Success(r.Headers, flags, http.StatusOK)
 }

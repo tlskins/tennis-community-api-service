@@ -41,7 +41,7 @@ func (u *UCService) shareAlbum(ctx context.Context, r *api.Request, album *aT.Al
 Your friend %s %s has shared the album %s with you.
 View At
 %s/albums/%s
-				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin(r), album.ID),
+				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
 			)
 			if softErr != nil {
 				fmt.Printf("error sending friend email: %s\n", softErr.Error())
@@ -120,5 +120,5 @@ View At
 		}
 	}
 
-	return u.Resp.Success(r, album, http.StatusOK)
+	return u.Resp.Success(r.Headers, album, http.StatusOK)
 }

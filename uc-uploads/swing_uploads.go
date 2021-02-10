@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	uuid "github.com/satori/go.uuid"
 
 	aT "github.com/tennis-community-api-service/albums/types"
@@ -24,7 +25,7 @@ func (u *UCService) GetRecentSwingUploads(ctx context.Context, r *api.Request) (
 	claims := auth.AuthorizedClaimsFromContext(ctx)
 	uploads, err := u.up.GetRecentSwingUploads(ctx, claims.Subject)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, uploads, http.StatusCreated)
+	return u.Resp.Success(r.Headers, uploads, http.StatusCreated)
 }
 
 func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -43,7 +44,7 @@ func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp
 		req.IsViewableByFriends,
 	)
 	api.CheckError(http.StatusInternalServerError, err)
-	return u.Resp.Success(r, upload, http.StatusCreated)
+	return u.Resp.Success(r.Headers, upload, http.StatusCreated)
 }
 
 func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipEvent) (string, error) {
@@ -51,6 +52,7 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 	if err != nil {
 		return "error", err
 	}
+	fmt.Printf("after CreateUploadClipVideos\n")
 	album, err := u.alb.CreateAlbumFromUpload(
 		ctx,
 		upload.UserID,
@@ -63,6 +65,7 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 	if err != nil {
 		return "error", err
 	}
+	fmt.Printf("after CreateAlbumFromUpload\n")
 	_, err = u.up.UpdateSwingUpload(ctx, &uT.UpdateSwingUpload{
 		UploadKey: upload.UploadKey,
 		UserID:    upload.UserID,
@@ -72,12 +75,14 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 	if err != nil {
 		return "error", err
 	}
+	fmt.Printf("after UpdateSwingUpload\n")
 	return "success", nil
 }
 
 func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwingEvent) (string, error) {
-	videos, gifs, jpgs := r.Outputs()
-	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, videos, gifs, jpgs)
+	spew.Dump(r)
+	videos, gifs, jpgs, txts := r.Outputs()
+	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, videos, gifs, jpgs, txts)
 	if err != nil {
 		return "error CreateUploadSwingVideos", err
 	}
@@ -86,16 +91,18 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 	swingVids := make([]*aT.SwingVideo, len(swingUploads))
 	for i, swing := range swingUploads {
 		swingVids[i] = &aT.SwingVideo{
-			CreatedAt: now,
-			UpdatedAt: now,
-			UserID:    upload.UserID,
-			UploadKey: upload.UploadKey,
-			Clip:      swing.ClipID,
-			Swing:     swing.SwingID,
-			VideoURL:  swing.CutURL,
-			GifURL:    swing.GifURL,
-			JpgURL:    swing.JpgURL,
-			Status:    enums.SwingVideoStatusCreated,
+			CreatedAt:        now,
+			UpdatedAt:        now,
+			UserID:           upload.UserID,
+			UploadKey:        upload.UploadKey,
+			Clip:             swing.ClipID,
+			Swing:            swing.SwingID,
+			TimestampSeconds: swing.TimestampSeconds,
+			Frames:           swing.Frames,
+			VideoURL:         swing.CutURL,
+			GifURL:           swing.GifURL,
+			JpgURL:           swing.JpgURL,
+			Status:           enums.SwingVideoStatusCreated,
 		}
 	}
 	album, err := u.alb.AddVideosToAlbum(ctx, upload.UserID, upload.UploadKey, swingVids)
@@ -172,7 +179,7 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 Your friend %s %s has has shared the album %s with you.
 View At:
 %s/albums/%s
-					`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin, album.ID),
+					`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin(r.ResponsePayload.Headers), album.ID),
 				)
 				if softErr != nil {
 					fmt.Printf("error sending friend email: %s\n", softErr.Error())

@@ -23,7 +23,7 @@ Welcome to Hive Tennis!
 Please follow this link to confirm your account:
 
 %s
-		`, fmt.Sprintf("%s/?confirmation=%s", u.Resp.Origin(r), confirmationID)),
+		`, fmt.Sprintf("%s/?confirmation=%s", u.Resp.Origin(r.Headers), confirmationID)),
 	)
 }
 
@@ -58,7 +58,7 @@ func (u *UCService) CreateUser(ctx context.Context, r *api.Request) (resp api.Re
 	err = u.sendWelcomeEmail(ctx, r, user.Email, conf.ID)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
-	return u.Resp.Success(r, usrResp, http.StatusCreated)
+	return u.Resp.Success(r.Headers, usrResp, http.StatusCreated)
 }
 
 func (u *UCService) InviteUser(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -93,17 +93,17 @@ Please follow the link below:
 %s
 
 -Hive Tennis
-		`, inviter.Name(), fmt.Sprintf("%s/%s?confirmation=%s", u.Resp.Origin(r), conf.URL, conf.ID)),
+		`, inviter.Name(), fmt.Sprintf("%s/%s?confirmation=%s", u.Resp.Origin(r.Headers), conf.URL, conf.ID)),
 	)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, nil, http.StatusCreated)
+	return u.Resp.Success(r.Headers, nil, http.StatusCreated)
 }
 
 func (u *UCService) GetUserConfirmation(ctx context.Context, r *api.Request) (resp api.Response, err error) {
 	id := r.PathParameters["id"]
 	conf, err := u.usr.GetConfirmation(ctx, id)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, conf, http.StatusOK)
+	return u.Resp.Success(r.Headers, conf, http.StatusOK)
 }
 
 func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -159,5 +159,5 @@ func (u *UCService) Confirm(ctx context.Context, r *api.Request) (resp api.Respo
 	api.CheckError(http.StatusInternalServerError, err)
 	newUser.AuthToken = authToken
 
-	return u.Resp.Success(r, newUser, http.StatusOK)
+	return u.Resp.Success(r.Headers, newUser, http.StatusOK)
 }

@@ -23,7 +23,7 @@ func (u *UCService) UpdateUserProfile(ctx context.Context, r *api.Request) (resp
 	usrReq := uT.UpdateUserProfile(req)
 	user, err := u.usr.UpdateUserProfile(ctx, &usrReq)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, user, http.StatusOK)
+	return u.Resp.Success(r.Headers, user, http.StatusOK)
 }
 
 func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -44,7 +44,7 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	user.AuthToken = authToken
 
-	return u.Resp.Success(r, user, http.StatusOK)
+	return u.Resp.Success(r.Headers, user, http.StatusOK)
 }
 
 func (u *UCService) GetUser(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -53,7 +53,7 @@ func (u *UCService) GetUser(ctx context.Context, r *api.Request) (resp api.Respo
 	claims := auth.AuthorizedClaimsFromContext(ctx)
 	user, err := u.usr.GetUser(ctx, claims.Subject)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, user, http.StatusOK)
+	return u.Resp.Success(r.Headers, user, http.StatusOK)
 }
 
 func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -74,7 +74,7 @@ func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) 
 		user, err = u.usr.RemoveCommentNote(ctx, claims.Subject, req.CommentNoteID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
-	return u.Resp.Success(r, user, http.StatusOK)
+	return u.Resp.Success(r.Headers, user, http.StatusOK)
 }
 
 func (u *UCService) RecentUsers(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -92,5 +92,5 @@ func (u *UCService) RecentUsers(ctx context.Context, r *api.Request) (resp api.R
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	users, err := u.usr.RecentUsers(ctx, req.Start, req.End, limit, offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
-	return u.Resp.Success(r, users, http.StatusOK)
+	return u.Resp.Success(r.Headers, users, http.StatusOK)
 }
