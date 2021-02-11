@@ -16,6 +16,7 @@ type SwingVideo struct {
 	Name             string                 `bson:"nm" json:"name"`
 	Clip             int                    `bson:"clip" json:"clip"`
 	Swing            int                    `bson:"swing" json:"swing"`
+	Rally            int                    `bson:"rally" json:"rally"`
 	TimestampSeconds int                    `bson:"timeSt" json:"timestampSecs"`
 	Frames           int                    `bson:"frames" json:"frames"`
 	VideoURL         string                 `bson:"vidUrl" json:"videoURL"`

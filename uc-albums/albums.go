@@ -107,6 +107,11 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 		err = u.shareAlbum(ctx, r, album, newFriendIDs)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
+	if req.CalculateMetrics {
+		album.CalculateMetrics()
+		album, err = u.alb.UpdateAlbum(ctx, &aT.UpdateAlbum{ID: album.ID, SwingVideos: &album.SwingVideos})
+		api.CheckError(http.StatusInternalServerError, err)
+	}
 	return u.Resp.Success(r.Headers, album, http.StatusOK)
 }
 

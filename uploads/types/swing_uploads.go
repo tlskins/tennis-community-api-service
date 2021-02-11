@@ -78,8 +78,9 @@ type UpdateUploadSwingVideo struct {
 }
 
 type SwingUploadMeta struct {
-	TimestampSeconds int
-	Frames           int
-	Swing            int
-	Clip             int
+	TimestampSeconds int    `json:"timestamp"`
+	Frames           int    `json:"frames"`
+	Swing            int    `json:"swing"`
+	Clip             int    `json:"clip"`
+	UploadKey        string `json:"uploadKey"`
 }

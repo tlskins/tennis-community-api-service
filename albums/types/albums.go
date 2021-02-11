@@ -24,6 +24,19 @@ type Album struct {
 	Comments            []*Comment        `bson:"cmnts" json:"comments"`
 }
 
+func (a *Album) CalculateMetrics() {
+	lastTime := 0
+	currRally := 1
+	rallyWindow := 6 // seconds
+	for i, swing := range a.SwingVideos {
+		if i != 0 && swing.TimestampSeconds-lastTime >= rallyWindow {
+			currRally++
+		}
+		swing.Rally = currRally
+		lastTime = swing.TimestampSeconds
+	}
+}
+
 type UpdateAlbum struct {
 	ID        string    `bson:"-" json:"id"`
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`

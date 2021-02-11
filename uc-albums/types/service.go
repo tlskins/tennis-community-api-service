@@ -28,7 +28,8 @@ func (r CreateAlbumReq) Validate() error {
 
 type UpdateAlbumReq struct {
 	*aT.UpdateAlbum
-	ShareAlbum bool `json:"shareAlbum"`
+	ShareAlbum       bool `json:"shareAlbum"`
+	CalculateMetrics bool `json:"calculateMetrics"`
 }
 
 type SearchAlbumsReq struct {
