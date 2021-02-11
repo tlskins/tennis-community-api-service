@@ -34,6 +34,8 @@ func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp
 	req := &t.CreateSwingUploadReq{}
 	api.ParseAndValidate(r, req)
 	claims := auth.AuthorizedClaimsFromContext(ctx)
+	spew.Dump(r)
+	fmt.Printf("OriginalURL=%s\n", req.OriginalURL)
 	upload, err := u.up.CreateSwingUpload(
 		ctx,
 		claims.Subject,
@@ -83,6 +85,7 @@ func (u *UCService) CreateUploadSwingVideos(ctx context.Context, r *t.UploadSwin
 	spew.Dump(r)
 	videos, gifs, jpgs, txts := r.Outputs()
 	upload, swingUploads, err := u.up.CreateUploadSwingVideos(ctx, r.ResponsePayload.Body.Bucket, videos, gifs, jpgs, txts)
+	spew.Dump(upload)
 	if err != nil {
 		return "error CreateUploadSwingVideos", err
 	}

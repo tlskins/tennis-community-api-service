@@ -28,7 +28,7 @@ func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, original
 	return u.Store.CreateSwingUpload(&t.SwingUpload{
 		CreatedAt:           now,
 		UpdatedAt:           now,
-		UploadKey:           paths[len(paths)-3],
+		UploadKey:           paths[len(paths)-2],
 		UserID:              userId,
 		Status:              enums.SwingUploadStatusOriginal,
 		OriginalURL:         originalURL,
@@ -39,7 +39,7 @@ func (u *UploadsService) CreateSwingUpload(ctx context.Context, userId, original
 	})
 }
 
-func (u *UploadsService) uploadIDFromFileName(videoPath string) (userID, uploadID, fileLen, fileName string, err error) {
+func (u *UploadsService) uploadIDFromClippedFileName(videoPath string) (userID, uploadID, fileLen, fileName string, err error) {
 	// upload id from folder path
 	paths := strings.Split(videoPath, "/")
 	if len(paths) < 4 {
@@ -57,7 +57,7 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string
 	for i, videoPath := range outputs {
 		var fileName string
 		fmt.Printf("videoPath %s\n", videoPath)
-		userID, uploadID, _, fileName, err = u.uploadIDFromFileName(videoPath)
+		userID, uploadID, _, fileName, err = u.uploadIDFromClippedFileName(videoPath)
 		api.CheckError(http.StatusInternalServerError, err)
 		// clip id from file name
 		rgx := regexp.MustCompile(`clip_(\d{1,})..+$`)
@@ -90,6 +90,11 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 	now := time.Now()
 	swings = make([]*t.UploadSwingVideo, len(videos))
 	for i, videoPath := range videos {
+		if uploadID == "" {
+			// video path is swing output s3 key
+			videoPaths := strings.Split(videoPath, "/")
+			uploadID = videoPaths[len(videoPaths)-2]
+		}
 		var meta *t.SwingUploadMeta
 		fmt.Printf("txtURL = %s\n", fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i]))
 		if meta, err = u.parseMetaFile(fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i])); err != nil {
