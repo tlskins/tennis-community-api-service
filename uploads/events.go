@@ -2,56 +2,25 @@ package uploads
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"regexp"
-	"strconv"
-	"strings"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/tennis-community-api-service/pkg/enums"
-	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uploads/types"
 
-	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )
 
-func (u *UploadsService) CreateUploadClipVideos(_ context.Context, bucket string, outputs []string) (resp *t.SwingUpload, err error) {
-	var uploadID, userID string
-	now := time.Now()
-	clips := make([]*t.UploadClipVideo, len(outputs))
-	for i, videoPath := range outputs {
-		var fileName string
-		fmt.Printf("videoPath %s\n", videoPath)
-		paths := strings.Split(videoPath, "/")
-		userID = paths[len(paths)-4]
-		uploadID = paths[len(paths)-3]
-		fileName = paths[len(paths)-1]
-		api.CheckError(http.StatusInternalServerError, err)
-
-		// clip id from file name
-		rgx := regexp.MustCompile(`clip_(\d{1,})..+$`)
-		matches := rgx.FindStringSubmatch(fileName)
-		if len(matches) < 2 {
-			return nil, errors.New("Invalid video name format")
-		}
-		var id int
-		id, err = strconv.Atoi(matches[1])
-
-		api.CheckError(http.StatusInternalServerError, err)
-		clips[i] = &t.UploadClipVideo{
-			ID:        id,
-			CreatedAt: now,
-			ClipURL:   fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
-		}
-	}
+func (u *UploadsService) CreateUploadClipVideos(_ context.Context, uploadID, userID string, clips []*t.UploadClipVideo) (resp *t.SwingUpload, err error) {
 	status := enums.SwingUploadStatusClipped
 	resp, err = u.Store.UpdateSwingUpload(&t.UpdateSwingUpload{
 		UploadKey:  uploadID,
 		UserID:     userID,
-		UpdatedAt:  now,
+		UpdatedAt:  time.Now(),
 		Status:     &status,
 		ClipVideos: &clips,
 	})
@@ -63,15 +32,16 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 	now := time.Now()
 	swings = make([]*t.UploadSwingVideo, len(videos))
 	for i, videoPath := range videos {
-		var meta *t.SwingUploadMeta
-		fmt.Printf("metaURL = %s\n", fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i]))
-		if meta, err = u.parseMetaFile(fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i])); err != nil {
+		meta := &t.SwingUploadMeta{}
+		metaPath := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, txts[i])
+		fmt.Printf("metaURL = %s\n", metaPath)
+		if err = u.unmarshalJSONFile(metaPath, meta); err != nil {
 			return
 		}
 		if uploadID == "" {
 			uploadID = meta.UploadKey
 		}
-		fmt.Printf("after parse meta\n")
+		spew.Dump(meta)
 		swings[i] = &t.UploadSwingVideo{
 			ID:               uuid.NewV4().String(),
 			CreatedAt:        now,
@@ -91,50 +61,17 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 	return upload, swings, err
 }
 
-func (u *UploadsService) parseMetaFile(txtURL string) (meta *t.SwingUploadMeta, err error) {
+func (u *UploadsService) unmarshalJSONFile(txtURL string, out interface{}) (err error) {
 	// download file
 	res, err := http.Get(txtURL)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	data, err := ioutil.ReadAll(res.Body)
+	bytesData, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	res.Body.Close()
-	fmt.Printf("after body close\n")
 
-	stringContent := string(data)
-	lineEnding := "\n"
-	if windows := strings.Index(stringContent, "\r\n"); windows > -1 {
-		lineEnding = "\r\n"
-	}
-
-	// parse file
-	meta = &t.SwingUploadMeta{}
-	for _, line := range strings.Split(stringContent, lineEnding) {
-		if attr := strings.Split(line, "="); len(attr) > 1 {
-			if attr[0] == "timestamp" {
-				if meta.TimestampSeconds, err = strconv.Atoi(attr[1]); err != nil {
-					return
-				}
-			} else if attr[0] == "frames" {
-				if meta.Frames, err = strconv.Atoi(attr[1]); err != nil {
-					return
-				}
-			} else if attr[0] == "swing" {
-				if meta.Swing, err = strconv.Atoi(attr[1]); err != nil {
-					return
-				}
-			} else if attr[0] == "clip" {
-				if meta.Clip, err = strconv.Atoi(attr[1]); err != nil {
-					return
-				}
-			} else if attr[0] == "uploadKey" {
-				meta.UploadKey = attr[1]
-			}
-		}
-	}
-	fmt.Printf("after parse file\n")
-	return meta, err
+	return json.Unmarshal(bytesData, out)
 }
