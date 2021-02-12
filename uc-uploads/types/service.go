@@ -34,10 +34,20 @@ type UploadClipEvent struct {
 	ResponsePayload struct {
 		StatusCode int `json:"statusCode"`
 		Body       struct {
-			Bucket  string   `json:"bucket"`
-			Outputs []string `json:"outputs"`
+			Bucket   string            `json:"bucket"`
+			UserID   string            `json:"userId"`
+			UploadID string            `json:"uploadId"`
+			Outputs  []*ClipUploadMeta `json:"outputs"`
 		} `json:"body"`
 	} `json:"responsePayload"`
+}
+
+type ClipUploadMeta struct {
+	Path         string `json:"path"`
+	FileName     string `json:"fileName"`
+	Number       int    `json:"number"`
+	StartSeconds int    `json:"startSec"`
+	EndSeconds   int    `json:"endSec"`
 }
 
 type UploadSwingEvent struct {

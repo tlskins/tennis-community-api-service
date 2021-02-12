@@ -52,9 +52,12 @@ type UpdateSwingUpload struct {
 }
 
 type UploadClipVideo struct {
-	ID        int       `bson:"id" json:"id"`
-	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
-	ClipURL   string    `bson:"clipUrl" json:"clipURL"`
+	ID           int       `bson:"id" json:"id"`
+	CreatedAt    time.Time `bson:"crAt" json:"createdAt"`
+	ClipURL      string    `bson:"clipUrl" json:"clipURL"`
+	FileName     string    `bson:"fileNm" json:"fileName"`
+	StartSeconds int       `bson:"st" json:"startSec"`
+	EndSeconds   int       `bson:"end" json:"endSec"`
 }
 
 type UploadSwingVideo struct {
@@ -75,12 +78,4 @@ type UpdateUploadSwingVideo struct {
 	UpdatedAt time.Time `bson:"updAt" json:"updatedAt"`
 	ClipID    *int      `bson:"clipId,omitempty" json:"clipId,omitempty"`
 	CutURL    *string   `bson:"cutUrl,omitempty" json:"cutURL,omitempty"`
-}
-
-type SwingUploadMeta struct {
-	TimestampSeconds int    `json:"timestamp"`
-	Frames           int    `json:"frames"`
-	Swing            int    `json:"swing"`
-	Clip             int    `json:"clip"`
-	UploadKey        string `json:"uploadKey"`
 }

@@ -17,7 +17,21 @@ import (
 )
 
 func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipEvent) (string, error) {
-	upload, err := u.up.CreateUploadClipVideos(ctx, r.ResponsePayload.Body.Bucket, r.ResponsePayload.Body.Outputs)
+	now := time.Now()
+	body := r.ResponsePayload.Body
+	clips := make([]*uT.UploadClipVideo, len(body.Outputs))
+	for i, clipMeta := range body.Outputs {
+		clips[i] = &uT.UploadClipVideo{
+			ID:           clipMeta.Number,
+			CreatedAt:    now,
+			ClipURL:      fmt.Sprintf("https://%s.s3.amazonaws.com/%s", r.ResponsePayload.Body.Bucket, clipMeta.Path),
+			FileName:     clipMeta.FileName,
+			StartSeconds: clipMeta.StartSeconds,
+			EndSeconds:   clipMeta.EndSeconds,
+		}
+	}
+
+	upload, err := u.up.CreateUploadClipVideos(ctx, body.UploadID, body.UserID, clips)
 	if err != nil {
 		return "error", err
 	}
