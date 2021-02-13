@@ -23,6 +23,7 @@ type Album struct {
 	FriendIDs           []string          `bson:"frndIds" json:"friendIds"`
 	Comments            []*Comment        `bson:"cmnts" json:"comments"`
 
+	// file upload only
 	SourceLength float64 `bson:"srcLen,omitempty" json:"sourceLength,omitempty"` // seconds
 	SourceSize   int64   `bson:"srcSize,omitempty" json:"sourceSize,omitempty"`  // bytes
 }

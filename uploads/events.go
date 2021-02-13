@@ -29,6 +29,7 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, uploadID, use
 
 func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, videos, gifs, jpgs, txts []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
 	var uploadID string
+	var clipNum int
 	now := time.Now()
 	swings = make([]*t.UploadSwingVideo, len(videos))
 	for i, videoPath := range videos {
@@ -41,6 +42,7 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		if uploadID == "" {
 			uploadID = meta.UploadKey
 		}
+		clipNum = meta.Clip
 		spew.Dump(meta)
 		swings[i] = &t.UploadSwingVideo{
 			ID:               uuid.NewV4().String(),
@@ -56,7 +58,7 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		}
 	}
 
-	upload, err = u.Store.CreateUploadSwingVideos(uploadID, swings)
+	upload, err = u.Store.CreateUploadSwingVideos(uploadID, clipNum, swings)
 	fmt.Printf("after store create upload\n")
 	return upload, swings, err
 }
