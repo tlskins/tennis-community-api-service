@@ -36,15 +36,20 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 		return "error", err
 	}
 	fmt.Printf("after CreateUploadClipVideos\n")
-	album, err := u.alb.CreateAlbumFromUpload(
-		ctx,
-		upload.UserID,
-		upload.UploadKey,
-		upload.AlbumName,
-		upload.IsPublic,
-		upload.IsViewableByFriends,
-		upload.FriendIDs,
-	)
+
+	album, err := u.alb.CreateAlbum(ctx, &aT.Album{
+		Name:                upload.AlbumName,
+		UploadKey:           upload.UploadKey,
+		UserID:              upload.UserID,
+		CreatedAt:           now,
+		UpdatedAt:           now,
+		Status:              enums.AlbumStatusProcessing,
+		IsPublic:            upload.IsPublic,
+		IsViewableByFriends: upload.IsViewableByFriends,
+		FriendIDs:           upload.FriendIDs,
+		SourceLength:        body.SourceLength,
+		SourceSize:          body.SourceSize,
+	})
 	if err != nil {
 		return "error", err
 	}
