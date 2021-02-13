@@ -21,18 +21,11 @@ type SwingUpload struct {
 	FriendIDs           []string                `bson:"frndIds" json:"friendIds"`
 	ClipVideos          []*UploadClipVideo      `bson:"clipVids" json:"clipVideos"`
 	SwingVideos         []*UploadSwingVideo     `bson:"swingVids" json:"swingVideos"`
+	ProcessedClips      []int                   `bson:"procClips" json:"processedClips"`
 }
 
 func (a SwingUpload) IsFinal() bool {
-	clipVidsCount := 0
-	swingMap := map[int]bool{}
-	for _, swing := range a.SwingVideos {
-		if !swingMap[swing.ClipID] {
-			swingMap[swing.ClipID] = true
-			clipVidsCount++
-		}
-	}
-	return clipVidsCount == len(a.ClipVideos)
+	return len(a.ProcessedClips) == len(a.ClipVideos)
 }
 
 type UpdateSwingUpload struct {
