@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	"sort"
 	"time"
 
 	"github.com/tennis-community-api-service/pkg/enums"
@@ -29,6 +30,15 @@ type Album struct {
 }
 
 func (a *Album) CalculateMetrics() {
+	// sort swings by upload key
+	sort.SliceStable(a.SwingVideos, func(i, j int) bool {
+		return a.SwingVideos[i].UploadKey < a.SwingVideos[j].UploadKey
+	})
+	// sort swings by timestamp
+	sort.SliceStable(a.SwingVideos, func(i, j int) bool {
+		return a.SwingVideos[i].TimestampSeconds < a.SwingVideos[j].TimestampSeconds
+	})
+	// calculate rallies
 	lastTime := 0
 	currRally := 1
 	rallyWindow := 6 // seconds

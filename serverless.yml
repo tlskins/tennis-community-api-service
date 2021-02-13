@@ -4,7 +4,7 @@ service: tennis-community-api-service
 #org: your-org-name
 
 custom:
-  secrets: ${file(config.staging.yml)}
+  secrets: ${file(config.dev.yml)}
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
