@@ -48,12 +48,12 @@ func (s *UploadsStore) UpdateSwingUpload(data *t.UpdateSwingUpload) (upload *t.S
 	return
 }
 
-func (s *UploadsStore) CreateUploadSwingVideos(uploadKey string, clipNum int, swings []*t.UploadSwingVideo) (upload *t.SwingUpload, err error) {
+func (s *UploadsStore) CreateUploadSwingVideos(userID, uploadKey string, clipNum int, swings []*t.UploadSwingVideo) (upload *t.SwingUpload, err error) {
 	sess, c := s.C(ColSwingUploads)
 	defer sess.Close()
 
 	upload = &t.SwingUpload{}
-	err = m.Update(c, upload, m.M{"upKey": uploadKey}, m.M{
+	err = m.Update(c, upload, m.M{"usrId": userID, "upKey": uploadKey}, m.M{
 		"$set": m.M{"updAt": time.Now()},
 		"$push": m.M{
 			"swingVids": m.M{"$each": swings},
