@@ -57,8 +57,11 @@ type UploadSwingEvent struct {
 		StatusCode int               `json:"statusCode"`
 		Headers    map[string]string `json:"headers"`
 		Body       struct {
-			Bucket  string         `json:"bucket"`
-			Outputs []*UploadSwing `json:"outputs"`
+			UploadID string         `json:"uploadId"`
+			UserID   string         `json:"userId"`
+			Clip     int            `json:"clipNum"`
+			Bucket   string         `json:"bucket"`
+			Outputs  []*UploadSwing `json:"outputs"`
 		} `json:"body"`
 	} `json:"responsePayload"`
 }

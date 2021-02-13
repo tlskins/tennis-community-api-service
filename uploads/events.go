@@ -27,9 +27,7 @@ func (u *UploadsService) CreateUploadClipVideos(_ context.Context, uploadID, use
 	return
 }
 
-func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket string, videos, gifs, jpgs, txts []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
-	var uploadID string
-	var clipNum int
+func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket, userID, uploadID string, clipNum int, videos, gifs, jpgs, txts []string) (upload *t.SwingUpload, swings []*t.UploadSwingVideo, err error) {
 	now := time.Now()
 	swings = make([]*t.UploadSwingVideo, len(videos))
 	for i, videoPath := range videos {
@@ -39,10 +37,6 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		if err = u.unmarshalJSONFile(metaPath, meta); err != nil {
 			return
 		}
-		if uploadID == "" {
-			uploadID = meta.UploadKey
-		}
-		clipNum = meta.Clip
 		spew.Dump(meta)
 		swings[i] = &t.UploadSwingVideo{
 			ID:               uuid.NewV4().String(),
@@ -50,7 +44,7 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 			UpdatedAt:        now,
 			TimestampSeconds: meta.TimestampSeconds,
 			Frames:           meta.Frames,
-			ClipID:           meta.Clip,
+			ClipID:           clipNum,
 			SwingID:          meta.Swing,
 			CutURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
 			GifURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, gifs[i]),
@@ -58,7 +52,7 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket strin
 		}
 	}
 
-	upload, err = u.Store.CreateUploadSwingVideos(uploadID, clipNum, swings)
+	upload, err = u.Store.CreateUploadSwingVideos(userID, uploadID, clipNum, swings)
 	fmt.Printf("after store create upload\n")
 	return upload, swings, err
 }
