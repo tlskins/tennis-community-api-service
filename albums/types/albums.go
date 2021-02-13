@@ -22,6 +22,9 @@ type Album struct {
 	IsViewableByFriends bool              `bson:"frndView" json:"isViewableByFriends"`
 	FriendIDs           []string          `bson:"frndIds" json:"friendIds"`
 	Comments            []*Comment        `bson:"cmnts" json:"comments"`
+
+	SourceLength float64 `bson:"srcLen,omitempty" json:"sourceLength,omitempty"` // seconds
+	SourceSize   int64   `bson:"srcSize,omitempty" json:"sourceSize,omitempty"`  // bytes
 }
 
 func (a *Album) CalculateMetrics() {

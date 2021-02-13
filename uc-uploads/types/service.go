@@ -34,10 +34,12 @@ type UploadClipEvent struct {
 	ResponsePayload struct {
 		StatusCode int `json:"statusCode"`
 		Body       struct {
-			Bucket   string            `json:"bucket"`
-			UserID   string            `json:"userId"`
-			UploadID string            `json:"uploadId"`
-			Outputs  []*ClipUploadMeta `json:"outputs"`
+			Bucket       string            `json:"bucket"`
+			UserID       string            `json:"userId"`
+			UploadID     string            `json:"uploadId"`
+			SourceLength float64           `json:"sourceLength"` // seconds
+			SourceSize   int64             `json:"sourceSize"`   // bytes
+			Outputs      []*ClipUploadMeta `json:"outputs"`
 		} `json:"body"`
 	} `json:"responsePayload"`
 }

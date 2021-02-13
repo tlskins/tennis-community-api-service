@@ -5,7 +5,6 @@ import (
 	"time"
 
 	t "github.com/tennis-community-api-service/albums/types"
-	"github.com/tennis-community-api-service/pkg/enums"
 )
 
 func (u *AlbumsService) SearchAlbums(ctx context.Context, userIDs, friendIDs []string, public, friends, homeApproved *bool, limit, offset int) ([]*t.Album, error) {
@@ -18,25 +17,6 @@ func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, erro
 
 func (u *AlbumsService) DeleteAlbum(ctx context.Context, id string) error {
 	return u.Store.DeleteAlbum(id)
-}
-
-func (u *AlbumsService) CreateAlbumFromUpload(ctx context.Context, userID, uploadKey, albumName string, isPublic, isFriends bool, friendIDs []string) (*t.Album, error) {
-	now := time.Now()
-	name := albumName
-	if name == "" {
-		name = uploadKey
-	}
-	return u.Store.CreateAlbum(&t.Album{
-		Name:                name,
-		UploadKey:           uploadKey,
-		UserID:              userID,
-		CreatedAt:           now,
-		UpdatedAt:           now,
-		Status:              enums.AlbumStatusProcessing,
-		IsPublic:            isPublic,
-		IsViewableByFriends: isFriends,
-		FriendIDs:           friendIDs,
-	})
 }
 
 func (u *AlbumsService) CreateAlbum(ctx context.Context, data *t.Album) (*t.Album, error) {
