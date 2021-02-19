@@ -38,6 +38,15 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket, user
 			return
 		}
 		spew.Dump(meta)
+
+		cutURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath)
+		gifURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, gifs[i])
+		jpgURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, jpgs[i])
+		if u.cdnURL != "" {
+			cutURL = fmt.Sprintf("%s/%s", u.cdnURL, videoPath)
+			gifURL = fmt.Sprintf("%s/%s", u.cdnURL, gifs[i])
+			jpgURL = fmt.Sprintf("%s/%s", u.cdnURL, jpgs[i])
+		}
 		swings[i] = &t.UploadSwingVideo{
 			ID:               uuid.NewV4().String(),
 			CreatedAt:        now,
@@ -46,9 +55,9 @@ func (u *UploadsService) CreateUploadSwingVideos(_ context.Context, bucket, user
 			Frames:           meta.Frames,
 			ClipID:           clipNum,
 			SwingID:          meta.Swing,
-			CutURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, videoPath),
-			GifURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, gifs[i]),
-			JpgURL:           fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucket, jpgs[i]),
+			CutURL:           cutURL,
+			GifURL:           gifURL,
+			JpgURL:           jpgURL,
 		}
 	}
 

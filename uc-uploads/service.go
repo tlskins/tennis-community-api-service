@@ -51,9 +51,10 @@ func Init() (svc *UCService, err error) {
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort := os.Getenv("SMTP_PORT")
 	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
+	cdnURL := os.Getenv("CDN_URL")
 
 	var upSvc *up.UploadsService
-	if upSvc, err = up.Init(uploadsDBName, uploadsDBHost, uploadsDBUser, uploadsDBPwd); err != nil {
+	if upSvc, err = up.Init(uploadsDBName, uploadsDBHost, uploadsDBUser, uploadsDBPwd, cdnURL); err != nil {
 		return
 	}
 

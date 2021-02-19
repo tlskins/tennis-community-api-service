@@ -8,10 +8,11 @@ import (
 )
 
 type UploadsService struct {
-	Store *store.UploadsStore
+	Store  *store.UploadsStore
+	cdnURL string
 }
 
-func Init(mongoDBName, mongoHost, mongoUser, mongoPwd string) (*UploadsService, error) {
+func Init(mongoDBName, mongoHost, mongoUser, mongoPwd, cdnURL string) (*UploadsService, error) {
 	mc, err := m.NewClientV2(mongoHost, mongoUser, mongoPwd)
 	if err != nil {
 		log.Fatalln(err)
@@ -19,6 +20,7 @@ func Init(mongoDBName, mongoHost, mongoUser, mongoPwd string) (*UploadsService, 
 	newStore := store.NewStore(mc, mongoDBName)
 
 	return &UploadsService{
-		Store: newStore,
+		Store:  newStore,
+		cdnURL: cdnURL,
 	}, nil
 }
