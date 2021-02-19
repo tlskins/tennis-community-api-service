@@ -59,6 +59,7 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+      CDN_URL: ${self:custom.secrets.CDN_URL}
     events:
       - http:
           path: uploads
@@ -89,6 +90,7 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+      CDN_URL: ${self:custom.secrets.CDN_URL}
     events:
       - http:
           path: uploads
@@ -119,6 +121,7 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+      CDN_URL: ${self:custom.secrets.CDN_URL}
 
   update_upload_swings:
     handler: entrypoints/uploads/update_upload_swings/update_upload_swings.go
@@ -142,6 +145,7 @@ functions:
       SMTP_HOST: ${self:custom.secrets.SMTP_HOST}
       SMTP_PORT: ${self:custom.secrets.SMTP_PORT}
       ALLOWED_ORIGIN: ${self:custom.secrets.ALLOWED_ORIGIN}
+      CDN_URL: ${self:custom.secrets.CDN_URL}
 
   ####################################################################################
   # ALBUMS FUNCTIONS
