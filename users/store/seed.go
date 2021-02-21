@@ -14,5 +14,17 @@ func (s *UsersStore) EnsureIndexes() error {
 	}); err != nil {
 		return err
 	}
+	if err := c.EnsureIndex(mgo.Index{
+		Key:    []string{"lowEm"},
+		Unique: true,
+	}); err != nil {
+		return err
+	}
+	if err := c.EnsureIndex(mgo.Index{
+		Key:    []string{"usrNm"},
+		Unique: true,
+	}); err != nil {
+		return err
+	}
 	return nil
 }
