@@ -112,7 +112,7 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 Your friend %s %s has commented on the album %s.
 View At
 %s/albums/%s
-		`, albumUser.FirstName, albumUser.LastName, friend.FirstName, friend.LastName, album.Name, u.Resp.Origin, album.ID),
+		`, albumUser.FirstName, albumUser.LastName, friend.FirstName, friend.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
 			)
 			if softErr != nil {
 				fmt.Printf("error sending album user email: %s\n", softErr.Error())
