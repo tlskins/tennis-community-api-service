@@ -87,32 +87,34 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 		// add comment notification to user in store
 		albumUser, err := u.usr.GetUser(ctx, album.UserID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
-		friend, err := u.usr.GetUser(ctx, claims.Subject)
+		poster, err := u.usr.GetUser(ctx, claims.Subject)
 		api.CheckError(http.StatusUnprocessableEntity, err)
-		albumUser.AddCommentNote(friend, album.ID, album.Name, req.SwingID)
+		albumUser.AddCommentNote(poster, album.ID, album.Name, req.SwingID)
 		albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
 			ID:           albumUser.ID,
 			CommentNotes: &albumUser.CommentNotes,
 		})
 		api.CheckError(http.StatusUnprocessableEntity, err)
 
-		// send email if new comment on album
-		note := friend.AddMyRecentComment(album.ID, album.Name, req.SwingID)
-		albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
-			ID:               friend.ID,
-			MyRecentComments: &friend.MyRecentComments,
+		// record poster's recent comments
+		note := poster.AddMyRecentComment(album.ID, album.Name, req.SwingID)
+		poster, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
+			ID:               poster.ID,
+			MyRecentComments: &poster.MyRecentComments,
 		})
 		api.CheckError(http.StatusUnprocessableEntity, err)
+
+		// only send email notif if havent notified of their posting recently on this album
 		if note.NumComments == 1 {
 			softErr := u.emailClient.SendEmail(
-				friend.Email,
-				fmt.Sprintf("Hive Tennis - %s Commented on your album %s!", friend.UserName, album.Name),
+				albumUser.Email,
+				fmt.Sprintf("Hive Tennis - %s Commented on your album %s!", albumUser.UserName, album.Name),
 				fmt.Sprintf(`
 %s %s,
 Your friend %s %s has commented on the album %s.
 View At
 %s/albums/%s
-		`, albumUser.FirstName, albumUser.LastName, friend.FirstName, friend.LastName, album.Name, u.Resp.Origin, album.ID),
+		`, albumUser.FirstName, albumUser.LastName, albumUser.FirstName, albumUser.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
 			)
 			if softErr != nil {
 				fmt.Printf("error sending album user email: %s\n", softErr.Error())

@@ -27,6 +27,9 @@ func (r CreateUserReq) Validate() error {
 	if len(r.UserName) < 3 {
 		return errors.New("Username must be at least 3 characters long")
 	}
+	if len(r.UserName) > 20 {
+		return errors.New("Username must be shorter than 20 characters")
+	}
 	if len(r.FirstName) == 0 {
 		return errors.New("Missing first name")
 	}
@@ -53,6 +56,9 @@ type UpdateUserProfileReq uT.UpdateUserProfile
 func (r UpdateUserProfileReq) Validate() error {
 	if len(r.UserName) < 3 {
 		return errors.New("Username must be at least 3 characters long")
+	}
+	if len(r.UserName) > 20 {
+		return errors.New("Username must be shorter than 20 characters")
 	}
 	if len(r.FirstName) == 0 {
 		return errors.New("Missing first name")

@@ -8,6 +8,7 @@ import (
 
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
+	"github.com/tennis-community-api-service/pkg/enums"
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uc-albums/types"
 )
@@ -69,6 +70,9 @@ func (u *UCService) DeleteAlbum(ctx context.Context, r *api.Request) (resp api.R
 	if album.UserID != claims.Subject {
 		api.CheckError(http.StatusUnauthorized, errors.New("Unable to delete an album that does not belong to you"))
 	}
+	if album.Status == enums.AlbumStatusProcessing {
+		api.CheckError(http.StatusUnprocessableEntity, errors.New("Please wait for album to finish processing"))
+	}
 	u.alb.DeleteAlbum(ctx, id)
 	api.CheckError(http.StatusInternalServerError, err)
 	return u.Resp.Success(r.Headers, nil, http.StatusOK)
@@ -85,6 +89,9 @@ func (u *UCService) UpdateAlbum(ctx context.Context, r *api.Request) (resp api.R
 	api.CheckError(http.StatusNotFound, err)
 	if oldAlbum.UserID != claims.Subject {
 		panic(errors.New("Cannot edit another user's album"))
+	}
+	if oldAlbum.Status == enums.AlbumStatusProcessing {
+		api.CheckError(http.StatusUnprocessableEntity, errors.New("Please wait for album to finish processing"))
 	}
 	album, err := u.alb.UpdateAlbum(ctx, req.UpdateAlbum)
 	api.CheckError(http.StatusUnprocessableEntity, err)
