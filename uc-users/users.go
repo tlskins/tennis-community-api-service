@@ -33,7 +33,7 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 	user, err := u.usr.GetUserByEmail(ctx, req.Email)
 	api.CheckError(http.StatusNotFound, err)
 	err = auth.ValidateCredentials(user.EncryptedPassword, req.Password)
-	api.CheckError(http.StatusUnauthorized, err)
+	api.CheckError(http.StatusUnauthorized, err, "Incorrect Password")
 	authToken, err := u.jwt.GenAccessToken(user)
 	api.CheckError(http.StatusInternalServerError, err)
 	now := time.Now()
