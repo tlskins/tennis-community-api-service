@@ -19,6 +19,15 @@ func (s *UsersStore) GetUser(userID string) (user *t.User, err error) {
 	return
 }
 
+func (s *UsersStore) GetAllUsers() (users []*t.User, err error) {
+	sess, c := s.C(ColUsers)
+	defer sess.Close()
+
+	users = []*t.User{}
+	err = m.Find(c, &users, m.M{})
+	return
+}
+
 func (s *UsersStore) GetUserByEmail(email string) (user *t.User, err error) {
 	sess, c := s.C(ColUsers)
 	defer sess.Close()

@@ -2,6 +2,7 @@ package uploads
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -33,6 +34,18 @@ func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp
 	claims := auth.AuthorizedClaimsFromContext(ctx)
 	spew.Dump(r)
 	fmt.Printf("OriginalURL=%s\n", req.OriginalURL)
+
+	user, err := u.usr.GetUser(ctx, claims.Subject)
+	api.CheckError(http.StatusNotFound, err)
+	recentUps, err := u.up.GetRecentSwingUploads(ctx, claims.Subject)
+	api.CheckError(http.StatusInternalServerError, err)
+	if len(recentUps) >= user.WeeklyUploadsLimit {
+		api.Abort(
+			http.StatusUnprocessableEntity,
+			errors.New("Weekly upload limit reached. Please reach out to admin@hivetennis.com to increase your limit."),
+		)
+	}
+
 	upload, err := u.up.CreateSwingUpload(
 		ctx,
 		claims.Subject,

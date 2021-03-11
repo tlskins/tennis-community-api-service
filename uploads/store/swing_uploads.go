@@ -14,11 +14,17 @@ func (s *UploadsStore) GetRecentSwingUploads(userID string) (uploads []*t.SwingU
 	sess, c := s.C(ColSwingUploads)
 	defer sess.Close()
 
+	now := time.Now()
+	offset := int(time.Monday - now.Weekday())
+	if offset > 0 {
+		offset = -6
+	}
+	lastMon := time.Date(now.Year(), now.Month(), now.Day()+offset, 0, 0, 0, 0, time.Local)
+
 	uploads = []*t.SwingUpload{}
 	err = m.Aggregate(c, &uploads, []m.M{
-		{"$match": m.M{"usrId": userID}},
+		{"$match": m.M{"usrId": userID, "crAt": m.M{"$gt": lastMon}}},
 		{"$sort": m.M{"crAt": -1}},
-		{"$limit": 5},
 	})
 	return
 }

@@ -33,6 +33,7 @@ type User struct {
 	DisableComments     bool `bson:"noComms" json:"disableComments"`
 	DisablePublicAlbums bool `bson:"noPubAlb" json:"disablePublicAlbums"`
 	Warnings            int  `bson:"warns" json:"warnings"`
+	WeeklyUploadsLimit  int  `bson:"wkUpLim" json:"weeklyUploadsLimit"`
 
 	// social
 	FriendIds      []string         `bson:"friendIds" json:"friendIds"`
@@ -153,9 +154,10 @@ type UpdateUser struct {
 	AuthToken         *string    `bson:"-" json:"authToken,omitempty"`
 
 	// permissions
-	DisableComments     bool `bson:"noComms,omitempty" json:"disableComments,omitempty"`
-	DisablePublicAlbums bool `bson:"noPubAlb,omitempty" json:"disablePublicAlbums,omitempty"`
-	Warnings            int  `bson:"warns,omitempty" json:"warnings,omitempty"`
+	DisableComments     *bool `bson:"noComms,omitempty" json:"disableComments,omitempty"`
+	DisablePublicAlbums *bool `bson:"noPubAlb,omitempty" json:"disablePublicAlbums,omitempty"`
+	Warnings            *int  `bson:"warns,omitempty" json:"warnings,omitempty"`
+	WeeklyUploadsLimit  *int  `bson:"wkUpLim,omitempty" json:"weeklyUploadsLimit,omitempty"`
 
 	// social
 	FriendIds      *[]string         `bson:"friendIds,omitempty" json:"friendIds,omitempty"`
@@ -178,13 +180,13 @@ type UpdateUserProfile struct {
 	IconNumber int    `bson:"icon" json:"iconNumber"`
 
 	// profile
-	IsPublic    bool     `bson:"pub" json:"isPublic"`
-	RightHanded *bool    `bson:"rgtHnd" json:"rightHanded"`
-	BirthYear   *int     `bson:"birthYr" json:"birthYear"`
-	Gender      *string  `bson:"gender" json:"gender"`
-	USTALevel   *float64 `bson:"ustaLvl" json:"ustaLevel"`
-	State       *string  `bson:"state" json:"state"`
-	City        *string  `bson:"city" json:"city"`
-	Longitude   *float64 `bson:"lng" json:"longitude"`
-	Latitude    *float64 `bson:"lat" json:"latitue"`
+	// IsPublic    bool     `bson:"pub" json:"isPublic"`
+	// RightHanded *bool    `bson:"rgtHnd" json:"rightHanded"`
+	// BirthYear   *int     `bson:"birthYr" json:"birthYear"`
+	// Gender      *string  `bson:"gender" json:"gender"`
+	// USTALevel   *float64 `bson:"ustaLvl" json:"ustaLevel"`
+	// State       *string  `bson:"state" json:"state"`
+	// City        *string  `bson:"city" json:"city"`
+	// Longitude   *float64 `bson:"lng" json:"longitude"`
+	// Latitude    *float64 `bson:"lat" json:"latitue"`
 }
