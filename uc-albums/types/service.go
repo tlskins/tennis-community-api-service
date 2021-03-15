@@ -43,12 +43,13 @@ type SearchAlbumsReq struct {
 }
 
 type PostCommentReq struct {
-	UserID  string `json:"userId"`
-	AlbumID string `json:"albumId"`
-	SwingID string `json:"swingId,omitempty"`
-	ReplyID string `json:"replyId,omitempty"`
-	Frame   int    `json:"frame,omitempty"`
-	Text    string `json:"text"`
+	UserID   string        `json:"userId"`
+	AlbumID  string        `json:"albumId"`
+	SwingID  string        `json:"swingId,omitempty"`
+	ReplyID  string        `json:"replyId,omitempty"`
+	Frame    int           `json:"frame,omitempty"`
+	Text     string        `json:"text"`
+	UserTags []*aT.UserTag `json:"userTags"`
 }
 
 func (r PostCommentReq) Validate() error {
@@ -62,7 +63,7 @@ func (r PostCommentReq) Validate() error {
 		return errors.New("Missing comment text")
 	}
 	if len(r.Text) > 500 {
-		return errors.New("Comment must be less than 500 characters")
+		return errors.New("Comment must be 500 characters or less")
 	}
 	return nil
 }

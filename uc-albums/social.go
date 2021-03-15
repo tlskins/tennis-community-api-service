@@ -57,28 +57,23 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 	claims := auth.AuthorizedClaimsFromContext(ctx)
 	req := &t.PostCommentReq{UserID: claims.Subject, AlbumID: r.PathParameters["id"]}
 	api.ParseAndValidate(r, req)
-	now := time.Now()
 
 	// add comment to album in store
+	now := time.Now()
+	comment := &aT.Comment{
+		ReplyID:   req.ReplyID,
+		UserID:    req.UserID,
+		CreatedAt: now,
+		UpdatedAt: now,
+		Frame:     req.Frame,
+		Text:      req.Text,
+		UserTags:  req.UserTags,
+	}
 	var album *aT.Album
 	if req.SwingID == "" {
-		album, err = u.alb.PostCommentToAlbum(ctx, req.AlbumID, &aT.Comment{
-			ReplyID:   req.ReplyID,
-			UserID:    req.UserID,
-			CreatedAt: now,
-			UpdatedAt: now,
-			Frame:     req.Frame,
-			Text:      req.Text,
-		})
+		album, err = u.alb.PostCommentToAlbum(ctx, req.AlbumID, comment)
 	} else {
-		album, err = u.alb.PostCommentToSwing(ctx, req.AlbumID, req.SwingID, &aT.Comment{
-			ReplyID:   req.ReplyID,
-			UserID:    req.UserID,
-			CreatedAt: now,
-			UpdatedAt: now,
-			Frame:     req.Frame,
-			Text:      req.Text,
-		})
+		album, err = u.alb.PostCommentToSwing(ctx, req.AlbumID, req.SwingID, comment)
 	}
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
