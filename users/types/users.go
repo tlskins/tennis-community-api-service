@@ -39,10 +39,11 @@ type User struct {
 	FriendRequests []*FriendRequest `bson:"frndReqs" json:"friendRequests"`
 
 	// notifications
-	UploadNotes      []*UploadNote  `bson:"upNotes" json:"uploadNotifications"`
-	FriendNotes      []*FriendNote  `bson:"frndNotes" json:"friendNotifications"`
-	CommentNotes     []*CommentNote `bson:"commentNotes" json:"commentNotifications"`
-	MyRecentComments []*CommentNote `bson:"recComms" json:"myRecentComments"`
+	UploadNotes       []*UploadNote       `bson:"upNotes" json:"uploadNotifications"`
+	FriendNotes       []*FriendNote       `bson:"frndNotes" json:"friendNotifications"`
+	CommentNotes      []*CommentNote      `bson:"commentNotes" json:"commentNotifications"`
+	MyRecentComments  []*CommentNote      `bson:"recComms" json:"myRecentComments"`
+	AlbumUserTagNotes []*AlbumUserTagNote `bson:"albUsrTagNotes" json:"albumUserTagNotifications"`
 
 	// profile
 	IsPublic    bool     `bson:"pub" json:"isPublic"`
@@ -162,10 +163,11 @@ type UpdateUser struct {
 	FriendRequests *[]*FriendRequest `bson:"frndReqs,omitempty" json:"friendRequests,omitempty"`
 
 	// notifications
-	UploadNotes      *[]*UploadNote  `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
-	FriendNotes      *[]*FriendNote  `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
-	CommentNotes     *[]*CommentNote `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
-	MyRecentComments *[]*CommentNote `bson:"recComms,omitempty" json:"myRecentComments,omitempty"`
+	UploadNotes       *[]*UploadNote       `bson:"upNotes,omitempty" json:"uploadNotifications,omitempty"`
+	FriendNotes       *[]*FriendNote       `bson:"frndNotes,omitempty" json:"friendNotifications,omitempty"`
+	CommentNotes      *[]*CommentNote      `bson:"commentNotes,omitempty" json:"commentNotifications,omitempty"`
+	MyRecentComments  *[]*CommentNote      `bson:"recComms,omitempty" json:"myRecentComments,omitempty"`
+	AlbumUserTagNotes *[]*AlbumUserTagNote `bson:"albUsrTagNotes,omitempty" json:"albumUserTagNotifications,omitempty"`
 }
 
 type UpdateUserProfile struct {

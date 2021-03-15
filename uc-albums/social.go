@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	uuid "github.com/satori/go.uuid"
+
 	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
 	api "github.com/tennis-community-api-service/pkg/lambda"
@@ -38,9 +40,9 @@ func (u *UCService) shareAlbum(ctx context.Context, r *api.Request, album *aT.Al
 				fmt.Sprintf("Hive Tennis - %s Shared An Album With You!", user.UserName),
 				fmt.Sprintf(`
 %s %s,
-Your friend %s %s has shared the album %s with you.
-View At
-%s/albums/%s
+Your friend %s %s has shared the album "%s" with you.
+
+Link: %s/albums/%s
 				`, friend.FirstName, friend.LastName, user.FirstName, user.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
 			)
 			if softErr != nil {
@@ -77,12 +79,51 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 	}
 	api.CheckError(http.StatusUnprocessableEntity, err)
 
-	// only send notifications if post to another user's album
-	if album.UserID != claims.Subject {
-		// add comment notification to user in store
-		albumUser, err := u.usr.GetUser(ctx, album.UserID)
+	// notifications
+	poster, err := u.usr.GetUser(ctx, claims.Subject)
+	api.CheckError(http.StatusUnprocessableEntity, err)
+
+	// notify tagged users
+	for _, tag := range comment.UserTags {
+		if tag.UserID == album.UserID || comment.UserID == tag.UserID {
+			continue
+		}
+		tagUser, err := u.usr.GetUser(ctx, tag.UserID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
-		poster, err := u.usr.GetUser(ctx, claims.Subject)
+		notes := append(tagUser.AlbumUserTagNotes, &uT.AlbumUserTagNote{
+			ID:              uuid.NewV4().String(),
+			CreatedAt:       now,
+			TaggerID:        poster.ID,
+			TaggerFirstName: poster.FirstName,
+			TaggerUserName:  poster.UserName,
+			AlbumID:         album.ID,
+			AlbumName:       album.Name,
+			SwingID:         req.SwingID,
+		})
+		_, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
+			ID:                tagUser.ID,
+			AlbumUserTagNotes: &notes,
+		})
+		api.CheckError(http.StatusUnprocessableEntity, err)
+
+		softErr := u.emailClient.SendEmail(
+			tagUser.Email,
+			fmt.Sprintf("Hive Tennis - %s Tagged you in the album %s!", poster.UserName, album.Name),
+			fmt.Sprintf(`
+%s %s,
+Your friend %s %s has tagged you in a comment on the album "%s".
+
+Link: %s/albums/%s
+	`, tagUser.FirstName, tagUser.LastName, poster.FirstName, poster.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
+		)
+		if softErr != nil {
+			fmt.Printf("error sending album user email: %s\n", softErr.Error())
+		}
+	}
+
+	// notify album user if not commenter
+	if album.UserID != claims.Subject {
+		albumUser, err := u.usr.GetUser(ctx, album.UserID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 		albumUser.AddCommentNote(poster, album.ID, album.Name, req.SwingID)
 		albumUser, err = u.usr.UpdateUser(ctx, &uT.UpdateUser{
@@ -103,13 +144,13 @@ func (u *UCService) PostComment(ctx context.Context, r *api.Request) (resp api.R
 		if note.NumComments == 1 {
 			softErr := u.emailClient.SendEmail(
 				albumUser.Email,
-				fmt.Sprintf("Hive Tennis - %s Commented on your album %s!", albumUser.UserName, album.Name),
+				fmt.Sprintf("Hive Tennis - %s Commented on your album %s!", poster.UserName, album.Name),
 				fmt.Sprintf(`
 %s %s,
-Your friend %s %s has commented on the album %s.
-View At
-%s/albums/%s
-		`, albumUser.FirstName, albumUser.LastName, albumUser.FirstName, albumUser.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
+Your friend %s %s has commented on the album "%s".
+
+Link: %s/albums/%s
+		`, albumUser.FirstName, albumUser.LastName, poster.FirstName, poster.LastName, album.Name, u.Resp.Origin(r.Headers), album.ID),
 			)
 			if softErr != nil {
 				fmt.Printf("error sending album user email: %s\n", softErr.Error())

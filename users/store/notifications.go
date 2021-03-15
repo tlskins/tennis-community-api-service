@@ -62,3 +62,12 @@ func (s *UsersStore) RemoveCommentNote(userID, noteID string) (user *t.User, err
 	err = m.Update(c, user, m.M{"_id": userID}, m.M{"$pull": m.M{"commentNotes": m.M{"_id": noteID}}})
 	return
 }
+
+func (s *UsersStore) RemoveAlbumUserTagNote(userID, noteID string) (user *t.User, err error) {
+	sess, c := s.C(ColUsers)
+	defer sess.Close()
+
+	user = &t.User{}
+	err = m.Update(c, user, m.M{"_id": userID}, m.M{"$pull": m.M{"albUsrTagNotes": m.M{"_id": noteID}}})
+	return
+}

@@ -77,9 +77,10 @@ func (r UpdateUserProfileReq) Validate() error {
 }
 
 type RemoveNotificationReq struct {
-	UploadNoteID  string `json:"uploadNotificationId"`
-	FriendNoteID  string `json:"friendNotificationId"`
-	CommentNoteID string `json:"commentNotificationId"`
+	UploadNoteID       string `json:"uploadNotificationId"`
+	FriendNoteID       string `json:"friendNotificationId"`
+	CommentNoteID      string `json:"commentNotificationId"`
+	AlbumUserTagNoteID string `json:"albumUserTagNotificationId"`
 }
 
 func (r RemoveNotificationReq) Validate() error {
@@ -91,6 +92,9 @@ func (r RemoveNotificationReq) Validate() error {
 		count++
 	}
 	if len(r.CommentNoteID) > 0 {
+		count++
+	}
+	if len(r.AlbumUserTagNoteID) > 0 {
 		count++
 	}
 	if count > 1 {

@@ -73,6 +73,9 @@ func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) 
 	} else if len(req.CommentNoteID) > 0 {
 		user, err = u.usr.RemoveCommentNote(ctx, claims.Subject, req.CommentNoteID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
+	} else if len(req.AlbumUserTagNoteID) > 0 {
+		user, err = u.usr.RemoveAlbumUserTagNote(ctx, claims.Subject, req.AlbumUserTagNoteID)
+		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
 	return u.Resp.Success(r.Headers, user, http.StatusOK)
 }

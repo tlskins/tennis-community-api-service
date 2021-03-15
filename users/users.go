@@ -43,6 +43,10 @@ func (u *UsersService) RemoveCommentNote(_ context.Context, userID, noteID strin
 	return u.Store.RemoveCommentNote(userID, noteID)
 }
 
+func (u *UsersService) RemoveAlbumUserTagNote(_ context.Context, userID, noteID string) (resp *t.User, err error) {
+	return u.Store.RemoveAlbumUserTagNote(userID, noteID)
+}
+
 func (u *UsersService) RecentUsers(_ context.Context, start, end time.Time, limit, offset int) ([]*t.User, error) {
 	return u.Store.RecentUsers(start, end, limit, offset)
 }

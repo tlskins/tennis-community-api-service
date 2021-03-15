@@ -40,3 +40,15 @@ type CommentNote struct {
 	SwingIDs        []string `bson:"swingIds" json:"swingIds"`
 	NumComments     int      `bson:"numComms" json:"numComments"`
 }
+
+type AlbumUserTagNote struct {
+	ID        string    `bson:"_id" json:"id"`
+	CreatedAt time.Time `bson:"crAt" json:"createdAt"`
+
+	TaggerID        string `bson:"tgrId,omitempty" json:"taggerId,omitempty"`
+	TaggerFirstName string `bson:"ftgrFirst,omitempty" json:"taggerFirstName,omitempty"`
+	TaggerUserName  string `bson:"tgrUsr,omitempty" json:"taggerUserName,omitempty"`
+	AlbumID         string `bson:"albumId" json:"albumId"`
+	AlbumName       string `bson:"albumNm" json:"albumName"`
+	SwingID         string `bson:"swingId,omitempty" json:"swingId,omitempty"`
+}
