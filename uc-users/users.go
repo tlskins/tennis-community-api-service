@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/tennis-community-api-service/pkg/auth"
+	"github.com/tennis-community-api-service/pkg/enums"
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uc-users/types"
 	uT "github.com/tennis-community-api-service/users/types"
@@ -32,6 +33,9 @@ func (u *UCService) SignIn(ctx context.Context, r *api.Request) (resp api.Respon
 
 	user, err := u.usr.GetUserByEmail(ctx, req.Email)
 	api.CheckError(http.StatusNotFound, err)
+	if user.Status == enums.UserStatusPending {
+		api.Abort(http.StatusForbidden, "Please confirm email before signing in")
+	}
 	err = auth.ValidateCredentials(user.EncryptedPassword, req.Password)
 	api.CheckError(http.StatusUnauthorized, err, "Incorrect Password")
 	authToken, err := u.jwt.GenAccessToken(user)
@@ -72,6 +76,9 @@ func (u *UCService) RemoveUserNotification(ctx context.Context, r *api.Request) 
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	} else if len(req.CommentNoteID) > 0 {
 		user, err = u.usr.RemoveCommentNote(ctx, claims.Subject, req.CommentNoteID)
+		api.CheckError(http.StatusUnprocessableEntity, err)
+	} else if len(req.AlbumUserTagNoteID) > 0 {
+		user, err = u.usr.RemoveAlbumUserTagNote(ctx, claims.Subject, req.AlbumUserTagNoteID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 	}
 	return u.Resp.Success(r.Headers, user, http.StatusOK)

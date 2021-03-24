@@ -4,12 +4,16 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/davecgh/go-spew/spew"
 
+	aT "github.com/tennis-community-api-service/albums/types"
 	"github.com/tennis-community-api-service/pkg/auth"
+	"github.com/tennis-community-api-service/pkg/enums"
 	api "github.com/tennis-community-api-service/pkg/lambda"
 	t "github.com/tennis-community-api-service/uc-uploads/types"
+	uT "github.com/tennis-community-api-service/uploads/types"
 )
 
 func (u *UCService) GetRecentSwingUploads(ctx context.Context, r *api.Request) (resp api.Response, err error) {
@@ -39,5 +43,26 @@ func (u *UCService) CreateSwingUpload(ctx context.Context, r *api.Request) (resp
 		req.IsViewableByFriends,
 	)
 	api.CheckError(http.StatusInternalServerError, err)
+
+	now := time.Now()
+	album, err := u.alb.CreateAlbum(ctx, &aT.Album{
+		Name:                upload.AlbumName,
+		UploadKey:           upload.UploadKey,
+		UserID:              upload.UserID,
+		CreatedAt:           now,
+		UpdatedAt:           now,
+		Status:              enums.AlbumStatusProcessing,
+		IsPublic:            upload.IsPublic,
+		IsViewableByFriends: upload.IsViewableByFriends,
+		FriendIDs:           upload.FriendIDs,
+	})
+	api.CheckError(http.StatusInternalServerError, err)
+
+	upload, err = u.up.UpdateSwingUpload(ctx, &uT.UpdateSwingUpload{
+		UserID:    upload.UserID,
+		UploadKey: upload.UploadKey,
+		AlbumID:   &album.ID,
+	})
+
 	return u.Resp.Success(r.Headers, upload, http.StatusCreated)
 }

@@ -37,33 +37,17 @@ func (u *UCService) CreateUploadClipVideos(ctx context.Context, r *t.UploadClipE
 	}
 	fmt.Printf("after CreateUploadClipVideos\n")
 
-	album, err := u.alb.CreateAlbum(ctx, &aT.Album{
-		Name:                upload.AlbumName,
-		UploadKey:           upload.UploadKey,
-		UserID:              upload.UserID,
-		CreatedAt:           now,
-		UpdatedAt:           now,
-		Status:              enums.AlbumStatusProcessing,
-		IsPublic:            upload.IsPublic,
-		IsViewableByFriends: upload.IsViewableByFriends,
-		FriendIDs:           upload.FriendIDs,
-		SourceLength:        body.SourceLength,
-		SourceSize:          body.SourceSize,
+	clippedStatus := enums.AlbumStatusClipped
+	_, err = u.alb.UpdateAlbum(ctx, &aT.UpdateAlbum{
+		ID:           upload.AlbumID,
+		Status:       &clippedStatus,
+		SourceLength: &body.SourceLength,
+		SourceSize:   &body.SourceSize,
 	})
 	if err != nil {
 		return "error", err
 	}
-	fmt.Printf("after CreateAlbumFromUpload\n")
-	_, err = u.up.UpdateSwingUpload(ctx, &uT.UpdateSwingUpload{
-		UploadKey: upload.UploadKey,
-		UserID:    upload.UserID,
-		UpdatedAt: time.Now(),
-		AlbumID:   &album.ID,
-	})
-	if err != nil {
-		return "error", err
-	}
-	fmt.Printf("after UpdateSwingUpload\n")
+
 	return "success", nil
 }
 

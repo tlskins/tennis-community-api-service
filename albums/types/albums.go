@@ -64,6 +64,10 @@ type UpdateAlbum struct {
 	IsViewableByFriends *bool              `bson:"frndView,omitempty" json:"isViewableByFriends,omitempty"`
 	FriendIDs           *[]string          `bson:"frndIds,omitempty" json:"friendIds,omitempty"`
 	Comments            *[]*Comment        `bson:"cmnts,omitempty" json:"comments,omitempty"`
+
+	// file upload only
+	SourceLength *float64 `bson:"srcLen,omitempty" json:"sourceLength,omitempty"` // seconds
+	SourceSize   *int64   `bson:"srcSize,omitempty" json:"sourceSize,omitempty"`  // bytes
 }
 
 func (a UpdateAlbum) Validate() error {

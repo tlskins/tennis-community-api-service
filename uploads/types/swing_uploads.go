@@ -25,6 +25,10 @@ type SwingUpload struct {
 }
 
 func (a SwingUpload) IsFinal() bool {
+	if len(a.ClipVideos) == 0 {
+		// clips havent finished processing yet
+		return false
+	}
 	return len(a.ProcessedClips) == len(a.ClipVideos)
 }
 

@@ -12,6 +12,7 @@ type AlbumStatus string
 
 const (
 	AlbumStatusProcessing AlbumStatus = "Processing"
+	AlbumStatusClipped    AlbumStatus = "Clipped"
 	AlbumStatusCreated    AlbumStatus = "Created"
 	AlbumStatusDeleted    AlbumStatus = "Deleted"
 )
