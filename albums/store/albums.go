@@ -25,7 +25,7 @@ func (s *AlbumsStore) DeleteAlbum(id string) (err error) {
 	return m.Remove(c, m.M{"_id": id})
 }
 
-func (s *AlbumsStore) SearchAlbums(userIDs, friendIDs []string, public, friends, homeApproved *bool, limit, offset int) (albums []*t.Album, err error) {
+func (s *AlbumsStore) SearchAlbums(userIDs, friendIDs []string, public, friends, homeApproved, isPro *bool, limit, offset int) (albums []*t.Album, err error) {
 	sess, c := s.C(ColAlbums)
 	defer sess.Close()
 
@@ -46,6 +46,9 @@ func (s *AlbumsStore) SearchAlbums(userIDs, friendIDs []string, public, friends,
 	}
 	if homeApproved != nil {
 		query["home"] = *homeApproved
+	}
+	if isPro != nil {
+		query["pro"] = *isPro
 	}
 
 	if limit > 0 {

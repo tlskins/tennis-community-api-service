@@ -7,8 +7,8 @@ import (
 	t "github.com/tennis-community-api-service/albums/types"
 )
 
-func (u *AlbumsService) SearchAlbums(ctx context.Context, userIDs, friendIDs []string, public, friends, homeApproved *bool, limit, offset int) ([]*t.Album, error) {
-	return u.Store.SearchAlbums(userIDs, friendIDs, public, friends, homeApproved, limit, offset)
+func (u *AlbumsService) SearchAlbums(ctx context.Context, userIDs, friendIDs []string, public, friends, homeApproved, isPro *bool, limit, offset int) ([]*t.Album, error) {
+	return u.Store.SearchAlbums(userIDs, friendIDs, public, friends, homeApproved, isPro, limit, offset)
 }
 
 func (u *AlbumsService) GetAlbum(ctx context.Context, id string) (*t.Album, error) {

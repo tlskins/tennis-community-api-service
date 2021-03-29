@@ -35,7 +35,7 @@ func (u *UCService) SearchAlbums(ctx context.Context, r *api.Request) (resp api.
 		api.CheckError(http.StatusUnprocessableEntity, err)
 		userIDs = append(userIDs, user.FriendIds...)
 	}
-	albums, err := u.alb.SearchAlbums(ctx, userIDs, friendIDs, req.Public, viewableByFriends, req.HomeApproved, req.Limit, req.Offset)
+	albums, err := u.alb.SearchAlbums(ctx, userIDs, friendIDs, req.Public, viewableByFriends, req.HomeApproved, req.Pro, req.Limit, req.Offset)
 	api.CheckError(http.StatusUnprocessableEntity, err)
 	return u.Resp.Success(r.Headers, albums, http.StatusOK)
 }

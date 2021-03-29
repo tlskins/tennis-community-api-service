@@ -38,6 +38,7 @@ type SearchAlbumsReq struct {
 	Shared       bool  `json:"shared"`
 	Public       *bool `json:"isPublic"`
 	HomeApproved *bool `json:"homeApproved"`
+	Pro          *bool `json:"pro"`
 	Limit        int   `json:"limit"`
 	Offset       int   `json:"offset"`
 }

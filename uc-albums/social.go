@@ -122,7 +122,7 @@ Link: %s/albums/%s
 	}
 
 	// notify album user if not commenter
-	if album.UserID != claims.Subject {
+	if album.UserID != "" && album.UserID != claims.Subject {
 		albumUser, err := u.usr.GetUser(ctx, album.UserID)
 		api.CheckError(http.StatusUnprocessableEntity, err)
 		albumUser.AddCommentNote(poster, album.ID, album.Name, req.SwingID)
